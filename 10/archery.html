@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>的当て</title>
+<style>
+  html, body { margin: 0; background: #1b2a3a; height: 100%; overflow: hidden; }
+  canvas { display: block; margin: 0 auto; background: #cfe8f5; touch-action: none; }
+</style>
+</head>
+<body>
+<canvas id="c" width="960" height="540"></canvas>
+<script>
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+const W = cv.width, H = cv.height;
+const GROUND = H - 60;
+const BOW = { x: 140, y: GROUND - 90 };   // 弓の位置
+const MAX_PULL = 120;                      // 最大引き距離(px)
+const POWER = 0.2;                         // 引き距離→初速
+const G = 0.25;                            // 重力
+
+let target = null;
+let arrows = [];       // 飛行中・刺さった矢
+let pulling = false;
+let mouse = { x: BOW.x, y: BOW.y };
+let score = 0;
+let shots = 0;
+
+function spawnTarget() {
+  target = {
+    x: 450 + Math.random() * (W - 450 - 60),
+    y: 90 + Math.random() * (GROUND - 90 - 90),
+    r: 36,
+  };
+  arrows = arrows.filter(a => a.flying);
+}
+
+// 引いた量とベクトル(弓から見て、マウスと反対向きに飛ぶ)
+function pullVec() {
+  let dx = mouse.x - BOW.x, dy = mouse.y - BOW.y;
+  let d = Math.hypot(dx, dy);
+  if (d > MAX_PULL) { dx *= MAX_PULL / d; dy *= MAX_PULL / d; d = MAX_PULL; }
+  return { dx, dy, d };
+}
+
+function pos(e) {
+  const r = cv.getBoundingClientRect();
+  return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height };
+}
+cv.addEventListener('pointerdown', e => {
+  pulling = true; mouse = pos(e); cv.setPointerCapture(e.pointerId);
+});
+cv.addEventListener('pointermove', e => { mouse = pos(e); });
+cv.addEventListener('pointerup', e => {
+  if (!pulling) return;
+  pulling = false;
+  const p = pullVec();
+  if (p.d < 10) return;   // 引きが足りなければ撃たない
+  arrows.push({ x: BOW.x, y: BOW.y, vx: -p.dx * POWER, vy: -p.dy * POWER, flying: true });
+  shots++;
+});
+
+function update() {
+  for (const a of arrows) {
+    if (!a.flying) continue;
+    a.x += a.vx; a.y += a.vy; a.vy += G; a.ang = Math.atan2(a.vy, a.vx);
+    if (target && Math.hypot(a.x - target.x, a.y - target.y) <= target.r) {
+      a.flying = false; score++; spawnTarget(); continue;
+    }
+    if (a.y >= GROUND || a.x > W + 50 || a.x < -50) a.flying = false;
+  }
+}
+
+// 予想軌道は出さない(狙いは引き方向だけで定める)
+function drawArrow(x, y, ang) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
+  ctx.strokeStyle = '#5a3b1f'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(-30, 0); ctx.lineTo(0, 0); ctx.stroke();
+  ctx.fillStyle = '#888';
+  ctx.beginPath(); ctx.moveTo(0, -4); ctx.lineTo(10, 0); ctx.lineTo(0, 4); ctx.fill();
+  ctx.restore();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  // 地面
+  ctx.fillStyle = '#6b9a4b'; ctx.fillRect(0, GROUND, W, H - GROUND);
+
+  // 的
+  if (target) {
+    const cols = ['#fff', '#d33', '#fff', '#d33'];
+    for (let i = 0; i < 4; i++) {
+      ctx.fillStyle = cols[i];
+      ctx.beginPath(); ctx.arc(target.x, target.y, target.r * (1 - i * 0.25), 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(target.x, target.y, target.r, 0, Math.PI * 2); ctx.stroke();
+  }
+
+  // 矢
+  for (const a of arrows) drawArrow(a.x, a.y, a.flying ? Math.atan2(a.vy, a.vx) : a.ang ?? 0);
+
+  // 弓
+  const p = pulling ? pullVec() : { dx: 0, dy: 0, d: 0 };
+  const aim = pulling ? Math.atan2(-p.dy, -p.dx) : 0;
+  ctx.save(); ctx.translate(BOW.x, BOW.y); ctx.rotate(aim);
+  ctx.strokeStyle = '#4a2c0f'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.arc(0, 0, 40, -Math.PI / 2.2, Math.PI / 2.2); ctx.stroke();
+  // 弦
+  const sx = 40 * Math.cos(Math.PI / 2.2), sy = 40 * Math.sin(Math.PI / 2.2);
+  const pull = pulling ? -p.d : 0;
+  ctx.strokeStyle = '#222'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(sx, -sy); ctx.lineTo(pull, 0); ctx.lineTo(sx, sy); ctx.stroke();
+  // つがえた矢
+  if (pulling && p.d >= 10) drawArrow(pull + 30, 0, 0);
+  ctx.restore();
+
+  // 引き具合ゲージ
+  if (pulling) {
+    ctx.fillStyle = '#0003'; ctx.fillRect(BOW.x - 50, BOW.y + 60, 100, 8);
+    ctx.fillStyle = '#e83'; ctx.fillRect(BOW.x - 50, BOW.y + 60, 100 * p.d / MAX_PULL, 8);
+  }
+
+  // スコア
+  ctx.fillStyle = '#123'; ctx.font = '20px sans-serif';
+  ctx.fillText(`命中 ${score} / ${shots}`, 20, 32);
+}
+
+function loop() { update(); draw(); requestAnimationFrame(loop); }
+spawnTarget();
+loop();
+</script>
+</body>
+</html>

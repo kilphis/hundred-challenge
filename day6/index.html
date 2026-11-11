@@ -1,0 +1,95 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>day6</title>
+<style>
+body{margin:0;background:#222;color:#eee;font-family:sans-serif}
+canvas{display:block;margin:auto;background:#fff}
+#bar{display:flex;gap:8px;justify-content:center;padding:10px}
+button{font-size:16px;padding:6px 12px}
+</style>
+<canvas id="c" width="660" height="660"></canvas>
+<div id="bar"></div>
+<script src="grid.js"></script>
+<script>
+const N = GRID.length, S = 10;
+const ctx = document.getElementById("c").getContext("2d");
+const BLACK = "#000000", GRAY = "#a6a6a6", RED = "#ff8a8a";
+
+// 元絵のマスを部位に仕分ける
+const parts = { eyeL: [], eyeR: [], nose: [], mouth: [], cheek: [], other: [] };
+for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+  const color = GRID[y][x];
+  if (!color) continue;
+  const cell = { x, y, color };
+  let p;
+  if (color === GRAY) p = "cheek";
+  else if (color !== BLACK) p = "other";            // 花
+  else if (x >= 50 && y <= 40) p = "other";         // 右の黒い塊
+  else if (y >= 41 && !(x >= 33 && x <= 39)) p = "mouth";
+  else if (y <= 33 && x < 30) p = "eyeL";
+  else if (y <= 33) p = "eyeR";
+  else p = "nose";
+  parts[p].push(cell);
+}
+const moved = (cells, f) => cells.map(c => ({ ...c, ...f(c) }));
+
+const EXPRESSIONS = {
+  "通常": () => Object.values(parts).flat(),
+
+  // 口を大きく開ける(元の口を消して楕円の輪郭を描く)
+  "びっくり": () => {
+    const mouth = [];
+    const cx = 30, cy = 50, rx = 11, ry = 7.5;
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const d = Math.hypot((x - cx) / rx, (y - cy) / ry);
+      if (d <= 1 && d >= 0.7) mouth.push({ x, y, color: BLACK });
+    }
+    return [...parts.eyeL, ...parts.eyeR, ...parts.nose, ...parts.cheek, ...parts.other, ...mouth];
+  },
+
+  // 頬の灰色を赤にする
+  "照れ": () => [
+    ...parts.eyeL, ...parts.eyeR, ...parts.nose, ...parts.mouth, ...parts.other,
+    ...moved(parts.cheek, () => ({ color: RED })),
+  ],
+
+  // 目の上に内側が下がる眉、口は上下反転して縦に半分に潰す
+  "怒り": () => {
+    const brows = [];
+    for (let x = 13; x <= 27; x++) for (const dy of [0, 1]) brows.push({ x, y: 7 + Math.round((x - 13) * 0.3) + dy, color: BLACK });
+    for (let x = 35; x <= 49; x++) for (const dy of [0, 1]) brows.push({ x, y: 11 - Math.round((x - 35) * 0.3) + dy, color: BLACK });
+    const frown = moved(parts.mouth, c => ({ y: 50 + Math.round((56 - c.y) * 0.5) }));
+    return [...parts.eyeL, ...parts.eyeR, ...parts.nose, ...parts.cheek, ...parts.other, ...brows, ...frown];
+  },
+
+  // 目と口を2×2の点にする
+  "虚無": () => {
+    const dot = (x, y) => [0, 1].flatMap(dx => [0, 1].map(dy => ({ x: x + dx, y: y + dy, color: BLACK })));
+    return [...parts.nose, ...parts.cheek, ...parts.other, ...dot(19, 22), ...dot(40, 23), ...dot(29, 49)];
+  },
+};
+
+let current = "通常";
+const bar = document.getElementById("bar");
+Object.keys(EXPRESSIONS).forEach((name, i) => {
+  const b = document.createElement("button");
+  b.textContent = `${i} ${name}`;
+  b.onclick = () => (current = name);
+  bar.append(b);
+});
+addEventListener("keydown", e => {
+  const name = Object.keys(EXPRESSIONS)[+e.key];
+  if (name) current = name;
+});
+
+function frame() {
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, 660, 660);
+  for (const c of EXPRESSIONS[current]()) {
+    ctx.fillStyle = c.color;
+    ctx.fillRect(c.x * S, c.y * S, S, S);
+  }
+  requestAnimationFrame(frame);
+}
+frame();
+</script>

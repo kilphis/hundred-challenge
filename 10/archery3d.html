@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>的当て 3D</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 16px; top: 12px; color: #123; font: 20px sans-serif; pointer-events: none; }
+  #cross { position: fixed; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; pointer-events: none; }
+  #cross::before, #cross::after { content: ''; position: absolute; background: #222; }
+  #cross::before { left: 10px; top: 0; width: 2px; height: 22px; }
+  #cross::after { top: 10px; left: 0; height: 2px; width: 22px; }
+  #gauge { position: fixed; left: 50%; bottom: 40px; width: 200px; height: 10px; margin-left: -100px; background: #0003; pointer-events: none; }
+  #gauge div { height: 100%; width: 0; background: #e83; }
+  #gauge div.just { background: #3c6; }
+  #gauge .band { position: absolute; top: -4px; height: 18px; background: #3c68; pointer-events: none; }
+  #pause { display: none; position: fixed; left: 50%; top: 80px; transform: translateX(-50%); color: #fff; background: #000a; padding: 6px 16px; font: 20px sans-serif; pointer-events: none; }
+  #mini { position: fixed; right: 12px; bottom: 12px; width: 360px; height: 240px; border: 2px solid #fff; box-sizing: border-box; pointer-events: none; }
+  #mini span { position: absolute; left: 4px; top: 2px; color: #fff; font: 12px sans-serif; text-shadow: 0 0 3px #000; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+<div id="hud"></div>
+<div id="cross"></div>
+<div id="pause">PAUSE (E で再開)</div>
+<div id="gauge"><div class="band" id="gband"></div><div id="gbar"></div></div>
+<div id="mini"><span>DEBUG: ドラッグで向き / WASD 移動 / Shift+WASD 向き / K・J 上下</span></div>
+<script>
+const SKY = 0xcfe8f5;
+const DRAW_TIME = 1.2;            // 満引きまでの秒数
+const SPEED_MIN = 15, SPEED_MAX = 60;
+const GRAVITY = 9.8;
+const JUST_MIN = 0.45, JUST_MAX = 0.55;   // 「ちょうど半分」のチャージ幅(割合)
+const MINI = { w: 360, h: 240, margin: 12 };
+const EYE = 1.6;
+const MAX_YAW = 0.6, MAX_PITCH = 0.4;   // マウスで向ける最大角(rad)
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(SKY);
+scene.fog = new THREE.Fog(SKY, 40, 140);
+const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.05, 300);
+camera.position.set(0, EYE, 0);
+camera.rotation.order = 'YXZ';
+scene.add(camera);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x557744, 0.9));
+const sun = new THREE.DirectionalLight(0xffffff, 0.6); sun.position.set(-10, 20, 10); scene.add(sun);
+
+// デバッグ用ミニウィンドウ(自由視点カメラ)
+const dbgCam = new THREE.PerspectiveCamera(60, MINI.w / MINI.h, 0.05, 400);
+dbgCam.layers.enable(1);
+dbgCam.rotation.order = 'YXZ';
+dbgCam.position.set(0, 12, 15);
+let dbgYaw = 0, dbgPitch = -0.35, dbgDrag = false;
+const keys = {};
+// プレイヤー位置と向きの目印(デバッグ視点にだけ映る)
+const marker = new THREE.Group();
+const mBody = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 8), new THREE.MeshBasicMaterial({ color: 0xff2222 }));
+const mDir = new THREE.Mesh(new THREE.ConeGeometry(0.15, 1.2, 8), new THREE.MeshBasicMaterial({ color: 0xff2222 }));
+mDir.rotation.x = -Math.PI / 2; mDir.position.z = -0.8;
+marker.add(mBody, mDir);
+marker.traverse(o => o.layers.set(1));
+camera.add(marker);
+
+// 地面
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshLambertMaterial({ color: 0x6b9a4b }));
+ground.rotation.x = -Math.PI / 2; scene.add(ground);
+
+// 奥行きの手がかり: 地面の格子・木・岩・柵
+const grid = new THREE.GridHelper(400, 200, 0x4f7a38, 0x5a8841);
+grid.position.y = 0.01; scene.add(grid);
+
+let seed = 12345;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const mat = c => new THREE.MeshLambertMaterial({ color: c });
+
+function addTree(x, z) {
+  const h = 3 + rnd() * 4;
+  const t = new THREE.Group();
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, h * 0.4, 6), mat(0x6b4a2a));
+  trunk.position.y = h * 0.2;
+  const leaf = new THREE.Mesh(new THREE.ConeGeometry(h * 0.35, h * 0.9, 8), mat(0x2f6b35));
+  leaf.position.y = h * 0.4 + h * 0.45;
+  t.add(trunk, leaf); t.position.set(x, 0, z); scene.add(t);
+}
+function addRock(x, z) {
+  const s = 0.2 + rnd() * 0.4;
+  const r = new THREE.Mesh(new THREE.DodecahedronGeometry(s), mat(0x8a8a8a));
+  r.position.set(x, s * 0.5, z); r.rotation.set(rnd() * 3, rnd() * 3, 0); r.scale.y = 0.7; scene.add(r);
+}
+// 木: 左右の外側に奥まで、的の奥(z<-65)は中央にも
+for (let z = -8; z > -130; z -= 6 + rnd() * 6) {
+  addTree(-(18 + rnd() * 25), z);
+  addTree(18 + rnd() * 25, z);
+}
+for (let i = 0; i < 12; i++) addTree((rnd() * 2 - 1) * 40, -(68 + rnd() * 50));
+// 岩: 全域に低く散らす(的の邪魔にならない高さ)
+for (let i = 0; i < 60; i++) addRock((rnd() * 2 - 1) * 35, -(3 + rnd() * 75));
+// 柵: 左右に5m間隔の杭と横木
+for (const sx of [-8, 8]) {
+  for (let z = -4; z >= -80; z -= 5) {
+    const p = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.2, 0.12), mat(0x7a5a38));
+    p.position.set(sx, 0.6, z); scene.add(p);
+    if (z > -80) {
+      const rail = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 5), mat(0x8a6a48));
+      rail.position.set(sx, 0.95, z - 2.5); scene.add(rail);
+    }
+  }
+}
+
+// 矢(原点=矢尻。+y方向が進行方向)
+function makeArrow() {
+  const g = new THREE.Group();
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 1.0, 6), new THREE.MeshLambertMaterial({ color: 0x5a3b1f }));
+  shaft.position.y = -0.5;
+  const tip = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.15, 6), new THREE.MeshLambertMaterial({ color: 0x888888 }));
+  tip.position.y = -0.075;
+  g.add(shaft, tip);
+  // デバッグ視点用の目印: 太く明るい軸と大きな矢尻(layer 1 = ミニウィンドウにだけ映る)
+  const bm = new THREE.MeshBasicMaterial({ color: 0xffee00 });
+  const bigShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 1.6, 8), bm);
+  bigShaft.position.y = -0.8;
+  const bigTip = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.6, 8), new THREE.MeshBasicMaterial({ color: 0xff3300 }));
+  bigTip.position.y = -0.3;
+  for (const m of [bigShaft, bigTip]) { m.layers.set(1); g.add(m); }
+  return g;
+}
+
+// 弓(カメラに付ける)
+const bow = new THREE.Group();
+bow.position.set(0.15, -0.18, -0.7);
+camera.add(bow);
+const BOW_R = 0.4, BOW_ARC = Math.PI * 0.8;
+const limb = new THREE.Mesh(new THREE.TorusGeometry(BOW_R, 0.012, 6, 24, BOW_ARC), new THREE.MeshLambertMaterial({ color: 0x4a2c0f }));
+limb.rotation.z = -BOW_ARC / 2;
+const limbHolder = new THREE.Group(); limbHolder.rotation.y = Math.PI / 2; limbHolder.add(limb);
+bow.add(limbHolder);
+const tipX = BOW_R * Math.cos(BOW_ARC / 2), tipY = BOW_R * Math.sin(BOW_ARC / 2);
+const STRING_REST = -tipX;                 // 弦の静止位置(bow座標のz)
+const stringGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, tipY, STRING_REST), new THREE.Vector3(0, 0, STRING_REST), new THREE.Vector3(0, -tipY, STRING_REST)]);
+const string = new THREE.Line(stringGeo, new THREE.LineBasicMaterial({ color: 0x222222 }));
+bow.add(string);
+const held = makeArrow(); held.rotation.x = -Math.PI / 2; held.visible = false; bow.add(held);
+
+function setDraw(p) {
+  const z = STRING_REST + 0.35 * p;
+  const pos = stringGeo.attributes.position;
+  pos.setZ(1, z); pos.needsUpdate = true;
+  held.position.set(0, 0, z - 1.0);
+}
+
+// 的
+let target = null;
+function spawnTarget() {
+  if (target) scene.remove(target.mesh);
+  const r = 0.9;
+  const g = new THREE.Group();
+  const cols = [0xffffff, 0xdd3333, 0xffffff, 0xdd3333];
+  for (let i = 0; i < 4; i++) {
+    const d = new THREE.Mesh(new THREE.CylinderGeometry(r * (1 - i * 0.25), r * (1 - i * 0.25), 0.1, 32), new THREE.MeshLambertMaterial({ color: cols[i] }));
+    d.rotation.x = Math.PI / 2; d.position.z = i * 0.01;   // 円盤の面を+z(手前)に向ける
+    g.add(d);
+  }
+  const x = (Math.random() * 2 - 1) * 15;
+  const y = 1.5 + Math.random() * 4;
+  const z = -(25 + Math.random() * 35);
+  g.position.set(x, y, z);
+  const post = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, y, 6), new THREE.MeshLambertMaterial({ color: 0x6b4a2a }));
+  post.position.set(0, -y / 2, -0.1); g.add(post);
+  scene.add(g);
+  target = { mesh: g, x, y, z, r };
+  // 刺さった矢は的と一緒に消す
+  for (const a of arrows) if (a.stuckOnTarget) { scene.remove(a.mesh); a.dead = true; }
+  arrows = arrows.filter(a => !a.dead);
+}
+
+// 状態
+let arrows = [];
+let drawing = false, drawT = 0, paused = false;
+let score = 0, shots = 0;
+let mouseX = 0, mouseY = 0;      // -1..1
+let yaw = 0, pitch = 0;
+const hud = document.getElementById('hud');
+const pauseEl = document.getElementById('pause');
+const gbar = document.getElementById('gbar');
+const gband = document.getElementById('gband');
+gband.style.left = (JUST_MIN * 100) + '%';
+gband.style.width = ((JUST_MAX - JUST_MIN) * 100) + '%';
+const inMini = e => e.clientX >= innerWidth - MINI.margin - MINI.w && e.clientY >= innerHeight - MINI.margin - MINI.h
+  && e.clientX <= innerWidth - MINI.margin && e.clientY <= innerHeight - MINI.margin;
+
+addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) startDraw(); }
+  if (e.code === 'KeyE' && !e.repeat) { paused = !paused; pauseEl.style.display = paused ? 'block' : 'none'; }
+});
+addEventListener('keyup', e => {
+  keys[e.code] = false;
+  if (e.code === 'Space') release();
+});
+addEventListener('mousemove', e => {
+  if (dbgDrag) { dbgYaw -= e.movementX * 0.005; dbgPitch = Math.max(-1.5, Math.min(1.5, dbgPitch - e.movementY * 0.005)); return; }
+  if (inMini(e)) return;
+  mouseX = (e.clientX / innerWidth) * 2 - 1;
+  mouseY = (e.clientY / innerHeight) * 2 - 1;
+});
+function startDraw() { if (drawing || paused) return; drawing = true; drawT = 0; held.visible = true; }
+addEventListener('mousedown', e => { if (inMini(e)) { dbgDrag = true; return; } startDraw(); });
+addEventListener('mouseup', () => {
+  if (dbgDrag) { dbgDrag = false; return; }
+  release();
+});
+function release() {
+  if (!drawing) return;
+  drawing = false; held.visible = false;
+  if (paused) { setDraw(0); gbar.style.width = '0'; gbar.className = ''; return; }   // 一時停止中の離しは撃たない
+  const p = Math.min(drawT / DRAW_TIME, 1);
+  setDraw(0); gbar.style.width = '0'; gbar.className = '';
+  if (p < 0.1) return;   // 引きが足りなければ撃たない
+  const dir = new THREE.Vector3(0, 0, -1).applyEuler(camera.rotation);
+  const speed = SPEED_MIN + (SPEED_MAX - SPEED_MIN) * p;
+  const mesh = makeArrow(); scene.add(mesh);
+  const start = camera.position.clone().add(dir.clone().multiplyScalar(0.5));
+  mesh.position.copy(start);
+  arrows.push({ mesh, pos: start, vel: dir.multiplyScalar(speed), flying: true, stuckOnTarget: false, noGravity: p >= JUST_MIN && p <= JUST_MAX });
+  shots++;
+}
+
+const UP = new THREE.Vector3(0, 1, 0);
+function orient(a, dir) { a.mesh.quaternion.setFromUnitVectors(UP, dir.clone().normalize()); }
+
+function stepArrow(a, dt) {
+  const prev = a.pos.clone();
+  if (!a.noGravity) a.vel.y -= GRAVITY * dt;
+  a.pos.addScaledVector(a.vel, dt);
+  // 的の面(z = target.z)を横切ったか
+  if (target && prev.z > target.z && a.pos.z <= target.z) {
+    const t = (prev.z - target.z) / (prev.z - a.pos.z);
+    const hx = prev.x + (a.pos.x - prev.x) * t, hy = prev.y + (a.pos.y - prev.y) * t;
+    if (Math.hypot(hx - target.x, hy - target.y) <= target.r) {
+      a.pos.set(hx, hy, target.z);
+      a.flying = false; a.stuckOnTarget = true;
+      score++;
+      a.mesh.position.copy(a.pos); orient(a, a.vel);
+      spawnTarget();
+      return;
+    }
+  }
+  if (a.pos.y <= 0) { a.pos.y = 0; a.flying = false; }
+  if (a.pos.length() > 300) a.flying = false;
+  a.mesh.position.copy(a.pos); orient(a, a.vel);
+}
+
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05); last = now;
+  // 狙い(マウス位置→向き)
+  if (!paused) {
+  const ty = -mouseX * MAX_YAW, tp = -mouseY * MAX_PITCH;
+  yaw += (ty - yaw) * 0.25; pitch += (tp - pitch) * 0.25;
+  camera.rotation.set(pitch, yaw, 0);
+
+  if (drawing) {
+    drawT += dt;
+    const p = Math.min(drawT / DRAW_TIME, 1);
+    setDraw(p); gbar.style.width = (p * 100) + '%';
+    gbar.className = (p >= JUST_MIN && p <= JUST_MAX) ? 'just' : '';
+  }
+  for (const a of arrows) if (a.flying) stepArrow(a, dt);
+  }
+
+  hud.textContent = `命中 ${score} / ${shots}`;
+  // デバッグカメラの移動
+  dbgCam.rotation.set(dbgPitch, dbgYaw, 0);
+  const fwd = new THREE.Vector3(0, 0, -1).applyEuler(dbgCam.rotation);
+  const right = new THREE.Vector3(1, 0, 0).applyEuler(dbgCam.rotation);
+  const sp = 15 * dt;
+  const shift = keys.ShiftLeft || keys.ShiftRight;
+  if (shift) {   // Shift+WASD: 向きの変更
+    const rs = 1.5 * dt;
+    if (keys.KeyA) dbgYaw += rs;
+    if (keys.KeyD) dbgYaw -= rs;
+    if (keys.KeyW) dbgPitch = Math.min(1.5, dbgPitch + rs);
+    if (keys.KeyS) dbgPitch = Math.max(-1.5, dbgPitch - rs);
+  } else {       // WASD: 移動
+    if (keys.KeyW) dbgCam.position.addScaledVector(fwd, sp);
+    if (keys.KeyS) dbgCam.position.addScaledVector(fwd, -sp);
+    if (keys.KeyD) dbgCam.position.addScaledVector(right, sp);
+    if (keys.KeyA) dbgCam.position.addScaledVector(right, -sp);
+  }
+  if (keys.KeyK) dbgCam.position.y += sp;
+  if (keys.KeyJ) dbgCam.position.y -= sp;
+
+  renderer.setScissorTest(false);
+  renderer.setViewport(0, 0, innerWidth, innerHeight);
+  renderer.render(scene, camera);
+  renderer.setScissorTest(true);
+  const vx = innerWidth - MINI.margin - MINI.w, vy = MINI.margin;
+  renderer.setViewport(vx, vy, MINI.w, MINI.h);
+  renderer.setScissor(vx, vy, MINI.w, MINI.h);
+  renderer.render(scene, dbgCam);
+  requestAnimationFrame(loop);
+}
+setDraw(0);
+spawnTarget();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

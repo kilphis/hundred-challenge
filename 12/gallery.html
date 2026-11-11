@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>成果物ギャラリー</title>
+<style>
+html,body{margin:0;height:100%;background:#15151c;color:#e8e6df;font:14px/1.5 "Hiragino Sans",sans-serif}
+#app{display:grid;grid-template-columns:260px 1fr;height:100%}
+#list{overflow-y:auto;background:#1c1c26;border-right:1px solid #2e2e3c;padding:8px 0}
+#list h3{margin:14px 14px 4px;font-size:12px;color:#8f8fa8;letter-spacing:.05em}
+#list button{display:block;width:100%;text-align:left;padding:6px 14px 6px 22px;border:0;background:none;color:#d8d6cf;font:inherit;cursor:pointer}
+#list button:hover{background:#262634}
+#list button.on{background:#34344a;color:#fff}
+#main{position:relative;min-width:0}
+#view{position:absolute;inset:0}
+#view canvas,#view img{display:block}
+#c2{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);image-rendering:pixelated;max-width:92%;max-height:80%}
+#imgv{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:92%;max-height:84%}
+#cap{position:absolute;left:0;right:0;bottom:0;padding:10px 18px;background:rgba(10,10,16,.75)}
+#cap b{font-size:16px}
+#cap span{color:#9a9ab0;margin-left:10px}
+#sub{position:absolute;top:10px;left:14px;display:flex;gap:6px;flex-wrap:wrap}
+#sub button{padding:4px 10px;border:1px solid #4a4a60;border-radius:4px;background:#22222e;color:#ddd;font:inherit;cursor:pointer}
+#sub button.on{background:#4a4a6e;color:#fff}
+#hint{position:absolute;bottom:58px;right:14px;color:#7a7a90;font-size:12px}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="sprites.js"></script>
+<script src="../day6/grid.js"></script>
+</head>
+<body>
+<div id="app">
+  <div id="list"></div>
+  <div id="main">
+    <div id="view"></div>
+    <canvas id="c2" style="display:none"></canvas>
+    <img id="imgv" style="display:none">
+    <div id="sub"></div>
+    <div id="hint"></div>
+    <div id="cap"></div>
+  </div>
+</div>
+<script>
+// ====================================================================
+// 展示物の定義。kind: 'pixel' | 'canvas' | 'image' | 'three'
+//  three: build() が THREE.Object3D を返す。{ cam:[x,y,z], target:[x,y,z], light:'day'|'room' } も指定できる。
+//  variants を持つものは上部のボタンで切り替える。
+// ====================================================================
+const mat = c => new THREE.MeshLambertMaterial({ color: c });
+const std = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.7 }, o));
+const M = (g, m, x = 0, y = 0, z = 0) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); return o; };
+const G = THREE;
+
+// ---------- day1: ドット絵 ----------
+function drawSprite(cv, sp) {
+  const pal = DAY1.PAL, h = sp.length, w = sp[0].length, k = Math.max(4, Math.floor(560 / Math.max(w, h)));
+  cv.width = w * k; cv.height = h * k;
+  const g = cv.getContext('2d');
+  g.fillStyle = '#060616'; g.fillRect(0, 0, cv.width, cv.height);
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+    const ch = sp[j][i]; if (ch === '.') continue;
+    g.fillStyle = `rgb(${pal[ch]})`; g.fillRect(i * k, j * k, k, k);
+  }
+}
+const pixelItem = (name, key, note) => ({ kind: 'pixel', name, note, draw: cv => drawSprite(cv, DAY1.sprites[key]) });
+
+// ---------- day3: 書店 ----------
+const BOOK_SAMPLES = [
+  { t: '雪国', a: '川端 康成', bg: '#e8eef2', fg: '#1d2b3a', s: 0 },
+  { t: '人間\n失格', a: '太宰 治', bg: '#2a2540', fg: '#ffd98a', s: 0 },
+  { t: '吾輩は\n猫である', a: '夏目 漱石', bg: '#e8c9a0', fg: '#3a2a20', s: 1 },
+  { t: '羅生門\n・鼻', a: '芥川 竜之介', bg: '#c9473a', fg: '#fff1e0', s: 1 },
+  { t: '流星\nワゴン', a: '重松 清', bg: '#7fa3b8', fg: '#10222c', s: 0 },
+  { t: '伊豆の\n踊子', a: '川端 康成', bg: '#b8d4c2', fg: '#25402f', s: 2 },
+  { t: '晩年', a: '太宰 治', bg: '#d9d3c7', fg: '#2b2b2b', s: 1 },
+  { t: '100日\nチャレンジ', a: '大塚 あみ', bg: '#111418', fg: '#7CFC9A', s: 1 },
+];
+function coverCanvas(title, author, bg, fg, style) {
+  const c = document.createElement('canvas'); c.width = 320; c.height = 460;
+  const g = c.getContext('2d');
+  g.fillStyle = bg; g.fillRect(0, 0, 320, 460); g.fillStyle = fg;
+  if (style === 0) { g.beginPath(); g.arc(160, 150, 90, 0, 7); g.globalAlpha = .25; g.fill(); g.globalAlpha = 1; }
+  if (style === 1) { g.globalAlpha = .25; for (let i = 0; i < 5; i++) g.fillRect(0, 40 + i * 30, 320, 10); g.globalAlpha = 1; }
+  if (style === 2) { g.globalAlpha = .25; g.fillRect(30, 30, 260, 260); g.globalAlpha = 1; }
+  g.font = 'bold 44px "Hiragino Mincho ProN", serif'; g.textAlign = 'center';
+  title.split('\n').forEach((l, i) => g.fillText(l, 160, 330 + i * 52));
+  g.font = '24px sans-serif'; g.fillText(author, 160, 435);
+  return c;
+}
+function makeBookMesh(b) {
+  const side = std(0xf3eee2, { roughness: 0.9 });
+  const front = std(0xffffff, { roughness: 0.6 }); front.map = new G.CanvasTexture(coverCanvas(b.t, b.a, b.bg, b.fg, b.s));
+  const spine = std(new G.Color(b.bg));
+  const m = new G.Mesh(new G.BoxGeometry(0.42, 0.6, 0.05), [side, spine, side, side, front, std(new G.Color(b.bg))]);
+  return m;
+}
+const wood = std(0x9b6b43), woodDark = std(0x6e4a2e);
+const SANS = '"Hiragino Sans", sans-serif', MARU = '"Hiragino Maru Gothic ProN", sans-serif', MIN = '"Hiragino Mincho ProN", serif';
+function wrap(g, text, maxW) {
+  const out = [];
+  text.split('\n').forEach(p => { let line = ''; for (const ch of p) { if (g.measureText(line + ch).width > maxW) { out.push(line); line = ch; } else line += ch; } out.push(line); });
+  return out;
+}
+function drawBody(g, body, cx, top, bottom, maxW, color, size, font) {
+  g.fillStyle = color; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = `bold ${size}px ${font}`;
+  const lines = wrap(g, body, maxW), lh = size * 1.3, y0 = (top + bottom) / 2 - (lines.length - 1) * lh / 2;
+  lines.forEach((l, i) => g.fillText(l, cx, y0 + i * lh));
+}
+const POP_DESIGNS = {
+  frame(g, W, H, { head, body }) {
+    g.fillStyle = '#fffdf5'; g.fillRect(0, 0, W, H); g.strokeStyle = '#c9473a'; g.lineWidth = 14; g.strokeRect(10, 10, W - 20, H - 20);
+    let top = 40;
+    if (head) { g.fillStyle = '#c9473a'; g.fillRect(40, 50, W - 80, 90); g.fillStyle = '#fff'; g.font = `bold 56px ${SANS}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(head, W / 2, 97); top = 150; }
+    drawBody(g, body, W / 2, top, H - 40, W - 100, '#333', 38, SANS);
+  },
+  kraft(g, W, H, { head, body }) {
+    g.fillStyle = '#c9a46e'; g.fillRect(0, 0, W, H);
+    g.strokeStyle = '#fff8e8'; g.lineWidth = 5; g.setLineDash([16, 10]); g.strokeRect(24, 24, W - 48, H - 48); g.setLineDash([]);
+    g.fillStyle = 'rgba(120,190,170,.85)'; g.save(); g.translate(W / 2, 18); g.rotate(-0.04); g.fillRect(-90, -18, 180, 40); g.restore();
+    let top = 50;
+    if (head) { g.fillStyle = '#5a3a1c'; g.font = `bold 50px ${MARU}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(head, W / 2, 92); top = 130; }
+    drawBody(g, body, W / 2, top, H - 40, W - 110, '#3b2412', 38, MARU);
+  },
+  burst(g, W, H, { head, body }) {
+    g.fillStyle = '#ffe45c'; g.fillRect(0, 0, W, H); g.fillStyle = '#e8453c'; g.beginPath();
+    const n = 22, cx = W / 2, cy = H / 2;
+    for (let i = 0; i < n * 2; i++) { const r = (i % 2 ? .78 : 1), a = i * Math.PI / n; g.lineTo(cx + Math.cos(a) * r * (W / 2 - 8), cy + Math.sin(a) * r * (H / 2 - 8)); }
+    g.closePath(); g.fill();
+    drawBody(g, head ? head + '\n' + body : body, cx, 50, H - 50, W - 170, '#fff', 40, SANS);
+  },
+  night(g, W, H, { head, body }) {
+    g.fillStyle = '#16241d'; g.fillRect(0, 0, W, H);
+    g.strokeStyle = '#d8c27a'; g.lineWidth = 4; g.strokeRect(16, 16, W - 32, H - 32); g.lineWidth = 1.5; g.strokeRect(28, 28, W - 56, H - 56);
+    let top = 50;
+    if (head) { g.fillStyle = '#d8c27a'; g.font = `bold 46px ${MIN}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(head, W / 2, 88); top = 125; }
+    drawBody(g, body, W / 2, top, H - 50, W - 120, '#f1ecd8', 38, MIN);
+  },
+};
+const POP_CONTENT = { head: '店長推し', body: '一晩で\n読み終えた' };
+function popMesh(design) {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 400; POP_DESIGNS[design](c.getContext('2d'), 512, 400, POP_CONTENT);
+  const g = new G.Group();
+  const card = M(new G.PlaneGeometry(0.55, 0.43), new G.MeshStandardMaterial({ map: new G.CanvasTexture(c), side: G.DoubleSide }), 0, 0.14 + 0.43 / 2 + 0.06, 0);
+  const stick = M(new G.CylinderGeometry(0.008, 0.008, 0.4, 8), woodDark, 0, 0.14, 0);
+  g.add(card, stick); g.position.y = -0.3; return g;
+}
+function tiersMesh() {
+  const g = new G.Group(), W = 4.2;
+  [{ y: 0.45, z: 0.9, d: 1 }, { y: 0.75, z: 0, d: 1 }, { y: 1.05, z: -0.9, d: 1 }].forEach(t => {
+    g.add(M(new G.BoxGeometry(W, 0.06, t.d), wood, 0, t.y, t.z));
+    g.add(M(new G.BoxGeometry(W, t.y, 0.05), woodDark, 0, t.y / 2, t.z + t.d / 2 - 0.03));
+    g.add(M(new G.BoxGeometry(0.06, t.y, t.d), woodDark, -W / 2 + 0.03, t.y / 2, t.z));
+    g.add(M(new G.BoxGeometry(0.06, t.y, t.d), woodDark, W / 2 - 0.03, t.y / 2, t.z));
+  });
+  g.position.y = -0.6; return g;
+}
+function bookcaseMesh() {
+  const grp = new G.Group(), width = 3.2, rows = 5, H = 2.7, D = 0.4, rowH = H / rows;
+  const add = (w, h, d, x, y, z) => grp.add(M(new G.BoxGeometry(w, h, d), woodDark, x, y, z));
+  add(0.05, H, D, -width / 2, H / 2, 0); add(0.05, H, D, width / 2, H / 2, 0); add(width, H, 0.03, 0, H / 2, -D / 2);
+  for (let r = 0; r <= rows; r++) add(width, 0.04, D, 0, r * rowH + 0.02, 0);
+  let seed = 3; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const items = [];
+  for (let r = 0; r < rows; r++) { let x = -width / 2 + 0.07; while (x < width / 2 - 0.1) { const t = 0.03 + rnd() * 0.035, h = rowH * (0.62 + rnd() * 0.3); if (x + t > width / 2 - 0.06) break; items.push({ x: x + t / 2, y: r * rowH + 0.04 + h / 2, t, h }); x += t + 0.002; } }
+  const mesh = new G.InstancedMesh(new G.BoxGeometry(1, 1, 1), std(0xffffff, { roughness: 0.8 }), items.length);
+  const m4 = new G.Matrix4(), col = new G.Color();
+  items.forEach((it, i) => { m4.makeScale(it.t, it.h, D * 0.8); m4.setPosition(it.x, it.y, 0); mesh.setMatrixAt(i, m4); col.setHSL(rnd(), 0.25 + rnd() * 0.4, 0.3 + rnd() * 0.35); mesh.setColorAt(i, col); });
+  grp.add(mesh); grp.position.y = -1.35; return grp;
+}
+function pendantMesh() {
+  const g = new G.Group();
+  g.add(M(new G.CylinderGeometry(0.005, 0.005, 0.7, 6), woodDark, 0, 0.45, 0));
+  g.add(M(new G.ConeGeometry(0.22, 0.2, 24, 1, true), std(0x2f4a3a, { side: G.DoubleSide }), 0, 0, 0));
+  g.add(M(new G.SphereGeometry(0.07, 12, 12), new G.MeshBasicMaterial({ color: 0xfff2c4 }), 0, -0.05, 0));
+  const l = new G.PointLight(0xffe2a8, 0.8, 7); l.position.set(0, -0.2, 0); g.add(l);
+  return g;
+}
+function signMesh() {
+  const c = document.createElement('canvas'); c.width = 1024; c.height = 200; const g = c.getContext('2d');
+  g.fillStyle = '#2f4a3a'; g.fillRect(0, 0, 1024, 200); g.fillStyle = '#f3e9cf'; g.font = 'bold 96px "Hiragino Mincho ProN", serif'; g.textAlign = 'center';
+  g.fillText('PICK UP  おすすめの本', 512, 130);
+  const grp = new G.Group();
+  grp.add(M(new G.PlaneGeometry(3.6, 0.7), new G.MeshStandardMaterial({ map: new G.CanvasTexture(c), side: G.DoubleSide })));
+  for (const x of [-1.7, 1.7]) grp.add(M(new G.BoxGeometry(0.05, 1.2, 0.05), woodDark, x, -0.6, 0));
+  return grp;
+}
+
+// ---------- day4: 箱庭(2D) ----------
+function draw4(fn, w = 360, h = 360) {
+  return cv => { cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.fillStyle = '#6e6450'; g.fillRect(0, 0, w, h); g.imageSmoothingEnabled = true; fn(g, w / 2, h / 2); };
+}
+const disc = (g, x, y, r, c) => { g.fillStyle = c; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); };
+const K4 = 11; // 元は半径12px。拡大率
+const D4 = {
+  player: draw4((g, x, y) => { disc(g, x, y, 12 * K4 / 2, 'rgb(80,160,255)'); }),
+  melee: draw4((g, x, y) => { disc(g, x, y, 12 * K4 / 2, 'rgb(200,60,60)'); }),
+  ranged: draw4((g, x, y) => { disc(g, x, y, 12 * K4 / 2, 'rgb(170,60,200)'); }),
+  thief: draw4((g, x, y) => { disc(g, x, y, 12 * K4 / 2, 'rgb(60,190,120)'); disc(g, x, y, 5 * K4 / 2, 'rgb(255,220,40)'); }),
+  key: draw4((g, x, y) => { disc(g, x, y, 8 * K4 / 2, 'rgb(255,220,40)'); }),
+  shot: draw4((g, x, y) => { disc(g, x, y, 5 * K4 / 2, 'rgb(255,140,60)'); }),
+  goal: draw4((g, x, y) => { disc(g, x, y, 16 * K4 / 2, 'rgb(255,220,80)'); }),
+  doorLocked: draw4((g, x, y) => { g.fillStyle = 'rgb(160,90,40)'; g.fillRect(x - 40, y - 100, 80, 200); }),
+  doorOpen: draw4((g, x, y) => { g.fillStyle = 'rgb(90,200,120)'; g.fillRect(x - 40, y - 100, 80, 200); }),
+  swOff: draw4((g, x, y) => { g.fillStyle = 'rgb(220,70,70)'; g.fillRect(x - 55, y - 55, 110, 110); }),
+  swOn: draw4((g, x, y) => { g.fillStyle = 'rgb(90,200,120)'; g.fillRect(x - 55, y - 55, 110, 110); }),
+  river: draw4((g, x, y) => { g.fillStyle = 'rgb(50,110,200)'; g.fillRect(x - 160, y - 70, 320, 140); }),
+  bridge: draw4((g, x, y) => {
+    g.fillStyle = 'rgb(50,110,200)'; g.fillRect(x - 160, y - 100, 320, 200);
+    g.fillStyle = 'rgb(150,100,50)'; g.fillRect(x - 160, y - 40, 320, 80);
+    g.strokeStyle = 'rgb(100,65,30)'; g.lineWidth = 6; for (let xx = x - 154; xx < x + 160; xx += 36) { g.beginPath(); g.moveTo(xx, y - 40); g.lineTo(xx, y + 40); g.stroke(); }
+  }),
+  attack: draw4((g, x, y) => { disc(g, x - 60, y, 12 * K4 / 2, 'rgb(80,160,255)'); g.strokeStyle = '#fff'; g.lineWidth = 6; g.strokeRect(x - 60 + 26 * K4 / 2 - 16 * K4 / 2, y - 16 * K4 / 2, 32 * K4 / 2 * 1, 32 * K4 / 2 * 1); }),
+};
+const c2 = (name, key, note) => ({ kind: 'canvas', name, note, draw: D4[key] });
+
+// ---------- day6: ドット顔 ----------
+const FACE = (() => {
+  const N = GRID.length, BLACK = '#000000', GRAY = '#a6a6a6', RED = '#ff8a8a';
+  const parts = { eyeL: [], eyeR: [], nose: [], mouth: [], cheek: [], other: [] };
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const color = GRID[y][x]; if (!color) continue; const cell = { x, y, color }; let p;
+    if (color === GRAY) p = 'cheek'; else if (color !== BLACK) p = 'other'; else if (x >= 50 && y <= 40) p = 'other';
+    else if (y >= 41 && !(x >= 33 && x <= 39)) p = 'mouth'; else if (y <= 33 && x < 30) p = 'eyeL'; else if (y <= 33) p = 'eyeR'; else p = 'nose';
+    parts[p].push(cell);
+  }
+  const moved = (cells, f) => cells.map(c => ({ ...c, ...f(c) }));
+  const EX = {
+    '通常': () => Object.values(parts).flat(),
+    'びっくり': () => { const mouth = []; const cx = 30, cy = 50, rx = 11, ry = 7.5;
+      for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { const d = Math.hypot((x - cx) / rx, (y - cy) / ry); if (d <= 1 && d >= 0.7) mouth.push({ x, y, color: BLACK }); }
+      return [...parts.eyeL, ...parts.eyeR, ...parts.nose, ...parts.cheek, ...parts.other, ...mouth]; },
+    '照れ': () => [...parts.eyeL, ...parts.eyeR, ...parts.nose, ...parts.mouth, ...parts.other, ...moved(parts.cheek, () => ({ color: RED }))],
+    '怒り': () => { const brows = [];
+      for (let x = 13; x <= 27; x++) for (const dy of [0, 1]) brows.push({ x, y: 7 + Math.round((x - 13) * 0.3) + dy, color: BLACK });
+      for (let x = 35; x <= 49; x++) for (const dy of [0, 1]) brows.push({ x, y: 11 - Math.round((x - 35) * 0.3) + dy, color: BLACK });
+      const frown = moved(parts.mouth, c => ({ y: 50 + Math.round((56 - c.y) * 0.5) }));
+      return [...parts.eyeL, ...parts.eyeR, ...parts.nose, ...parts.cheek, ...parts.other, ...brows, ...frown]; },
+    '虚無': () => { const dot = (x, y) => [0, 1].flatMap(dx => [0, 1].map(dy => ({ x: x + dx, y: y + dy, color: BLACK })));
+      return [...parts.nose, ...parts.cheek, ...parts.other, ...dot(19, 22), ...dot(40, 23), ...dot(29, 49)]; },
+  };
+  return { N, EX };
+})();
+const faceItem = name => ({ kind: 'canvas', name: '顔(' + name + ')', note: 'day6 の表情: ' + name, draw: cv => {
+  const S = 9; cv.width = cv.height = FACE.N * S; const g = cv.getContext('2d');
+  g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height);
+  for (const c of FACE.EX[name]()) { g.fillStyle = c.color; g.fillRect(c.x * S, c.y * S, S, S); }
+} });
+
+// ---------- day9〜11: 3D ----------
+function carMesh() {
+  const car = new G.Group();
+  car.add(M(new G.BoxGeometry(1.8, 0.6, 4.0), mat(0xdd2222), 0, 0.65, 0), M(new G.BoxGeometry(1.5, 0.55, 1.9), mat(0x99ccff), 0, 1.2, -0.2));
+  const wg = new G.CylinderGeometry(0.38, 0.38, 0.3, 16), wm = mat(0x222222);
+  for (const [x, z] of [[-0.95, 1.3], [0.95, 1.3], [-0.95, -1.3], [0.95, -1.3]]) { const m = M(wg, wm, x, 0.38, z); m.rotation.z = Math.PI / 2; car.add(m); }
+  car.position.y = -0.9; return car;
+}
+function tree9() {
+  const t = new G.Group();
+  t.add(M(new G.CylinderGeometry(0.3, 0.4, 2, 6), mat(0x5a3b20), 0, 1, 0), M(new G.ConeGeometry(1.8, 5, 7), mat(0x2f6b2f), 0, 4.2, 0));
+  t.position.y = -3; return t;
+}
+function tree10() {
+  const h = 5, t = new G.Group();
+  t.add(M(new G.CylinderGeometry(0.2, 0.3, h * 0.4, 6), mat(0x6b4a2a), 0, h * 0.2, 0), M(new G.ConeGeometry(h * 0.35, h * 0.9, 8), mat(0x2f6b35), 0, h * 0.4 + h * 0.45, 0));
+  t.position.y = -2.5; return t;
+}
+function tree11() {
+  const h = 6, t = new G.Group();
+  t.add(M(new G.CylinderGeometry(0.25, 0.35, h * 0.4, 6), mat(0x4a3320), 0, h * 0.2, 0), M(new G.ConeGeometry(h * 0.35, h * 0.9, 8), mat(0x1f4a2a), 0, h * 0.85, 0));
+  t.position.y = -3; return t;
+}
+function rockMesh() { const r = M(new G.DodecahedronGeometry(0.5), mat(0x8a8a8a), 0, 0, 0); r.rotation.set(1, 2, 0); r.scale.y = 0.7; return r; }
+function fenceMesh() {
+  const g = new G.Group();
+  for (const z of [0, -5]) g.add(M(new G.BoxGeometry(0.12, 1.2, 0.12), mat(0x7a5a38), 0, 0.6, z));
+  g.add(M(new G.BoxGeometry(0.05, 0.05, 5), mat(0x8a6a48), 0, 0.95, -2.5));
+  g.position.set(0, -0.6, 2.5); return g;
+}
+function targetMesh() {
+  const g = new G.Group(), r = 0.9, y = 3;
+  [0xffffff, 0xdd3333, 0xffffff, 0xdd3333].forEach((c, i) => { const d = M(new G.CylinderGeometry(r * (1 - i * 0.25), r * (1 - i * 0.25), 0.1, 32), mat(c), 0, 0, i * 0.01); d.rotation.x = Math.PI / 2; g.add(d); });
+  g.add(M(new G.CylinderGeometry(0.06, 0.06, y, 6), mat(0x6b4a2a), 0, -y / 2, -0.1));
+  g.position.y = 0.6; return g;
+}
+function arrowMesh(kind) {
+  const g = new G.Group();
+  if (kind === 'big') {
+    g.add(M(new G.CylinderGeometry(0.045, 0.045, 1.6, 6), new G.MeshBasicMaterial({ color: 0xffee33 }), 0, -0.8, 0), M(new G.ConeGeometry(0.14, 0.4, 6), new G.MeshBasicMaterial({ color: 0xff4422 }), 0, -0.2, 0));
+  } else if (kind === 'd11') {
+    g.add(M(new G.CylinderGeometry(0.012, 0.012, 1.0, 6), mat(0xd8c9a0), 0, -0.5, 0), M(new G.ConeGeometry(0.03, 0.15, 6), mat(0xaaaaaa), 0, -0.075, 0));
+  } else {
+    g.add(M(new G.CylinderGeometry(0.012, 0.012, 1.0, 6), mat(0x5a3b1f), 0, -0.5, 0), M(new G.ConeGeometry(0.03, 0.15, 6), mat(0x888888), 0, -0.075, 0));
+  }
+  g.rotation.z = Math.PI / 2; g.position.x = 0.5; return g;
+}
+function bowMesh(pull = 0) {
+  const bow = new G.Group(), R = 0.4, ARC = Math.PI * 0.8;
+  const limb = M(new G.TorusGeometry(R, 0.012, 6, 24, ARC), mat(0x4a2c0f)); limb.rotation.z = -ARC / 2;
+  const lh = new G.Group(); lh.rotation.y = Math.PI / 2; lh.add(limb); bow.add(lh);
+  const tipY = R * Math.sin(ARC / 2), rest = -R * Math.cos(ARC / 2), z = rest + 0.35 * pull;
+  bow.add(new G.Line(new G.BufferGeometry().setFromPoints([new G.Vector3(0, tipY, rest), new G.Vector3(0, 0, z), new G.Vector3(0, -tipY, rest)]), new G.LineBasicMaterial({ color: 0xdddddd })));
+  if (pull > 0) { const a = arrowMesh('d11'); a.rotation.set(0, 0, 0); a.position.set(0, 0, z - 1.0); a.rotation.x = -Math.PI / 2; bow.add(a); }
+  bow.rotation.y = -Math.PI / 2 * 0; return bow;
+}
+function markerMesh() {
+  const g = new G.Group();
+  g.add(M(new G.SphereGeometry(0.3, 12, 8), new G.MeshBasicMaterial({ color: 0xff2222 })));
+  const d = M(new G.ConeGeometry(0.15, 1.2, 8), new G.MeshBasicMaterial({ color: 0xff2222 }), 0, 0, -0.8); d.rotation.x = -Math.PI / 2; g.add(d); return g;
+}
+function cartMesh() {
+  const cart = new G.Group();
+  cart.add(M(new G.BoxGeometry(2.2, 0.2, 3.2), mat(0x7a5a38), 0, 0.9, -0.6));
+  for (const sx of [-1.1, 1.1]) cart.add(M(new G.BoxGeometry(0.08, 0.4, 3.2), mat(0x6a4a2a), sx, 1.2, -0.6));
+  const wg = new G.CylinderGeometry(0.6, 0.6, 0.12, 14);
+  for (const sx of [-1.15, 1.15]) for (const z of [-1.5, 0.1]) { const w = M(wg, mat(0x2a1d10), sx, 0.6, z); w.rotation.z = Math.PI / 2; cart.add(w); }
+  const hm = mat(0x6b4426), dk = mat(0x2a1a0e), horse = new G.Group(); horse.position.set(0, 0, 2.8); cart.add(horse);
+  const part = (g, m, x, y, z, rx = 0) => { const o = M(g, m, x, y, z); o.rotation.x = rx; horse.add(o); };
+  part(new G.BoxGeometry(0.9, 0.9, 1.9), hm, 0, 1.55, 0); part(new G.BoxGeometry(0.45, 0.9, 0.55), hm, 0, 2.15, 1.0, 0.5); part(new G.BoxGeometry(0.4, 0.45, 0.8), hm, 0, 2.5, 1.45, 0.35);
+  part(new G.BoxGeometry(0.12, 0.3, 0.12), dk, -0.13, 2.85, 1.15); part(new G.BoxGeometry(0.12, 0.3, 0.12), dk, 0.13, 2.85, 1.15);
+  part(new G.BoxGeometry(0.1, 0.6, 0.5), dk, 0, 2.4, 0.75, 0.5); part(new G.BoxGeometry(0.15, 0.9, 0.15), dk, 0, 1.3, -1.0, -0.4);
+  for (const [x, z] of [[-0.3, 0.75], [0.3, 0.75], [-0.3, -0.75], [0.3, -0.75]]) part(new G.BoxGeometry(0.2, 1.1, 0.2), hm, x, 0.55, z);
+  cart.add(M(new G.BoxGeometry(0.1, 0.1, 1.6), mat(0x6a4a2a), 0, 1.0, 1.4));
+  cart.add(playerMesh(true)); cart.position.set(0, -1.5, -1); return cart;
+}
+function playerMesh(onCart) {
+  const p = new G.Group(), b = mat(0x3a5a8a);
+  p.add(M(new G.BoxGeometry(0.55, 0.85, 0.3), b, 0, 1.0, 0), M(new G.SphereGeometry(0.2, 12, 10), mat(0xe8c8a0), 0, 1.65, 0),
+    M(new G.SphereGeometry(0.22, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), mat(0x7a2a2a), 0, 1.7, 0),
+    M(new G.BoxGeometry(0.12, 0.12, 0.75), b, 0.2, 1.2, -0.4), M(new G.BoxGeometry(0.12, 0.12, 0.75), b, -0.15, 1.2, -0.25));
+  if (onCart) { p.position.set(0, 1.0, -1.4); p.rotation.y = Math.PI; } else p.position.y = -1;
+  return p;
+}
+function goalMesh() {
+  const g = new G.Group();
+  for (const sg of [-1, 1]) g.add(M(new G.BoxGeometry(0.5, 7, 0.5), mat(0xeeeeee), 5.5 * sg, 3.5, 0));
+  const cv = document.createElement('canvas'); cv.width = 256; cv.height = 64; const c = cv.getContext('2d');
+  for (let i = 0; i < 16; i++) for (let j = 0; j < 4; j++) { c.fillStyle = (i + j) % 2 ? '#fff' : '#111'; c.fillRect(i * 16, j * 16, 16, 16); }
+  g.add(M(new G.BoxGeometry(11.5, 1.6, 0.3), new G.MeshBasicMaterial({ map: new G.CanvasTexture(cv) }), 0, 6.6, 0));
+  g.position.y = -3.5; return g;
+}
+const SPECIES = {
+  weave: { name: 'ゴースト(うねる・青白)', color: 0xdfeeff, emissive: 0x6688aa },
+  arc: { name: 'ゴースト(放物線・紫)', color: 0xe0c8ff, emissive: 0x7040a8 },
+  road: { name: 'ゴースト(道沿い・橙)', color: 0xffd8b0, emissive: 0xb05a10 },
+};
+function ghostMesh(k) {
+  const m = new G.MeshLambertMaterial({ color: SPECIES[k].color, emissive: SPECIES[k].emissive, transparent: true, opacity: 0.8 });
+  const g = new G.Group(), tail = M(new G.ConeGeometry(0.8, 1.4, 14), m, 0, -0.6, 0); tail.rotation.x = Math.PI;
+  g.add(M(new G.SphereGeometry(0.8, 14, 10), m, 0, 0.3, 0), tail);
+  for (const sx of [-0.28, 0.28]) g.add(M(new G.SphereGeometry(0.1, 8, 6), new G.MeshBasicMaterial({ color: 0 }), sx, 0.45, 0.72));
+  return g;
+}
+
+// ====================================================================
+const GROUPS = [
+  { day: 'day1  縦スクロール弾幕シューティング', items: [
+    pixelItem('自機', 'PLAYER', '7×7 のドット絵'), pixelItem('敵A(赤)', 'ENEMY_A', '13×13'),
+    pixelItem('敵B(緑)', 'ENEMY_B', '21×15'), pixelItem('ボス', 'BOSS', '43×25。HP 200') ] },
+  { day: 'day2  ガチャ', items: [] },
+  { day: 'day3  本屋のピックアップコーナー', items: [
+    { kind: 'three', name: '本', note: '表紙は canvas で生成。ドラッグで回転', variants: BOOK_SAMPLES.map(b => b.t.replace('\n', '')),
+      build: (v) => { const m = makeBookMesh(BOOK_SAMPLES[v || 0]); m.scale.setScalar(3.2); return m; }, cam: [0, 0, 3.4], light: 'room' },
+    { kind: 'three', name: 'POP', note: '4つのデザイン', variants: Object.keys(POP_DESIGNS), build: v => { const m = popMesh(Object.keys(POP_DESIGNS)[v || 0]); m.scale.setScalar(2.4); m.position.y = -1; return m; }, cam: [0, 0, 3], light: 'room' },
+    { kind: 'three', name: 'ひな壇テーブル', note: '3段', build: tiersMesh, cam: [0, 1.5, 6], light: 'room' },
+    { kind: 'three', name: '本棚', note: '背表紙は InstancedMesh', build: bookcaseMesh, cam: [0, 0.5, 5.5], light: 'room' },
+    { kind: 'three', name: '看板', note: '「PICK UP おすすめの本」', build: signMesh, cam: [0, 0, 3.4], light: 'room' },
+    { kind: 'three', name: 'ペンダントライト', note: '', build: pendantMesh, cam: [0, 0, 1.4], light: 'room' } ] },
+  { day: 'day4  箱庭(鬼ごっこ)', items: [
+    c2('プレイヤー', 'player', 'HP 3'), c2('敵:近接(赤)', 'melee', 'HP 3'), c2('敵:遠隔(紫)', 'ranged', 'HP 2'),
+    c2('敵:泥棒(緑、黄色い核=鍵持ち)', 'thief', ''), c2('鍵', 'key', ''), c2('敵弾', 'shot', ''),
+    c2('扉(施錠)', 'doorLocked', ''), c2('扉(開)', 'doorOpen', ''), c2('スイッチ(OFF)', 'swOff', ''), c2('スイッチ(ON)', 'swOn', ''),
+    c2('川', 'river', ''), c2('橋', 'bridge', ''), c2('ゴール', 'goal', ''), c2('攻撃判定', 'attack', '') ] },
+  { day: 'day5  会話ゲーム', items: [{ kind: 'image', name: 'IRIS', note: 'メインキャラ(自作の絵)', src: '../day5/chara.png' },
+    { kind: 'image', name: '背景(昼)', note: '', src: '../day5/bg.png' }, { kind: 'image', name: '背景(夜)', note: '', src: '../day5/bg_night.png' }] },
+  { day: 'day6  ドット絵の顔', items: [{ kind: 'image', name: '元絵', note: 'Face.png', src: '../day6/Face.png' }, ...Object.keys(FACE.EX).map(faceItem)] },
+  { day: 'day7  跳ねるボール', items: [{ kind: 'canvas', name: 'ボール', note: 'ターミナル上の「O」1文字', draw: cv => { cv.width = 300; cv.height = 300; const g = cv.getContext('2d'); g.fillStyle = '#111'; g.fillRect(0, 0, 300, 300); g.fillStyle = '#eee'; g.font = 'bold 220px monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('O', 150, 160); } }] },
+  { day: 'day8  asset-stack', items: [] },
+  { day: 'day9  ドライブ', items: [
+    { kind: 'three', name: '車', note: '', build: carMesh, cam: [5, 3, 6] }, { kind: 'three', name: '木', note: '', build: tree9, cam: [8, 3, 10] } ] },
+  { day: 'day10  アーチェリー', items: [
+    { kind: 'three', name: '的', note: '', build: targetMesh, cam: [0, 0, 7] }, { kind: 'three', name: '矢', note: '', build: () => arrowMesh('d10'), cam: [0, 0.5, 2] },
+    { kind: 'three', name: '矢(デバッグ視点の太い矢)', note: '飛んでいる矢', build: () => arrowMesh('big'), cam: [0, 0.5, 3] },
+    { kind: 'three', name: '弓', note: '', build: () => bowMesh(0), cam: [-1.5, 0.5, 1.5] },
+    { kind: 'three', name: '木', note: '', build: tree10, cam: [8, 3, 10] }, { kind: 'three', name: '岩', note: '', build: rockMesh, cam: [1.5, 1, 2] },
+    { kind: 'three', name: '柵', note: '', build: fenceMesh, cam: [5, 3, 6] }, { kind: 'three', name: 'プレイヤー位置の印(赤)', note: 'デバッグ用', build: markerMesh, cam: [3, 2, 3] } ] },
+  { day: 'day11  馬車アーチェリー', items: [
+    { kind: 'three', name: '馬車と馬(と射手)', note: '', build: cartMesh, cam: [8, 4, 9] }, { kind: 'three', name: '射手', note: '', build: () => playerMesh(false), cam: [2.5, 1, 3] },
+    { kind: 'three', name: 'ゴールゲート', note: '', build: goalMesh, cam: [8, 4, 16] },
+    ...Object.keys(SPECIES).map(k => ({ kind: 'three', name: SPECIES[k].name, note: '', build: () => ghostMesh(k), cam: [3, 1, 4] })),
+    { kind: 'three', name: '弓(引き絞り)', note: '', build: () => bowMesh(1), cam: [-1.8, 0.4, 1.8] },
+    { kind: 'three', name: '木', note: '', build: tree11, cam: [8, 3, 10] } ] },
+];
+
+// ====================================================================
+// 描画系
+// ====================================================================
+const view = document.getElementById('view'), c2el = document.getElementById('c2'), imgEl = document.getElementById('imgv');
+const subEl = document.getElementById('sub'), capEl = document.getElementById('cap'), hintEl = document.getElementById('hint');
+const renderer = new G.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(devicePixelRatio);
+view.appendChild(renderer.domElement);
+const camera = new G.PerspectiveCamera(45, 1, 0.05, 500);
+const controls = new G.OrbitControls(camera, renderer.domElement);
+controls.autoRotate = true; controls.autoRotateSpeed = 1.6; controls.enableDamping = true;
+let scene = null, current = null, curVariant = 0;
+
+function resize() {
+  const w = view.clientWidth, h = view.clientHeight;
+  renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+
+function show(item, variant = 0) {
+  current = item; curVariant = variant;
+  document.querySelectorAll('#list button').forEach(b => b.classList.toggle('on', b._item === item));
+  c2el.style.display = imgEl.style.display = 'none'; renderer.domElement.style.display = 'none'; scene = null; hintEl.textContent = '';
+  subEl.innerHTML = '';
+  if (item.variants) item.variants.forEach((n, i) => { const b = document.createElement('button'); b.textContent = n; b.className = i === variant ? 'on' : ''; b.onclick = () => show(item, i); subEl.appendChild(b); });
+  if (item.kind === 'pixel' || item.kind === 'canvas') { c2el.style.display = 'block'; item.draw(c2el); }
+  else if (item.kind === 'image') { imgEl.style.display = 'block'; imgEl.src = item.src; imgEl.onerror = () => { imgEl.style.display = 'none'; }; }
+  else {
+    renderer.domElement.style.display = 'block'; resize();
+    scene = new G.Scene();
+    const room = item.light === 'room';
+    scene.background = new G.Color(room ? 0x24201a : 0x8fb7d8);
+    if (room) { scene.add(new G.AmbientLight(0xffffff, 0.7)); const d = new G.DirectionalLight(0xffffff, 0.8); d.position.set(3, 5, 4); scene.add(d); }
+    else { scene.add(new G.HemisphereLight(0xffffff, 0x556b3a, 0.9)); const d = new G.DirectionalLight(0xffffff, 0.7); d.position.set(5, 10, 6); scene.add(d); }
+    const floorY = -0.001;
+    const obj = item.build(variant); scene.add(obj);
+    const box = new G.Box3().setFromObject(obj), sz = box.getSize(new G.Vector3()), ctr = box.getCenter(new G.Vector3());
+    const r = Math.max(sz.x, sz.y, sz.z) || 1;
+    const dir = new G.Vector3(...(item.cam || [3, 2, 4])).normalize();
+    camera.position.copy(ctr).addScaledVector(dir, r * 1.9 + 0.5);
+    controls.target.copy(ctr); controls.update();
+    hintEl.textContent = 'ドラッグで回転 / ホイールで拡大';
+  }
+  capEl.innerHTML = `<b>${item.name}</b><span>${item.dayLabel}${item.note ? ' ・ ' + item.note : ''}</span>`;
+}
+
+(function loop() { requestAnimationFrame(loop); if (scene) { controls.update(); renderer.render(scene, camera); } })();
+
+// 一覧
+const listEl = document.getElementById('list');
+const flat = [];
+GROUPS.forEach(gr => {
+  const h = document.createElement('h3'); h.textContent = gr.day + (gr.items.length ? '' : '(展示物なし)'); listEl.appendChild(h);
+  gr.items.forEach(it => {
+    it.dayLabel = gr.day.split(/\s/)[0];
+    const b = document.createElement('button'); b.textContent = it.name; b._item = it; b.onclick = () => show(it); listEl.appendChild(b); flat.push(it);
+  });
+});
+addEventListener('keydown', e => {
+  const i = flat.indexOf(current);
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') show(flat[(i + 1) % flat.length]);
+  if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') show(flat[(i - 1 + flat.length) % flat.length]);
+});
+show(flat[+location.hash.slice(1) || 0] || flat[0]);
+</script>
+</body>
+</html>

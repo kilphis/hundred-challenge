@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Day11 馬車とゴースト</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 16px; top: 12px; color: #fff; font: 20px/1.6 -apple-system, "Hiragino Sans", sans-serif; text-shadow: 0 1px 3px #000; pointer-events: none; }
+  #cross { position: fixed; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; pointer-events: none; }
+  #cross::before, #cross::after { content: ''; position: absolute; background: #fff; }
+  #cross::before { left: 10px; top: 0; width: 2px; height: 22px; }
+  #cross::after { top: 10px; left: 0; height: 2px; width: 22px; }
+  #gauge { position: fixed; left: 50%; bottom: 40px; width: 200px; height: 10px; margin-left: -100px; background: #fff3; pointer-events: none; }
+  #gauge div { height: 100%; width: 0; background: #e83; }
+  #gauge div.just { background: #3c6; }
+  #gauge .band { position: absolute; top: -4px; height: 18px; background: #3c68; }
+  #pause { display: none; position: fixed; left: 50%; top: 80px; transform: translateX(-50%); color: #fff; background: #000a; padding: 6px 16px; font: 20px sans-serif; pointer-events: none; }
+  #map { position: fixed; right: 12px; top: 12px; width: 200px; height: 200px; background: #0008; border: 2px solid #fff8; border-radius: 6px; pointer-events: none; }
+  #flash { position: fixed; inset: 0; background: #d00; opacity: 0; pointer-events: none; transition: opacity .35s; }
+  #over { display: none; position: fixed; inset: 0; background: #000a; color: #fff; font: 20px/1.8 -apple-system, "Hiragino Sans", sans-serif; text-align: center; padding-top: 30vh; box-sizing: border-box; }
+  #over h1 { margin: 0 0 8px; font-size: 40px; letter-spacing: .1em; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+<div id="hud"></div>
+<div id="cross"></div>
+<div id="gauge"><div class="band" id="gband"></div><div id="gbar"></div></div>
+<div id="pause">PAUSE (E で再開)</div>
+<canvas id="map" width="200" height="200"></canvas>
+<div id="flash"></div>
+<div id="over"><h1 id="title">GAME OVER</h1><div id="result"></div><div>クリック / R でもう一度</div></div>
+<script>
+const SKY = 0x20263d;
+const DRAW_TIME = 0.6;
+const SPEED_MIN = 15, SPEED_MAX = 60;
+const GRAVITY = 9.8;
+const JUST_MIN = 0.45, JUST_MAX = 0.55;
+const MAX_YAW = 1.5, MAX_PITCH = 0.65;   // 画面端までマウスを動かしたときに向く最大角(rad)
+const EYE = 1.9;                 // 荷台の上の目の高さ
+const CART_SPEED = 14;
+const GHOST_SPEED = CART_SPEED + 6;
+const GHOST_R = 1.0, GHOST_BITE = 3.0;
+const SPAWN_DIST = 50, SPAWN_EVERY = 2.0;
+const MAX_HP = 5;
+
+const smooth = (x, a, b) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+const mat = c => new THREE.MeshLambertMaterial({ color: c });
+
+// ───────── シーン ─────────
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(SKY);
+scene.fog = new THREE.Fog(SKY, 30, 160);
+const camera = new THREE.PerspectiveCamera(65, innerWidth / innerHeight, 0.05, 400);
+camera.rotation.order = 'YXZ';
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+document.body.prepend(renderer.domElement);
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+scene.add(new THREE.HemisphereLight(0x8899cc, 0x223322, 0.9));
+const moon = new THREE.DirectionalLight(0xccd8ff, 0.5); moon.position.set(-20, 40, 10); scene.add(moon);
+
+// ───────── コース(Day9「丘陵アップダウン」と同じ生成・長さだけ延長) ─────────
+function rng(seed) {
+  let a = seed * 2654435761 >>> 0;
+  return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+const pts = [];
+{
+  const r = rng(1), n = 61, Z0 = -1200, Z1 = 1200;
+  let y = 0, x = 0;
+  for (let i = 0; i < n; i++) {
+    const z = Z0 + i * (Z1 - Z0) / (n - 1);
+    y = clamp(y + (r() - 0.5) * 8, 0, 14);
+    x = clamp(x * 0.8 + (r() - 0.5) * 70, -75, 75);
+    let yy = y, xx = x;
+    if (i === 0) { yy = 0; xx = 0; }
+    if (i === n - 1) { yy = 0; xx = 0; }
+    if (i === 1 || i === n - 2) yy = Math.min(y, 10);
+    pts.push(new THREE.Vector3(xx, yy, z));
+  }
+}
+const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.5);
+const LEN = curve.getLength();
+const atS = s => curve.getPointAt(clamp(s / LEN, 0, 1));
+const tanS = s => curve.getTangentAt(clamp(s / LEN, 0, 1));
+
+// 地形: 道の近くは道路の高さ、遠くはなだらかな丘へ
+const TW = 300, TZ = 2600, SEGX = 75, SEGZ = 650;
+const roadSamples = []; for (let i = 0; i <= 1300; i++) roadSamples.push(curve.getPointAt(i / 1300));
+const baseH = (x, z) => 8 + 6 * Math.sin(x * 0.03) * Math.cos(z * 0.025) + 18 * smooth(Math.abs(x), 110, 210);
+const tgeo = new THREE.PlaneGeometry(TW, TZ, SEGX, SEGZ);
+tgeo.rotateX(-Math.PI / 2);
+{
+  const tp = tgeo.attributes.position, col = [];
+  for (let i = 0; i < tp.count; i++) {
+    const x = tp.getX(i), z = tp.getZ(i);
+    // roadSamples は z の昇順 → 二分探索の近くだけ調べる
+    let lo = 0, hi = roadSamples.length - 1;
+    while (lo < hi) { const m = (lo + hi) >> 1; if (roadSamples[m].z < z) lo = m + 1; else hi = m; }
+    let best = 1e9, by = 0;
+    for (let k = Math.max(0, lo - 40); k <= Math.min(roadSamples.length - 1, lo + 40); k++) {
+      const q = roadSamples[k], d = (q.x - x) ** 2 + (q.z - z) ** 2;
+      if (d < best) { best = d; by = q.y; }
+    }
+    const d = Math.sqrt(best);
+    const h = best > 1e8 ? baseH(x, z) : (by - 0.2) + (baseH(x, z) - (by - 0.2)) * smooth(d, 8, 34);
+    tp.setY(i, h);
+    const sh = 0.85 + 0.15 * Math.sin(x * 0.2) * Math.cos(z * 0.2);
+    col.push(0.17 * sh, 0.29 * sh, 0.16 * sh);
+  }
+  tgeo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  tgeo.computeVertexNormals();
+  scene.add(new THREE.Mesh(tgeo, new THREE.MeshLambertMaterial({ vertexColors: true })));
+}
+const gridY = tgeo.attributes.position;
+function groundAt(x, z) {       // 近くの頂点の高さ
+  const gx = clamp(Math.round((x / TW + 0.5) * SEGX), 0, SEGX), gz = clamp(Math.round((z / TZ + 0.5) * SEGZ), 0, SEGZ);
+  return gridY.getY(gz * (SEGX + 1) + gx);
+}
+
+function ribbon(off0, off1, y, color) {
+  const N = 1300, pos = [], idx = [];
+  for (let i = 0; i <= N; i++) {
+    const u = i / N, p = curve.getPointAt(u), t = curve.getTangentAt(u);
+    const side = new THREE.Vector3(t.z, 0, -t.x).normalize();
+    const a = p.clone().addScaledVector(side, off0), b = p.clone().addScaledVector(side, off1);
+    pos.push(a.x, p.y + y, a.z, b.x, p.y + y, b.z);
+    if (i < N) idx.push(2 * i, 2 * i + 1, 2 * i + 2, 2 * i + 1, 2 * i + 3, 2 * i + 2);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setIndex(idx); g.computeVertexNormals();
+  return new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color, side: THREE.DoubleSide }));
+}
+scene.add(ribbon(-5, 5, 0.02, 0x4a4338));
+
+// ゴール(終点手前のゲート。ここを通過でクリア)
+const GOAL_S = LEN - 10;
+{
+  const p = atS(GOAL_S), t = tanS(GOAL_S), g = new THREE.Group();
+  const side = new THREE.Vector3(t.z, 0, -t.x).normalize();
+  const postG = new THREE.BoxGeometry(0.5, 7, 0.5), pm = mat(0xeeeeee);
+  for (const sg of [-1, 1]) { const m = new THREE.Mesh(postG, pm); m.position.copy(side).multiplyScalar(5.5 * sg).setY(3.5); g.add(m); }
+  const cv = document.createElement('canvas'); cv.width = 256; cv.height = 64;
+  const c = cv.getContext('2d');
+  for (let i = 0; i < 16; i++) for (let j = 0; j < 4; j++) { c.fillStyle = (i + j) % 2 ? '#fff' : '#111'; c.fillRect(i * 16, j * 16, 16, 16); }
+  const banner = new THREE.Mesh(new THREE.BoxGeometry(11.5, 1.6, 0.3), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv) }));
+  banner.position.y = 6.6; banner.lookAt(t.x, 6.6, t.z); g.add(banner);
+  g.position.copy(p); scene.add(g);
+}
+
+// 木(道から離れた所に)
+{
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const near = roadSamples.filter((_, i) => i % 3 === 0);
+  for (let n = 0, placed = 0; n < 6000 && placed < 500; n++) {
+    const x = (rnd() - 0.5) * 260, z = (rnd() - 0.5) * 2400;
+    let best = 1e9;
+    for (const p of near) { const d = (p.x - x) ** 2 + (p.z - z) ** 2; if (d < best) best = d; }
+    if (Math.sqrt(best) < 9) continue;
+    const h = 4 + rnd() * 4, t = new THREE.Group();
+    const tr = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.35, h * 0.4, 6), mat(0x4a3320)); tr.position.y = h * 0.2;
+    const lf = new THREE.Mesh(new THREE.ConeGeometry(h * 0.35, h * 0.9, 8), mat(0x1f4a2a)); lf.position.y = h * 0.85;
+    t.add(tr, lf); t.position.set(x, groundAt(x, z), z); scene.add(t); placed++;
+  }
+}
+
+// ───────── 馬車 ─────────
+const cart = new THREE.Group();     // +z が進行方向
+scene.add(cart);
+{
+  const bed = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.2, 3.2), mat(0x7a5a38)); bed.position.set(0, 0.9, -0.6);
+  cart.add(bed);
+  for (const sx of [-1.1, 1.1]) {
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.4, 3.2), mat(0x6a4a2a)); rail.position.set(sx, 1.2, -0.6); cart.add(rail);
+  }
+  const wg = new THREE.CylinderGeometry(0.6, 0.6, 0.12, 14);
+  for (const sx of [-1.15, 1.15]) for (const z of [-1.5, 0.1]) {
+    const w = new THREE.Mesh(wg, mat(0x2a1d10)); w.rotation.z = Math.PI / 2; w.position.set(sx, 0.6, z); cart.add(w);
+  }
+  const hm = mat(0x6b4426), dk = mat(0x2a1a0e);
+  const horse = new THREE.Group(); horse.position.set(0, 0, 2.8); cart.add(horse);
+  const part = (g, m, x, y, z, rx = 0) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); o.rotation.x = rx; horse.add(o); return o; };
+  part(new THREE.BoxGeometry(0.9, 0.9, 1.9), hm, 0, 1.55, 0);                    // 胴
+  part(new THREE.BoxGeometry(0.45, 0.9, 0.55), hm, 0, 2.15, 1.0, 0.5);          // 首
+  part(new THREE.BoxGeometry(0.4, 0.45, 0.8), hm, 0, 2.5, 1.45, 0.35);           // 頭
+  part(new THREE.BoxGeometry(0.12, 0.3, 0.12), dk, -0.13, 2.85, 1.15);           // 耳
+  part(new THREE.BoxGeometry(0.12, 0.3, 0.12), dk, 0.13, 2.85, 1.15);
+  part(new THREE.BoxGeometry(0.1, 0.6, 0.5), dk, 0, 2.4, 0.75, 0.5);             // たてがみ
+  part(new THREE.BoxGeometry(0.15, 0.9, 0.15), dk, 0, 1.3, -1.0, -0.4);          // しっぽ
+  for (const [x, z] of [[-0.3, 0.75], [0.3, 0.75], [-0.3, -0.75], [0.3, -0.75]]) part(new THREE.BoxGeometry(0.2, 1.1, 0.2), hm, x, 0.55, z);
+  const pole = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 1.6), mat(0x6a4a2a)); pole.position.set(0, 1.0, 1.4); cart.add(pole);
+}
+// プレイヤー(荷台視点では隠す)
+const player = new THREE.Group();
+{
+  const body = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.85, 0.3), mat(0x3a5a8a)); body.position.y = 1.0;
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 10), mat(0xe8c8a0)); head.position.y = 1.65;
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), mat(0x7a2a2a)); cap.position.y = 1.7;
+  const armG = new THREE.BoxGeometry(0.12, 0.12, 0.75);
+  const armL = new THREE.Mesh(armG, mat(0x3a5a8a)); armL.position.set(0.2, 1.2, -0.4);
+  const armR = new THREE.Mesh(armG, mat(0x3a5a8a)); armR.position.set(-0.15, 1.2, -0.25);
+  player.add(body, head, cap, armL, armR);
+  player.position.set(0, 1.0, -1.4);
+  cart.add(player);
+}
+// カメラは荷台に載せる。何もしなければ後ろ(-z)を向く
+scene.add(camera);
+// 視点切替用: 荷台視点(0) / 前方から馬車ごと後ろを見る(1) / 上空(2)。狙いは常に荷台基準
+const aimCam = new THREE.Object3D(); aimCam.rotation.order = 'YXZ'; cart.add(aimCam); aimCam.position.set(0, EYE, -1.4);
+function applyCamera() {
+  const showFps = camMode === 0;
+  bow.visible = true; player.visible = !showFps; player.rotation.y = Math.PI + yaw; crossEl.style.display = showFps ? 'block' : 'none';
+  if (camMode === 0) { aimCam.updateWorldMatrix(true, false); aimCam.matrixWorld.decompose(camera.position, camera.quaternion, camera.scale); return; }
+  const p = cart.position, t = tanS(sCart);
+  if (camMode === 1) { camera.position.copy(p).addScaledVector(t, 9).add(new THREE.Vector3(0, 5, 0)); camera.lookAt(p.clone().addScaledVector(t, -12).add(new THREE.Vector3(0, 1, 0))); }
+  else { camera.position.copy(p).addScaledVector(t, -15).add(new THREE.Vector3(0, 55, 0)); camera.lookAt(p); }
+}
+
+// ───────── 弓 ─────────
+function makeArrow(big) {      // big: 飛んでいる矢(太く明るく)。手元の矢は細いまま
+  const g = new THREE.Group();
+  const r = big ? 0.045 : 0.012, L = big ? 1.6 : 1.0;
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(r, r, L, 6), big ? new THREE.MeshBasicMaterial({ color: 0xffee33 }) : mat(0xd8c9a0)); shaft.position.y = -L / 2;
+  const tip = new THREE.Mesh(new THREE.ConeGeometry(big ? 0.14 : 0.03, big ? 0.4 : 0.15, 6), big ? new THREE.MeshBasicMaterial({ color: 0xff4422 }) : mat(0xaaaaaa)); tip.position.y = big ? -0.2 : -0.075;
+  g.add(shaft, tip);
+  return g;
+}
+const bow = new THREE.Group();
+bow.position.set(0.15, -0.18, -0.7);
+aimCam.add(bow);
+const BOW_R = 0.4, BOW_ARC = Math.PI * 0.8;
+const limb = new THREE.Mesh(new THREE.TorusGeometry(BOW_R, 0.012, 6, 24, BOW_ARC), mat(0x4a2c0f));
+limb.rotation.z = -BOW_ARC / 2;
+const limbHolder = new THREE.Group(); limbHolder.rotation.y = Math.PI / 2; limbHolder.add(limb);
+bow.add(limbHolder);
+const tipY = BOW_R * Math.sin(BOW_ARC / 2), STRING_REST = -BOW_R * Math.cos(BOW_ARC / 2);
+const stringGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, tipY, STRING_REST), new THREE.Vector3(0, 0, STRING_REST), new THREE.Vector3(0, -tipY, STRING_REST)]);
+bow.add(new THREE.Line(stringGeo, new THREE.LineBasicMaterial({ color: 0xdddddd })));
+const held = makeArrow(); held.rotation.x = -Math.PI / 2; held.visible = false; bow.add(held);
+function setDraw(p) {
+  const z = STRING_REST + 0.35 * p, pos = stringGeo.attributes.position;
+  pos.setZ(1, z); pos.needsUpdate = true; held.position.set(0, 0, z - 1.0);
+}
+
+// ───────── ゴースト ─────────
+const ghostBodyG = new THREE.SphereGeometry(0.8, 14, 10), ghostTailG = new THREE.ConeGeometry(0.8, 1.4, 14);
+// 種と動きの対応: うねる=青白 / 放物線=紫 / 道沿い=橙
+const SPECIES = {
+  weave: { color: 0xdfeeff, emissive: 0x6688aa, dot: '#9cf' },
+  arc:   { color: 0xe0c8ff, emissive: 0x7040a8, dot: '#c8f' },
+  road:  { color: 0xffd8b0, emissive: 0xb05a10, dot: '#fa5' },
+};
+for (const k in SPECIES) SPECIES[k].mat = new THREE.MeshLambertMaterial({ color: SPECIES[k].color, emissive: SPECIES[k].emissive, transparent: true, opacity: 0.8 });
+const eyeG = new THREE.SphereGeometry(0.1, 8, 6), eyeM = new THREE.MeshBasicMaterial({ color: 0x000000 });
+function makeGhost(m) {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(ghostBodyG, m); body.position.y = 0.3;
+  const tail = new THREE.Mesh(ghostTailG, m); tail.rotation.x = Math.PI; tail.position.y = -0.6;
+  g.add(body, tail);
+  for (const sx of [-0.28, 0.28]) { const e = new THREE.Mesh(eyeG, eyeM); e.position.set(sx, 0.45, 0.72); g.add(e); }
+  return g;
+}
+
+// ───────── 状態 ─────────
+let sCart, arrows, ghosts, hp, score, shots, tAlive, spawnT, over;
+let paused = false, camMode = 0;
+let drawing = false, drawT = 0, mouseX = 0, mouseY = 0, yaw = 0, pitch = 0;
+const hud = document.getElementById('hud'), gbar = document.getElementById('gbar'), gband = document.getElementById('gband');
+const pauseEl = document.getElementById('pause'), flash = document.getElementById('flash'), overEl = document.getElementById('over');
+gband.style.left = (JUST_MIN * 100) + '%'; gband.style.width = ((JUST_MAX - JUST_MIN) * 100) + '%';
+
+function reset() {
+  for (const a of arrows || []) scene.remove(a.mesh);
+  for (const g of ghosts || []) scene.remove(g.mesh);
+  sCart = SPAWN_DIST + 10; arrows = []; ghosts = []; hp = MAX_HP; score = 0; shots = 0; tAlive = 0; spawnT = 1; over = false;
+  drawing = false; setDraw(0); held.visible = false; gbar.style.width = '0'; gbar.className = '';
+  overEl.style.display = 'none'; paused = false; pauseEl.style.display = 'none';
+}
+
+function spawnGhost() {
+  const kinds = ['weave', 'arc', 'road'], kind = kinds[Math.floor(Math.random() * 3)];
+  const mesh = makeGhost(SPECIES[kind].mat); scene.add(mesh);
+  const b = atS(sCart - SPAWN_DIST);
+  ghosts.push({ kind, mesh, base: b, pos: b.clone(), h: 1.2 + Math.random() * 1.5, ph: Math.random() * 6.28, d0: SPAWN_DIST,
+    s: sCart - SPAWN_DIST, lat: (Math.random() * 2 - 1) * 2.5,                                   // road: 道上の位置と横ずれ
+    arc: (Math.random() < 0.5 ? -1 : 1) * (12 + Math.random() * 10),                              // arc: 膨らむ幅
+    amp: 2 + Math.random() * 3, freq: 1.2 + Math.random() * 1.8, vph: Math.random() * 6.28, vfreq: 0.8 + Math.random() * 1.2, vamp: 0.3 + Math.random() * 0.3 });
+}
+
+// ───────── 入力 ─────────
+function startDraw() { if (over || paused || drawing) return; drawing = true; drawT = 0; held.visible = true; }
+const crossEl = document.getElementById('cross');
+addEventListener('mousemove', e => { mouseX = (e.clientX / innerWidth) * 2 - 1; mouseY = (e.clientY / innerHeight) * 2 - 1; });
+addEventListener('mousedown', () => { if (over) reset(); else startDraw(); });
+addEventListener('mouseup', release);
+addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) startDraw(); }
+  if (e.code === 'KeyR') reset();
+  if (e.code === 'KeyE' && !e.repeat && !over) { paused = !paused; pauseEl.style.display = paused ? 'block' : 'none'; }
+  if (e.code === 'KeyC' && !e.repeat) camMode = (camMode + 1) % 3;
+});
+addEventListener('keyup', e => { if (e.code === 'Space') release(); });
+
+const cartVel = new THREE.Vector3();
+function release() {
+  if (!drawing) return;
+  drawing = false; held.visible = false;
+  const p = Math.min(drawT / DRAW_TIME, 1);
+  setDraw(0); gbar.style.width = '0'; gbar.className = '';
+  if (over || paused || p < 0.1) return;
+  const dir = new THREE.Vector3(); aimCam.getWorldDirection(dir).negate();   // Object3D は +z を返すので反転
+  const speed = SPEED_MIN + (SPEED_MAX - SPEED_MIN) * p;
+  const mesh = makeArrow(true); scene.add(mesh);
+  const pos = aimCam.getWorldPosition(new THREE.Vector3()).addScaledVector(dir, 0.5);
+  mesh.position.copy(pos);
+  // 馬車の速度を引き継ぐ
+  arrows.push({ mesh, pos, vel: dir.multiplyScalar(speed).add(cartVel), flying: true, age: 0, noGravity: p >= JUST_MIN && p <= JUST_MAX });
+  shots++;
+}
+
+// ───────── 更新 ─────────
+const UP = new THREE.Vector3(0, 1, 0);
+const _ab = new THREE.Vector3(), _ac = new THREE.Vector3(), _c = new THREE.Vector3();
+function segHitsSphere(a, b, c, r) {      // 線分 a→b と球(c, r)
+  _ab.subVectors(b, a); _ac.subVectors(c, a);
+  const t = Math.min(1, Math.max(0, _ac.dot(_ab) / (_ab.lengthSq() || 1)));
+  _c.copy(a).addScaledVector(_ab, t);
+  return _c.distanceTo(c) <= r;
+}
+
+function update(dt) {
+  tAlive += dt;
+  sCart += CART_SPEED * dt;
+  const p = atS(sCart), t = tanS(sCart);
+  cart.position.copy(p); cart.lookAt(p.x + t.x, p.y, p.z + t.z);   // 向きは水平のまま(坂で狙いの基準が傾かないように)
+  cartVel.copy(t).multiplyScalar(CART_SPEED);
+
+  // 狙い(荷台の後ろ向きを基準に、マウスで向ける)
+  const ty = -mouseX * MAX_YAW, tp = -mouseY * MAX_PITCH;
+  yaw += (ty - yaw) * 0.25; pitch += (tp - pitch) * 0.25;
+  aimCam.rotation.set(pitch, yaw, 0);
+
+  if (drawing) {
+    drawT += dt;
+    const q = Math.min(drawT / DRAW_TIME, 1);
+    setDraw(q); gbar.style.width = (q * 100) + '%';
+    gbar.className = (q >= JUST_MIN && q <= JUST_MAX) ? 'just' : '';
+  }
+
+  spawnT -= dt;
+  if (spawnT <= 0) { spawnGhost(); spawnT = SPAWN_EVERY; }
+
+  if (sCart >= GOAL_S) { endGame(true); return; }
+  const cp = cart.position;
+  for (const g of ghosts) {
+    let dist;
+    if (g.kind === 'road') {          // 道に沿って追ってくる
+      g.s += GHOST_SPEED * dt;
+      const gp = atS(g.s), gt = tanS(g.s);
+      g.pos.copy(gp).addScaledVector(new THREE.Vector3(gt.z, 0, -gt.x).normalize(), g.lat);
+      g.pos.y = groundAt(g.pos.x, g.pos.z) + 1.5 + g.h;
+      dist = Math.hypot(g.pos.x - cp.x, g.pos.z - cp.z);
+    } else {                          // 道を無視して馬車へ直進(速さは伸び縮みする)
+      const toCart = new THREE.Vector3(cp.x - g.base.x, 0, cp.z - g.base.z);
+      dist = toCart.length(); toCart.normalize();
+      const sp = GHOST_SPEED * (1 + g.vamp * Math.sin(tAlive * g.vfreq + g.vph));
+      g.base.addScaledVector(toCart, sp * dt);
+      const side = new THREE.Vector3(toCart.z, 0, -toCart.x);
+      if (g.kind === 'arc') {         // 横に膨らむ放物線
+        const k = Math.min(dist / g.d0, 1);
+        g.pos.copy(g.base).addScaledVector(side, g.arc * 4 * k * (1 - k));
+        g.pos.y = groundAt(g.pos.x, g.pos.z) + g.h + 1.5;
+      } else {                        // 左右上下にうねる
+        g.pos.copy(g.base).addScaledVector(side, Math.sin(tAlive * g.freq + g.ph) * g.amp);
+        g.pos.y = groundAt(g.pos.x, g.pos.z) + 1.5 + g.h + Math.sin(tAlive * g.freq * 1.7 + g.ph) * 1.0;
+      }
+    }
+    g.mesh.position.copy(g.pos);
+    g.mesh.lookAt(cp.x, g.pos.y, cp.z);
+    if (dist < 2.5) {     // 追いつかれた
+      g.dead = true; hp--;
+      flash.style.transition = 'none'; flash.style.opacity = 0.5;
+      requestAnimationFrame(() => { flash.style.transition = 'opacity .35s'; flash.style.opacity = 0; });
+      if (hp <= 0) endGame();
+    }
+  }
+
+  const prev = new THREE.Vector3();
+  for (const a of arrows) {
+    if (!a.flying) continue;
+    prev.copy(a.pos);
+    if (!a.noGravity) a.vel.y -= GRAVITY * dt;
+    a.pos.addScaledVector(a.vel, dt);
+    a.age += dt;
+    for (const g of ghosts) {
+      if (g.dead || !g.pos) continue;
+      if (segHitsSphere(prev, a.pos, g.pos, GHOST_R)) { g.dead = true; a.flying = false; a.dead = true; score++; break; }
+    }
+    const gy = groundAt(a.pos.x, a.pos.z);
+    if (a.flying && a.pos.y <= gy) { a.pos.y = gy; a.flying = false; a.stuckT = 0; }
+    if (a.age > 6) a.dead = true;
+    a.mesh.position.copy(a.pos);
+    a.mesh.quaternion.setFromUnitVectors(UP, a.vel.clone().normalize());
+  }
+  for (const a of arrows) if (!a.flying) { a.stuckT = (a.stuckT || 0) + dt; if (a.stuckT > 4) a.dead = true; }
+
+  for (const g of ghosts) if (g.dead) scene.remove(g.mesh);
+  ghosts = ghosts.filter(g => !g.dead);
+  for (const a of arrows) if (a.dead) scene.remove(a.mesh);
+  arrows = arrows.filter(a => !a.dead);
+}
+
+function endGame(clear) {
+  over = true; drawing = false; held.visible = false; setDraw(0); gbar.style.width = '0';
+  document.getElementById('result').textContent = (clear ? '到着！ ' : '') + `撃退 ${score} 体 / 生存 ${tAlive.toFixed(1)} 秒`;
+  document.getElementById('title').textContent = clear ? 'GOAL' : 'GAME OVER';
+  overEl.style.display = 'block';
+}
+
+// ミニマップ(真上から見た道・馬車・ゴースト。北=上)
+const mapEl = document.getElementById('map'), mctx = mapEl.getContext('2d');
+const MAP_SCALE = 200 / 210;      // 馬車を中心にした約210mの範囲を表示
+const goalPt = atS(GOAL_S);
+const mapPts = roadSamples.filter((_, i) => i % 2 === 0);
+function drawMap() {
+  const cx = cart.position.x, cz = cart.position.z;
+  const mx = x => 100 + (x - cx) * MAP_SCALE, mz = z => 100 + (z - cz) * MAP_SCALE;
+  mctx.clearRect(0, 0, 200, 200);
+  mctx.strokeStyle = '#b8aa90'; mctx.lineWidth = 6; mctx.lineJoin = 'round'; mctx.beginPath();
+  let pen = false;
+  for (const p of mapPts) {
+    if (Math.abs(p.z - cz) > 160) { pen = false; continue; }
+    if (pen) mctx.lineTo(mx(p.x), mz(p.z)); else mctx.moveTo(mx(p.x), mz(p.z));
+    pen = true;
+  }
+  mctx.stroke();
+  for (const g of ghosts) { mctx.fillStyle = SPECIES[g.kind].dot; mctx.beginPath(); mctx.arc(mx(g.pos.x), mz(g.pos.z), 3.5, 0, 7); mctx.fill(); }
+  if (Math.abs(goalPt.z - cz) < 160) { mctx.fillStyle = '#fff'; mctx.fillRect(mx(goalPt.x) - 6, mz(goalPt.z) - 2, 12, 4); }
+  mctx.fillStyle = '#f33'; mctx.beginPath(); mctx.arc(100, 100, 5, 0, 7); mctx.fill();
+}
+
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 0.05); last = now;
+  if (!over && !paused) update(dt);
+  hud.innerHTML = `HP ${'♥'.repeat(Math.max(hp, 0))}${'♡'.repeat(MAX_HP - Math.max(hp, 0))}<br>撃退 ${score} (射 ${shots})<br>ゴールまで ${Math.max(0, Math.round(GOAL_S - sCart))} m`;
+  applyCamera(); drawMap();
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+reset();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

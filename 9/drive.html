@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Day9 自動運転ドライブ</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#000;font-family:-apple-system,"Hiragino Sans",sans-serif;color:#fff}
+  canvas{display:block}
+  #menu{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+        background:rgba(10,20,30,.78);gap:18px}
+  #menu h1{margin:0 0 10px;font-size:34px;letter-spacing:.1em}
+  .course{width:360px;padding:16px 20px;border:1px solid #8ab;border-radius:10px;background:rgba(255,255,255,.08);
+          cursor:pointer;transition:.15s}
+  .course:hover{background:rgba(255,255,255,.2)}
+  .course b{font-size:20px}
+  .course span{display:block;font-size:13px;opacity:.8;margin-top:4px}
+  #hud{position:absolute;left:16px;top:14px;font-size:15px;line-height:1.7;text-shadow:0 1px 3px #000;display:none}
+  #hud button{margin-top:6px;padding:4px 12px;cursor:pointer}
+  #hint{position:absolute;right:16px;bottom:12px;font-size:12px;opacity:.75;display:none}
+</style>
+</head>
+<body>
+<div id="menu">
+  <h1>コースを選ぶ</h1>
+</div>
+<div id="hud">
+  <div id="cname"></div>
+  <div>速度 <span id="spd">0</span> km/h</div>
+  <div>標高 <span id="alt">0</span> m</div>
+  <div><span id="laplabel">周回</span> <span id="lap">0</span></div>
+  <button id="back">コース選択へ</button>
+</div>
+<div id="hint">C: カメラ切替(後方 / 上空 / 車内)</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ───────── コース定義 ─────────
+// pts: [x, y(標高), z] の閉曲線の制御点。base(x,z): 道路から離れた場所の地形高さ。
+const smooth = (x, a, b) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+
+function lakePts() {
+  const out = [], n = 16;
+  for (let i = 0; i < n; i++) {
+    const a = i / n * Math.PI * 2;
+    const r = 78 + 5 * Math.sin(a * 3) + 3 * Math.cos(a * 2);
+    out.push([Math.cos(a) * r, 0, Math.sin(a) * r]);
+  }
+  return out;
+}
+
+
+// ───────── 自動生成(シード付き乱数) ─────────
+function rng(seed) {
+  let a = seed * 2654435761 >>> 0;
+  return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+// 標高・横ずれを「前の値 + 乱数」で積み上げる
+function genHill(seed) {
+  const r = rng(seed), pts = [], n = 16;
+  let y = 0, x = 0;
+  for (let i = 0; i < n; i++) {
+    const z = -300 + i * 600 / (n - 1);
+    y = clamp(y + (r() - 0.5) * 24, 0, 42);
+    x = clamp(x * 0.8 + (r() - 0.5) * 70, -75, 75);
+    let yy = y, xx = x;
+    if (i === 0) { yy = 0; xx = 0; }
+    if (i === n - 1) { yy = 0; xx = 0; }
+    if (i === 1) yy = Math.min(y, 10);
+    if (i === n - 2) yy = Math.min(y, 10);
+    pts.push([xx, yy, z]);
+  }
+  return {
+    open: true, size: 680, pts, speed: 20, sky: 0xbfd8e8, ground: [0.38, 0.52, 0.22], slopeGain: 0.8,
+    base: (x, z) => 8 + 6 * Math.sin(x * 0.03) * Math.cos(z * 0.025) + 18 * smooth(Math.abs(x), 110, 210),
+  };
+}
+
+function genRiver(seed) {
+  const r = rng(seed), step = 30;
+  const side = sign => {           // 橋の端(|z|=60)から外側へ
+    const out = []; let y = 14, x = 0;
+    for (let z = 90; z <= 300; z += step) {
+      y = clamp(y + (r() - 0.5) * 16, 3, 30);
+      x = clamp(x * 0.8 + (r() - 0.5) * 70, -65, 65);
+      let yy = y, xx = x;
+      if (z === 300) { yy = 0; }
+      if (z === 270) yy = Math.min(y, 8);
+      out.push([xx, yy, sign * z]);
+    }
+    return out;
+  };
+  const neg = side(-1).reverse(), pos = side(1);
+  const bridge = [-60, -30, 0, 30, 60].map(z => [0, 14, z]);
+  return {
+    open: true, size: 680, pts: [...neg, ...bridge, ...pos], speed: 22, sky: 0xbfe0f0,
+    ground: [0.32, 0.55, 0.26], slopeGain: 0.6,
+    base: (x, z) => {
+      const bank = 10 + 4 * Math.sin(x * 0.03 + z * 0.02) + 16 * smooth(Math.abs(x), 110, 210);
+      return -6 + (bank + 6) * smooth(Math.abs(z), 16, 40);
+    },
+    bridge: { half: 50 },
+    river: { y: 0, hw: 60 },
+  };
+}
+
+const COURSES = [
+  {
+    name: '湖畔周回', desc: '湖のまわりを一周する、ほぼ平坦なコース',
+    pts: lakePts(), speed: 22, sky: 0x9fd0f0, ground: [0.30, 0.55, 0.25],
+    base: (x, z) => {
+      const r = Math.hypot(x, z);
+      return -4 * (1 - smooth(r, 46, 62)) + 8 * smooth(r, 120, 190);
+    },
+    lake: { r: 62, y: -1.3 },
+  },
+  {
+    name: '丘陵アップダウン', desc: '丘をいくつも越える長い一本道。標高は乱数の累積で生成',
+    make: genHill, endless: true,
+  },
+  {
+    name: '大河と橋', desc: 'カーブと丘を越え、橋で大きな川を渡る。乱数の累積で生成',
+    make: genRiver,
+  },
+];
+
+// ───────── three.js 基本 ─────────
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+document.body.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.5, 900);
+addEventListener('resize', () => {
+  renderer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+});
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x556644, 0.75));
+const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+sun.position.set(80, 140, 60);
+scene.add(sun);
+
+// ───────── 車 ─────────
+const car = new THREE.Group();
+const wheels = [];
+{
+  const body = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.6, 4.0), new THREE.MeshLambertMaterial({ color: 0xdd2222 }));
+  body.position.y = 0.65;
+  const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.55, 1.9), new THREE.MeshLambertMaterial({ color: 0x99ccff }));
+  cabin.position.set(0, 1.2, -0.2);
+  car.add(body, cabin);
+  const wg = new THREE.CylinderGeometry(0.38, 0.38, 0.3, 16), wm = new THREE.MeshLambertMaterial({ color: 0x222222 });
+  for (const [x, z] of [[-0.95, 1.3], [0.95, 1.3], [-0.95, -1.3], [0.95, -1.3]]) {
+    const pivot = new THREE.Group(); pivot.position.set(x, 0.38, z);
+    const m = new THREE.Mesh(wg, wm); m.rotation.z = Math.PI / 2;
+    pivot.add(m); car.add(pivot); wheels.push(pivot);
+  }
+}
+
+// ───────── コース生成 ─────────
+let course = null; // {def, curve, group, u, lap}
+
+
+// 道路中心線(連続サンプル列)への最近点: 線分に射影して標高を補間する
+function roadAt(near, x, z) {
+  let bi = 0, best = 1e9;
+  for (let i = 0; i < near.length; i++) {
+    const d = (near[i].p.x - x) ** 2 + (near[i].p.z - z) ** 2;
+    if (d < best) { best = d; bi = i; }
+  }
+  let bd = Math.sqrt(best), by = near[bi].p.y;
+  for (const k of [bi - 1, bi]) {
+    if (k < 0 || k + 1 >= near.length) continue;
+    const a = near[k].p, b = near[k + 1].p, dx = b.x - a.x, dz = b.z - a.z, L = dx * dx + dz * dz;
+    if (!L) continue;
+    const t = Math.min(1, Math.max(0, ((x - a.x) * dx + (z - a.z) * dz) / L));
+    const d = Math.hypot(x - (a.x + dx * t), z - (a.z + dz * t));
+    if (d <= bd) { bd = d; by = a.y + (b.y - a.y) * t; }
+  }
+  return { d: bd, y: by };
+}
+
+function ribbon(samples, off0, off1, yOff, color, skip, open) {
+  const pos = [], idx = [];
+  let k = 0;
+  for (let i = 0; i < samples.length; i++) {
+    const { p, t } = samples[i];
+    const tf = new THREE.Vector3(t.x, 0, t.z).normalize();
+    const side = new THREE.Vector3(tf.z, 0, -tf.x);
+    const a = p.clone().addScaledVector(side, off0), b = p.clone().addScaledVector(side, off1);
+    pos.push(a.x, p.y + yOff, a.z, b.x, p.y + yOff, b.z);
+    const j = (i + 1) % samples.length;
+    if (!(open && i === samples.length - 1) && !(skip && skip(i))) idx.push(2 * i, 2 * i + 1, 2 * j, 2 * i + 1, 2 * j + 1, 2 * j);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setIndex(idx);
+  g.computeVertexNormals();
+  return new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color, side: THREE.DoubleSide }));
+}
+
+function buildCourse(def) {
+  if (course) { scene.remove(course.group); }
+  const group = new THREE.Group();
+  const curve = new THREE.CatmullRomCurve3(def.pts.map(p => new THREE.Vector3(...p)), !def.open, 'catmullrom', 0.5);
+
+  const N = def.open ? 1000 : 700, samples = [];
+  for (let i = 0; i < N; i++) {
+    const u = def.open ? i / (N - 1) : i / N;
+    samples.push({ p: curve.getPointAt(u), t: curve.getTangentAt(u) });
+  }
+
+  // 地形: 道路の近くは道路高さに合わせ、遠くは base(x,z) へ滑らかに移行
+  const SIZE = def.size || 460, SEG = Math.round(SIZE / 3);
+  const tg = new THREE.PlaneGeometry(SIZE, SIZE, SEG, SEG);
+  tg.rotateX(-Math.PI / 2);
+  const tp = tg.attributes.position, col = [];
+  const near = samples;
+  const wy = def.lake ? def.lake.y : def.river ? def.river.y : null;
+  const [gr, gg, gb] = def.ground;
+  for (let i = 0; i < tp.count; i++) {
+    const x = tp.getX(i), z = tp.getZ(i);
+    const { d, y: by } = roadAt(near, x, z);
+    const nb = def.bridge ? 1 - smooth(Math.abs(z), def.bridge.half - 10, def.bridge.half + 10) : 0;
+    const h = by - 0.3 + (def.base(x, z) - (by - 0.3)) * Math.max(smooth(d, 8, 34), nb);
+    tp.setY(i, h);
+    const sh = 0.85 + 0.15 * Math.sin(x * 0.2) * Math.cos(z * 0.2);
+    const low = wy !== null && h < wy + 0.8;
+    col.push(...(low ? [0.75, 0.7, 0.5] : [gr * sh, gg * sh, gb * sh]));
+  }
+  tg.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  tg.computeVertexNormals();
+  group.add(new THREE.Mesh(tg, new THREE.MeshLambertMaterial({ vertexColors: true })));
+
+  // 道路
+  group.add(ribbon(samples, -5, 5, 0.02, 0x3a3a3e, null, def.open));
+  group.add(ribbon(samples, -0.12, 0.12, 0.05, 0xffffff, i => Math.floor(i / 6) % 2 === 0, def.open));
+  group.add(ribbon(samples, -5, -4.7, 0.05, 0xffffff, null, def.open));
+  group.add(ribbon(samples, 4.7, 5, 0.05, 0xffffff, null, def.open));
+
+  // 湖
+  if (def.lake) {
+    const w = new THREE.Mesh(new THREE.CircleGeometry(def.lake.r + 20, 64).rotateX(-Math.PI / 2),
+      new THREE.MeshLambertMaterial({ color: 0x3a8fd0, transparent: true, opacity: 0.85 }));
+    w.position.y = def.lake.y;
+    group.add(w);
+  }
+
+  // 川と橋
+  if (def.river) {
+    const w = new THREE.Mesh(new THREE.PlaneGeometry(SIZE, def.river.hw * 2).rotateX(-Math.PI / 2),
+      new THREE.MeshLambertMaterial({ color: 0x3a8fd0, transparent: true, opacity: 0.85 }));
+    w.position.y = def.river.y;
+    group.add(w);
+  }
+  if (def.bridge) {
+    const half = def.bridge.half, deck = samples.filter(s => Math.abs(s.p.z) <= half);
+    const wallM = new THREE.MeshLambertMaterial({ color: 0xb0b0b0 }), pilM = new THREE.MeshLambertMaterial({ color: 0x888888 });
+    for (const off of [-5, 5]) {
+      const pos = [], idx = [];
+      deck.forEach(({ p, t }, i) => {
+        const tf = new THREE.Vector3(t.x, 0, t.z).normalize();
+        const q = p.clone().addScaledVector(new THREE.Vector3(tf.z, 0, -tf.x), off);
+        pos.push(q.x, p.y, q.z, q.x, p.y + 1.1, q.z);
+        if (i < deck.length - 1) idx.push(2 * i, 2 * i + 1, 2 * i + 2, 2 * i + 1, 2 * i + 3, 2 * i + 2);
+      });
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+      group.add(new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: 0xb0b0b0, side: THREE.DoubleSide })));
+    }
+    for (let i = 0; i < deck.length; i += 25) {
+      const p = deck[i].p, h = p.y + 8;
+      const pil = new THREE.Mesh(new THREE.BoxGeometry(2, h, 9), pilM);
+      pil.position.set(p.x, p.y - 0.5 - h / 2, p.z);
+      group.add(pil);
+    }
+  }
+
+  // 木(道路から離れた場所に)
+  const trunkG = new THREE.CylinderGeometry(0.3, 0.4, 2, 6), leafG = new THREE.ConeGeometry(1.8, 5, 7);
+  const trunkM = new THREE.MeshLambertMaterial({ color: 0x5a3b20 }), leafM = new THREE.MeshLambertMaterial({ color: 0x2f6b2f });
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let n = 0, placed = 0; n < 2000 && placed < (def.size ? 300 : 140); n++) {
+    const x = (rnd() - 0.5) * SIZE * 0.82, z = (rnd() - 0.5) * SIZE * 0.82;
+    let best = 1e9;
+    for (const s of near) best = Math.min(best, (s.p.x - x) ** 2 + (s.p.z - z) ** 2);
+    if (Math.sqrt(best) < 14) continue;
+    if (def.lake && Math.hypot(x, z) < def.lake.r + 4) continue;
+    // 地形高さを近傍の頂点から近似
+    const gx = Math.round((x / SIZE + 0.5) * SEG), gz = Math.round((z / SIZE + 0.5) * SEG);
+    const h = tp.getY(gz * (SEG + 1) + gx);
+    if (wy !== null && h < wy + 1) continue;
+    const tree = new THREE.Group();
+    const tr = new THREE.Mesh(trunkG, trunkM); tr.position.y = 1;
+    const lf = new THREE.Mesh(leafG, leafM); lf.position.y = 4.2;
+    tree.add(tr, lf); tree.position.set(x, h, z);
+    group.add(tree); placed++;
+  }
+
+  scene.add(group);
+  scene.background = new THREE.Color(def.sky);
+  scene.fog = new THREE.Fog(def.sky, 150, 520);
+  course = { def, curve, group, u: 0, lap: 0, len: curve.getLength() };
+  group.add(car);
+  camPos.set(0, -999, 0); // 次フレームで即スナップ
+}
+
+
+// ───────── 無限コース(進行方向に道と地形を作り足し、後ろは捨てる) ─────────
+function catmull(p0, p1, p2, p3, t) {
+  const t2 = t * t, t3 = t2 * t, o = new THREE.Vector3();
+  for (const k of ['x', 'y', 'z'])
+    o[k] = 0.5 * (2 * p1[k] + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3);
+  return o;
+}
+
+function terrainH(def, near, x, z) {
+  const { d, y: by } = roadAt(near, x, z);
+  return by - 0.3 + (def.base(x, z) - (by - 0.3)) * smooth(d, 8, 34);
+}
+
+const NODE_DZ = 40, CHUNK = 80, AHEAD = 520;
+
+function newEndless(def, seed) {
+  const e = { def, seed, r: rng(seed), x: 0, y: 0, nodes: [new THREE.Vector3(0, 0, -NODE_DZ)],
+    samples: [], starts: {}, sBase: 0, nextInterval: 1, endZ: 0, idx: 0, s: 0, nextChunk: -1, chunks: [] };
+  e.group = new THREE.Group();
+  return e;
+}
+
+function endlessAddNode(e) {
+  const i = e.nodes.length, r = e.r;
+  e.y = clamp(e.y + (r() - 0.5) * 24, 0, 42);
+  e.x = clamp(e.x * 0.8 + (r() - 0.5) * 70, -75, 75);
+  let y = e.y, x = e.x;
+  if (i === 1) { y = 0; x = 0; }
+  if (i === 2) y = Math.min(y, 10);
+  e.nodes.push(new THREE.Vector3(x, y, (i - 1) * NODE_DZ));
+}
+
+function endlessSample(e, j) {
+  while (e.nodes.length < j + 3) endlessAddNode(e);
+  const [a, b, c, d] = [e.nodes[j - 1], e.nodes[j], e.nodes[j + 1], e.nodes[j + 2]];
+  e.starts[j] = e.sBase + e.samples.length;
+  for (let k = 0; k < 12; k++) {
+    const t = k / 12, p = catmull(a, b, c, d, t);
+    const tan = catmull(a, b, c, d, t + 0.01).sub(catmull(a, b, c, d, t - 0.01)).normalize();
+    const prev = e.samples[e.samples.length - 1];
+    e.samples.push({ p, t: tan, s: prev ? prev.s + prev.p.distanceTo(p) : 0 });
+  }
+  e.endZ = c.z;
+}
+
+function endlessRoad(e, j) {
+  const from = e.starts[j] - e.sBase, to = e.starts[j + 1] - e.sBase;
+  const pts = e.samples.slice(from, to + 1), abs0 = e.starts[j];
+  const skip = i => Math.floor((abs0 + i) / 6) % 2 === 0;
+  const objs = [
+    ribbon(pts, -5, 5, 0.02, 0x3a3a3e, null, true),
+    ribbon(pts, -0.12, 0.12, 0.05, 0xffffff, skip, true),
+    ribbon(pts, -5, -4.7, 0.05, 0xffffff, null, true),
+    ribbon(pts, 4.7, 5, 0.05, 0xffffff, null, true),
+  ];
+  objs.forEach(o => e.group.add(o));
+  e.chunks.push({ maxZ: e.nodes[j + 1].z, objs });
+}
+
+function endlessTerrain(e, cz) {
+  const def = e.def, z0 = cz * CHUNK, W = 460, COLS = 154, ROWS = 32;
+  const near = e.samples.filter(s => s.p.z > z0 - 45 && s.p.z < z0 + CHUNK + 45);
+  const g = new THREE.PlaneGeometry(W, CHUNK, COLS, ROWS);
+  g.rotateX(-Math.PI / 2); g.translate(0, 0, z0 + CHUNK / 2);
+  const tp = g.attributes.position, col = [], [gr, gg, gb] = def.ground;
+  for (let i = 0; i < tp.count; i++) {
+    const x = tp.getX(i), z = tp.getZ(i), h = terrainH(def, near, x, z);
+    tp.setY(i, h);
+    const sh = 0.85 + 0.15 * Math.sin(x * 0.2) * Math.cos(z * 0.2);
+    col.push(gr * sh, gg * sh, gb * sh);
+  }
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  g.computeVertexNormals();
+  const objs = [new THREE.Mesh(g, new THREE.MeshLambertMaterial({ vertexColors: true }))];
+
+  const rn = rng(e.seed * 1000 + cz + 5000);
+  const trunkG = new THREE.CylinderGeometry(0.3, 0.4, 2, 6), leafG = new THREE.ConeGeometry(1.8, 5, 7);
+  const trunkM = new THREE.MeshLambertMaterial({ color: 0x5a3b20 }), leafM = new THREE.MeshLambertMaterial({ color: 0x2f6b2f });
+  for (let n = 0, placed = 0; n < 200 && placed < 14; n++) {
+    const x = (rn() - 0.5) * W * 0.9, z = z0 + rn() * CHUNK;
+    if (near.some(s => (s.p.x - x) ** 2 + (s.p.z - z) ** 2 < 196)) continue;
+    const tree = new THREE.Group();
+    const tr = new THREE.Mesh(trunkG, trunkM); tr.position.y = 1;
+    const lf = new THREE.Mesh(leafG, leafM); lf.position.y = 4.2;
+    tree.add(tr, lf); tree.position.set(x, terrainH(def, near, x, z), z);
+    objs.push(tree); placed++;
+  }
+  objs.forEach(o => e.group.add(o));
+  e.chunks.push({ maxZ: z0 + CHUNK, objs });
+}
+
+function endlessEnsure(e, carZ) {
+  while (e.endZ < carZ + AHEAD) {
+    const j = e.nextInterval++;
+    endlessSample(e, j);
+    if (j >= 2) endlessRoad(e, j - 1);
+  }
+  while (e.nextChunk * CHUNK + CHUNK + 45 <= e.endZ) endlessTerrain(e, e.nextChunk++);
+  // 後ろを捨てる
+  while (e.chunks.length && e.chunks[0].maxZ < carZ - 200) {
+    for (const o of e.chunks.shift().objs) {
+      e.group.remove(o);
+      o.traverse(m => { if (m.geometry) m.geometry.dispose(); });
+    }
+  }
+  if (e.idx > 600) { e.samples.splice(0, 400); e.idx -= 400; e.sBase += 400; }
+}
+
+function endlessAt(e, ds) {
+  e.s += ds;
+  while (e.idx + 2 < e.samples.length && e.samples[e.idx + 1].s <= e.s) e.idx++;
+  const a = e.samples[e.idx], b = e.samples[e.idx + 1];
+  const f = clamp((e.s - a.s) / (b.s - a.s), 0, 1);
+  return { p: a.p.clone().lerp(b.p, f), t: a.t.clone().lerp(b.t, f).normalize() };
+}
+
+function buildEndless(def, seed) {
+  if (course) scene.remove(course.group);
+  const e = newEndless(def, seed);
+  endlessEnsure(e, 0);
+  scene.add(e.group);
+  scene.background = new THREE.Color(def.sky);
+  scene.fog = new THREE.Fog(def.sky, 150, 520);
+  e.group.add(car);
+  course = { def, group: e.group, endless: e, u: 0, lap: 0 };
+  camPos.set(0, -999, 0);
+}
+
+// ───────── 走行(自動運転) ─────────
+const camPos = new THREE.Vector3();
+let camMode = 0, snapCam = true;
+const clock = new THREE.Clock();
+let running = false, speedNow = 0;
+
+function update(dt) {
+  const c = course;
+  const e = c.endless;
+  const t = e ? endlessAt(e, 0).t : c.curve.getTangentAt(c.u);
+  // 坂の影響: 登りは遅く、下りは速く
+  const gain = c.def.slopeGain || 0;
+  const target = c.done ? 0 : c.def.speed * clamp(1 - t.y * gain, 0.8, 1.2);
+  speedNow += (target - speedNow) * (1 - Math.exp(-1.2 * dt));
+  const du = e ? 0 : speedNow * dt / c.len;
+  const nu = c.u + du;
+  if (e) {
+    // 無限コース: 進んだ分だけ位置を進める
+  } else if (c.def.open) {
+    if (nu >= 1) { c.u = 1; c.done = true; speedNow = 0; } else c.u = nu;
+  } else {
+    if (nu >= 1) c.lap++;
+    c.u = nu % 1;
+  }
+
+  let pos, tan;
+  if (e) {
+    ({ p: pos, t: tan } = endlessAt(e, speedNow * dt));
+    endlessEnsure(e, pos.z);
+  } else { pos = c.curve.getPointAt(c.u); tan = c.curve.getTangentAt(c.u); }
+  car.position.copy(pos);
+  car.lookAt(pos.clone().add(tan));
+  for (const w of wheels) w.rotation.x += speedNow * dt / 0.38;
+
+  // カメラ
+  const tf = new THREE.Vector3(tan.x, 0, tan.z).normalize();
+  let want, look;
+  if (camMode === 0) {
+    want = pos.clone().addScaledVector(tf, -9).add(new THREE.Vector3(0, 4.2, 0));
+    look = pos.clone().addScaledVector(tan, 6).add(new THREE.Vector3(0, 1.5, 0));
+  } else if (camMode === 1) {
+    want = pos.clone().addScaledVector(tf, -30).add(new THREE.Vector3(0, 40, 0));
+    look = pos.clone();
+  } else {
+    want = pos.clone().addScaledVector(tan, 0.3).add(new THREE.Vector3(0, 1.45, 0));
+    look = pos.clone().addScaledVector(tan, 15).add(new THREE.Vector3(0, 1.3, 0));
+  }
+  if (snapCam || camPos.y < -900) { camPos.copy(want); snapCam = false; }
+  else camPos.lerp(want, 1 - Math.exp(-(camMode === 2 ? 30 : 5) * dt));
+  camera.position.copy(camPos);
+  camera.lookAt(look);
+
+  document.getElementById('spd').textContent = Math.round(speedNow * 3.6);
+  document.getElementById('alt').textContent = Math.round(pos.y);
+  document.getElementById('lap').textContent = e ? (e.s / 1000).toFixed(2) + ' km' : c.def.open ? (c.done ? '到着' : Math.round(c.u * 100) + '%') : c.lap;
+}
+
+function loop() {
+  requestAnimationFrame(loop);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  if (running && course) update(dt);
+  renderer.render(scene, camera);
+}
+
+// ───────── UI ─────────
+const menu = document.getElementById('menu'), hud = document.getElementById('hud'), hint = document.getElementById('hint');
+function start(def, label, endlessSeed) {
+  if (endlessSeed) buildEndless(def, endlessSeed); else buildCourse(def);
+  speedNow = def.speed; snapCam = true; running = true;
+  document.getElementById('cname').textContent = label;
+  document.getElementById('laplabel').textContent = endlessSeed ? '距離' : def.open ? '進行' : '周回';
+  menu.style.display = 'none'; hud.style.display = 'block'; hint.style.display = 'block';
+}
+const VARIANTS = ['A', 'B', 'C', 'D', 'E'];
+COURSES.forEach(c => {
+  const d = document.createElement('div');
+  d.className = 'course';
+  d.innerHTML = `<b>${c.name}</b><span>${c.desc}</span>`;
+  if (c.make) {
+    const row = document.createElement('div'); row.style.marginTop = '8px';
+    VARIANTS.forEach((v, i) => {
+      const b = document.createElement('button'); b.textContent = v; b.style.cssText = 'margin-right:6px;padding:4px 12px;cursor:pointer';
+      b.onclick = e => { e.stopPropagation(); start({ ...c, ...c.make(i + 1) }, `${c.name} ${v}`); };
+      row.appendChild(b);
+    });
+    const run = (seed) => start({ ...c, ...c.make(seed) }, `${c.name} #${seed}`);
+    const rb = document.createElement('button'); rb.textContent = 'ランダム'; rb.style.cssText = 'margin-right:10px;padding:4px 12px;cursor:pointer';
+    rb.onclick = e => { e.stopPropagation(); run(1 + Math.floor(Math.random() * 99999)); };
+    const inp = document.createElement('input'); inp.type = 'number'; inp.min = 1; inp.placeholder = 'シード'; inp.style.cssText = 'width:80px;padding:3px';
+    inp.onclick = e => e.stopPropagation();
+    const go = document.createElement('button'); go.textContent = '再現'; go.style.cssText = 'margin-left:4px;padding:4px 10px;cursor:pointer';
+    go.onclick = e => { e.stopPropagation(); const n = parseInt(inp.value, 10); if (n > 0) run(n); };
+    row.append(rb, inp, go);
+    if (c.endless) {
+      const eb = document.createElement('button'); eb.textContent = '∞ 無限'; eb.style.cssText = 'margin-left:14px;padding:4px 12px;cursor:pointer';
+      eb.onclick = e => { e.stopPropagation(); const seed = 1 + Math.floor(Math.random() * 99999);
+        start({ ...c, ...c.make(seed) }, `${c.name} ∞ #${seed}`, seed); };
+      row.append(eb);
+    }
+    d.appendChild(row);
+  } else d.onclick = () => start(c, c.name);
+  menu.appendChild(d);
+});
+document.getElementById('back').onclick = () => {
+  running = false; menu.style.display = 'flex'; hud.style.display = 'none'; hint.style.display = 'none';
+};
+addEventListener('keydown', e => { if (e.key === 'c' || e.key === 'C') { camMode = (camMode + 1) % 3; snapCam = true; } });
+
+// メニュー背景に湖コースを表示
+buildCourse(COURSES[0]);
+camera.position.set(0, 60, 140); camera.lookAt(0, 0, 0);
+loop();
+</script>
+</body>
+</html>

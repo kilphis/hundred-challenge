@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>本屋のピックアップコーナー</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#222}canvas{display:block}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="books.js"></script>
+<script src="fetched.js" onerror="void 0"></script>
+<style>
+#panel{position:fixed;top:0;right:0;width:320px;height:100%;box-sizing:border-box;padding:20px;background:rgba(252,248,238,.97);color:#2b2118;font:14px/1.6 "Hiragino Sans",sans-serif;box-shadow:-4px 0 18px rgba(0,0,0,.35);transform:translateX(105%);transition:transform .35s;overflow-y:auto}
+#panel.open{transform:none}
+#panel img{width:100%;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#panel h2{margin:14px 0 2px;font:bold 20px "Hiragino Mincho ProN",serif}
+#panel .au{color:#6b5a48;margin-bottom:10px}
+#panel dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:0 0 12px}
+#panel dt{color:#8a7861}#panel dd{margin:0}
+#panel .sum{border-top:1px solid #d8ccb4;padding-top:10px}
+#p-amz{display:inline-block;margin-top:14px;padding:8px 14px;background:#2f4a3a;color:#f3e9cf;border-radius:4px;text-decoration:none}
+#p-amz[hidden]{display:none}
+#close{position:absolute;top:8px;right:12px;border:0;background:none;font-size:24px;cursor:pointer;color:#6b5a48}
+</style>
+</head>
+<body>
+<aside id="panel"><button id="close" title="閉じる(Esc)">×</button><img id="p-cover" alt=""><h2 id="p-title"></h2><div class="au" id="p-author"></div><dl id="p-dl"></dl><div class="sum" id="p-sum"></div><a id="p-amz" target="_blank" rel="noopener" hidden>Amazon.co.jp で見る →</a></aside>
+<script>
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(devicePixelRatio);
+renderer.shadowMap.enabled = true;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xf1e8d8);
+const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(0, 2.6, 5.2);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 1.0, 0);
+controls.maxDistance = 9;
+controls.maxPolarAngle = Math.PI/2 - 0.02;
+controls.update();
+
+const hemi = new THREE.HemisphereLight(0xfff4e0, 0x8a7a66, 0.75);
+scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+sun.position.set(3, 6, 4);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, {left:-5,right:5,top:5,bottom:-5});
+scene.add(sun);
+
+// 床
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.MeshStandardMaterial({color:0xc9b79c, roughness:0.9}));
+floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
+
+const wood = new THREE.MeshStandardMaterial({color:0x9b6b43, roughness:0.7});
+const woodDark = new THREE.MeshStandardMaterial({color:0x6e4a2e, roughness:0.7});
+function box(w,h,d,mat,x,y,z){
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat);
+  m.position.set(x,y,z); m.castShadow = m.receiveShadow = true; scene.add(m); return m;
+}
+
+// 什器: 3段のひな壇テーブル(奥ほど高い)
+const W = 4.2;
+const tiers = [ {y:0.45, z: 0.9, d:1.0}, {y:0.75, z: 0.0, d:1.0}, {y:1.05, z:-0.9, d:1.0} ];
+tiers.forEach(t=>{
+  box(W, 0.06, t.d, wood, 0, t.y, t.z);                    // 天板
+  box(W, t.y, 0.05, woodDark, 0, t.y/2, t.z + t.d/2 - 0.03); // 前板
+  box(0.06, t.y, t.d, woodDark, -W/2+0.03, t.y/2, t.z);      // 側板
+  box(0.06, t.y, t.d, woodDark,  W/2-0.03, t.y/2, t.z);
+});
+
+// 書影を canvas で生成
+function coverCanvas(title, author, bg, fg, style){
+  const c = document.createElement('canvas'); c.width = 320; c.height = 460;
+  const g = c.getContext('2d');
+  g.fillStyle = bg; g.fillRect(0,0,320,460);
+  g.fillStyle = fg;
+  if(style===0){ g.beginPath(); g.arc(160,150,90,0,7); g.globalAlpha=.25; g.fill(); g.globalAlpha=1; }
+  if(style===1){ g.globalAlpha=.25; for(let i=0;i<5;i++) g.fillRect(0,40+i*30,320,10); g.globalAlpha=1; }
+  if(style===2){ g.globalAlpha=.25; g.fillRect(30,30,260,260); g.globalAlpha=1; }
+  g.font = 'bold 44px "Hiragino Mincho ProN", serif';
+  g.textAlign = 'center';
+  const lines = title.split('\n');
+  lines.forEach((l,i)=>g.fillText(l,160,330+i*52));
+  g.font = '24px sans-serif'; g.fillText(author,160,435);
+  return c;
+}
+function cover(...a){ const t = new THREE.CanvasTexture(coverCanvas(...a)); t.anisotropy = 8; return t; }
+// 取得データ(fetched.js、gitignore)があれば本に上書きする。無ければ canvas の表紙のまま
+if(typeof FETCHED!=='undefined') BOOKS.forEach(b=>Object.assign(b, FETCHED[b.isbn]||{}));
+const SPECS = BOOKS.filter(b=>!b.center);
+const centerBook = BOOKS.find(b=>b.center);
+const bookMeshes = [];
+
+// 本: 表紙(前面) + 厚み。pivotは下端
+function makeBook(i, w=0.42, h=0.6, d=0.05, book=null){
+  book = book || SPECS[i % SPECS.length];
+  const {coverText:t, author:a, bg, fg, style:s} = book;
+  const side = new THREE.MeshStandardMaterial({color:0xf3eee2, roughness:0.9});
+  const front = new THREE.MeshStandardMaterial({map:cover(t,a,bg,fg,s), roughness:0.6});
+  const spine = new THREE.MeshStandardMaterial({color:new THREE.Color(bg), roughness:0.6});
+  if(book.cover) new THREE.TextureLoader().load(book.cover, t=>{ t.anisotropy = 8; front.map = t; front.needsUpdate = true; });
+  const mats = [side, spine, side, side, front, new THREE.MeshStandardMaterial({color:new THREE.Color(bg)})];
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mats);
+  m.geometry.translate(0, h/2, 0);
+  m.castShadow = m.receiveShadow = true;
+  m.userData.book = book;
+  bookMeshes.push(m);
+  const g = new THREE.Group(); g.add(m); scene.add(g); return g;
+}
+
+// 面陳(表紙を見せて立てかける): 後ろに傾ける
+let n = 0;
+tiers.forEach((t,ti)=>{
+  const count = 5 - (ti===1 ? 1 : 0);
+  for(let k=0;k<count;k++){
+    const isCenter = (ti===2 && k===2);
+    const b = makeBook(n++, 0.42, 0.6, 0.05, isCenter ? centerBook : null);
+    const x = (k - (count-1)/2) * 0.78;
+    b.position.set(x, t.y+0.03, t.z + 0.05);
+    b.rotation.x = -0.22;                       // 後ろへ寄りかかる
+    b.rotation.y = (Math.random()-0.5)*0.08;
+  }
+});
+
+// 平積み(最前段の手前)
+for(let k=0;k<4;k++){
+  const b = makeBook(k+2, 0.42, 0.6, 0.05);
+  b.rotation.x = -Math.PI/2;                    // 寝かせる
+  b.position.set(-1.6 + k*0.1, 0.48 + k*0.05, 1.15);
+  b.rotation.z = (k-1.5)*0.05;
+}
+
+// POP: デザイン(見た目)は関数のテーブル、中身(文言)は別。1枚=デザイン名+中身
+function wrap(g, text, maxW){
+  const out = [];
+  text.split('\n').forEach(para=>{
+    let line = '';
+    for(const ch of para){
+      if(g.measureText(line+ch).width > maxW){ out.push(line); line = ch; } else line += ch;
+    }
+    out.push(line);
+  });
+  return out;
+}
+function drawBody(g, body, cx, top, bottom, maxW, color, size, font){
+  g.fillStyle = color; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.font = `bold ${size}px ${font}`;
+  const lines = wrap(g, body, maxW);
+  const lh = size*1.3, y0 = (top+bottom)/2 - (lines.length-1)*lh/2;
+  lines.forEach((l,i)=>g.fillText(l, cx, y0+i*lh));
+}
+const SANS = '"Hiragino Sans", sans-serif', MARU = '"Hiragino Maru Gothic ProN", sans-serif', MIN = '"Hiragino Mincho ProN", serif';
+const POP_DESIGNS = {
+  // 見出し帯つきの枠
+  frame(g,W,H,{head,body}){
+    g.fillStyle='#fffdf5'; g.fillRect(0,0,W,H);
+    g.strokeStyle='#c9473a'; g.lineWidth=14; g.strokeRect(10,10,W-20,H-20);
+    let top=40;
+    if(head){ g.fillStyle='#c9473a'; g.fillRect(40,50,W-80,90);
+      g.fillStyle='#fff'; g.font=`bold 56px ${SANS}`; g.textAlign='center'; g.textBaseline='middle'; g.fillText(head,W/2,97); top=150; }
+    drawBody(g, body, W/2, top, H-40, W-100, '#333', 38, SANS);
+  },
+  // クラフト紙+マスキングテープ+手書き風
+  kraft(g,W,H,{head,body}){
+    g.fillStyle='#c9a46e'; g.fillRect(0,0,W,H);
+    g.strokeStyle='#fff8e8'; g.lineWidth=5; g.setLineDash([16,10]); g.strokeRect(24,24,W-48,H-48); g.setLineDash([]);
+    g.fillStyle='rgba(120,190,170,.85)'; g.save(); g.translate(W/2,18); g.rotate(-0.04); g.fillRect(-90,-18,180,40); g.restore();
+    let top=50;
+    if(head){ g.fillStyle='#5a3a1c'; g.font=`bold 50px ${MARU}`; g.textAlign='center'; g.textBaseline='middle'; g.fillText(head,W/2,92); top=130; }
+    drawBody(g, body, W/2, top, H-40, W-110, '#3b2412', 38, MARU);
+  },
+  // 吹き出し・ギザギザ
+  burst(g,W,H,{head,body}){
+    g.fillStyle='#ffe45c'; g.fillRect(0,0,W,H);
+    g.fillStyle='#e8453c'; g.beginPath();
+    const n=22, cx=W/2, cy=H/2;
+    for(let i=0;i<n*2;i++){ const r=(i%2? .78:1), a=i*Math.PI/n;
+      g.lineTo(cx+Math.cos(a)*r*(W/2-8), cy+Math.sin(a)*r*(H/2-8)); }
+    g.closePath(); g.fill();
+    const t = head ? head+'\n'+body : body;
+    drawBody(g, t, cx, 50, H-50, W-170, '#fff', 40, SANS);
+  },
+  // 黒板風
+  night(g,W,H,{head,body}){
+    g.fillStyle='#16241d'; g.fillRect(0,0,W,H);
+    g.strokeStyle='#d8c27a'; g.lineWidth=4; g.strokeRect(16,16,W-32,H-32); g.lineWidth=1.5; g.strokeRect(28,28,W-56,H-56);
+    let top=50;
+    if(head){ g.fillStyle='#d8c27a'; g.font=`bold 46px ${MIN}`; g.textAlign='center'; g.textBaseline='middle'; g.fillText(head,W/2,88); top=125; }
+    drawBody(g, body, W/2, top, H-50, W-120, '#f1ecd8', 38, MIN);
+  },
+};
+const POP_NAMES = Object.keys(POP_DESIGNS);
+function popTexture(design, content){
+  const W=512,H=400, c=document.createElement('canvas'); c.width=W; c.height=H;
+  const g=c.getContext('2d'); POP_DESIGNS[design](g,W,H,content);
+  const t=new THREE.CanvasTexture(c); t.anisotropy=8; return t;
+}
+function pop(x,y,z,design,content,rotY=0,scale=1){
+  const g = new THREE.Group();
+  const card = new THREE.Mesh(new THREE.PlaneGeometry(0.55*scale,0.43*scale),
+    new THREE.MeshStandardMaterial({map:popTexture(design,content), side:THREE.DoubleSide}));
+  card.position.y = 0.14+0.43*scale/2+0.06; card.castShadow = true;
+  const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.008,0.008,0.4,8), woodDark);
+  stick.position.y = 0.14;
+  g.add(card, stick);
+  g.position.set(x,y,z); g.rotation.y = rotY; scene.add(g);
+  g.userData = {card, content};
+  return g;
+}
+pop(-1.75, tiers[0].y+0.03, 0.55, 'frame', {head:'店長推し', body:'一晩で\n読み終えた'}, 0.15);
+pop( 1.75, tiers[1].y+0.03, -0.35, 'burst', {body:'泣ける\n電車で読まないで'}, -0.1);
+// 中央の本のPOP(キーボード 1〜4 でデザイン切替)
+const centerPop = pop(0, tiers[2].y+0.03+0.62, -1.15, 'kraft',
+  {body:'日記だと思って読んでみ？プログラミングできるようになるから'}, 0, 1.15);
+addEventListener('keydown', e=>{
+  const i = +e.key - 1;
+  if(i>=0 && i<POP_NAMES.length){
+    const m = centerPop.userData.card.material;
+    m.map = popTexture(POP_NAMES[i], centerPop.userData.content); m.needsUpdate = true;
+  }
+});
+
+// ヘッダー看板
+const signC = document.createElement('canvas'); signC.width = 1024; signC.height = 200;
+const sg = signC.getContext('2d');
+sg.fillStyle = '#2f4a3a'; sg.fillRect(0,0,1024,200);
+sg.fillStyle = '#f3e9cf'; sg.font = 'bold 96px "Hiragino Mincho ProN", serif'; sg.textAlign = 'center';
+sg.fillText('PICK UP  おすすめの本', 512, 130);
+const sign = new THREE.Mesh(new THREE.PlaneGeometry(3.6,0.7), new THREE.MeshStandardMaterial({map:new THREE.CanvasTexture(signC)}));
+sign.position.set(0, 2.55, -1.5); scene.add(sign);
+box(0.05, 1.2, 0.05, woodDark, -1.7, 1.95, -1.5);
+box(0.05, 1.2, 0.05, woodDark,  1.7, 1.95, -1.5);
+
+// ---- 店内 ----
+const RX = 7, RZB = -5, RZF = 8, RH = 3.8;   // 部屋の半幅 / 奥 / 手前 / 天井高
+// 床を板張りに
+(function(){
+  const c=document.createElement('canvas'); c.width=c.height=512; const g=c.getContext('2d');
+  for(let i=0;i<8;i++){ g.fillStyle=`hsl(28,${35+Math.random()*10}%,${52+Math.random()*10}%)`; g.fillRect(0,i*64,512,64);
+    g.fillStyle='rgba(60,35,15,.5)'; g.fillRect(0,i*64,512,2);
+    const o=Math.random()*512; g.fillRect(o,i*64,2,64); }
+  const t=new THREE.CanvasTexture(c); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(6,6); t.anisotropy=8;
+  floor.material = new THREE.MeshStandardMaterial({map:t, roughness:0.55});
+  floor.geometry = new THREE.PlaneGeometry(RX*2, RZF-RZB); floor.position.z = (RZF+RZB)/2;
+})();
+const wallMat = new THREE.MeshStandardMaterial({color:0xefe4cf, roughness:1});
+function wall(w,h,x,y,z,ry,mat=wallMat){
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat); m.position.set(x,y,z); m.rotation.y=ry; m.receiveShadow=true; scene.add(m); return m;
+}
+wall(RX*2,RH,0,RH/2,RZB,0);                 // 奥
+wall(RZF-RZB,RH,-RX,RH/2,(RZF+RZB)/2,Math.PI/2);   // 左
+wall(RZF-RZB,RH,RX,RH/2,(RZF+RZB)/2,-Math.PI/2);   // 右
+const ceil = new THREE.Mesh(new THREE.PlaneGeometry(RX*2,RZF-RZB), new THREE.MeshStandardMaterial({color:0xf7f1e4}));
+ceil.rotation.x=Math.PI/2; ceil.position.set(0,RH,(RZF+RZB)/2); scene.add(ceil);
+// 巾木
+[[RX*2,0,RZB+0.01,0],[RZF-RZB,-RX+0.01,(RZF+RZB)/2,Math.PI/2],[RZF-RZB,RX-0.01,(RZF+RZB)/2,-Math.PI/2]].forEach(([w,x,z,ry])=>{
+  const m=new THREE.Mesh(new THREE.BoxGeometry(w,0.12,0.03),woodDark); m.position.set(x,0.06,z); m.rotation.y=ry; scene.add(m);
+});
+
+// 壁面の本棚(背表紙を InstancedMesh で並べる)
+function bookcase(cx, cz, ry, width=3.2, rows=5, H=2.7){
+  const grp=new THREE.Group(); grp.position.set(cx,0,cz); grp.rotation.y=ry; scene.add(grp);
+  const D=0.4, rowH=H/rows;
+  const add=(w,h,d,x,y,z)=>{ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),woodDark); m.position.set(x,y,z); m.receiveShadow=true; grp.add(m); };
+  add(0.05,H,D,-width/2,H/2,0); add(0.05,H,D,width/2,H/2,0); add(width,H,0.03,0,H/2,-D/2);
+  for(let r=0;r<=rows;r++) add(width,0.04,D,0,r*rowH+0.02,0);
+  const items=[];
+  for(let r=0;r<rows;r++){
+    let x=-width/2+0.07;
+    while(x<width/2-0.1){
+      const t=0.03+Math.random()*0.035, h=rowH*(0.62+Math.random()*0.3);
+      if(x+t>width/2-0.06) break;
+      items.push({x:x+t/2,y:r*rowH+0.04+h/2,t,h}); x+=t+0.002;
+    }
+  }
+  const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial({roughness:0.8}), items.length);
+  const m4=new THREE.Matrix4(), col=new THREE.Color();
+  items.forEach((it,i)=>{
+    m4.makeScale(it.t,it.h,D*0.8); m4.setPosition(it.x,it.y,0); mesh.setMatrixAt(i,m4);
+    col.setHSL(Math.random(), 0.25+Math.random()*0.4, 0.3+Math.random()*0.35); mesh.setColorAt(i,col);
+  });
+  grp.add(mesh);
+}
+for(let i=-2;i<=2;i++) bookcase(i*3.3, RZB+0.22, 0);          // 奥
+for(let i=0;i<3;i++){ bookcase(-RX+0.22, -3.2+i*3.3, Math.PI/2); bookcase(RX-0.22, -3.2+i*3.3, -Math.PI/2); }
+
+// 置き型の縦の本棚(壁と平行、中央向き)
+[-4.3,4.3].forEach(x=>[-2.2,1.2].forEach(z=>bookcase(x,z,x<0?Math.PI/2:-Math.PI/2,3.2,4,1.8)));
+
+// ひな壇の後ろの柱(床〜天井)
+const pillar = new THREE.Mesh(new THREE.BoxGeometry(W, RH, 1.0), new THREE.MeshStandardMaterial({color:0xe6dac2, roughness:0.95}));
+pillar.position.set(0, RH/2, -2.4); pillar.receiveShadow = true; scene.add(pillar);
+box(W+0.1, 0.12, 1.1, woodDark, 0, 0.06, -2.4);   // 柱の巾木
+
+const pendants = [];
+// 天井のペンダントライト(中央は除く)
+[-3.5,3.5].forEach(x=>[-2,1.5].forEach(z=>{
+  const cord=new THREE.Mesh(new THREE.CylinderGeometry(0.005,0.005,0.7,6),woodDark); cord.position.set(x,RH-0.35,z); scene.add(cord);
+  const shade=new THREE.Mesh(new THREE.ConeGeometry(0.22,0.2,24,1,true),new THREE.MeshStandardMaterial({color:0x2f4a3a,side:THREE.DoubleSide}));
+  shade.position.set(x,RH-0.8,z); scene.add(shade);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.07,12,12),new THREE.MeshBasicMaterial({color:0xfff2c4})); bulb.position.set(x,RH-0.85,z); scene.add(bulb);
+  const l=new THREE.PointLight(0xffe2a8,0.35,7); l.position.set(x,RH-0.9,z); scene.add(l); pendants.push(l);
+}));
+scene.background = new THREE.Color(0x1c1a17);
+
+// ---- クリックで本にズーム + 詳細パネル ----
+const panel = document.getElementById('panel');
+function isbn10(i13){            // 978-始まりの ISBN-13 → ISBN-10(Amazonの /dp/ に使える)
+  if(!/^978\d{10}$/.test(i13)) return null;
+  const b = i13.slice(3,12); let s = 0;
+  for(let k=0;k<9;k++) s += (10-k)*(+b[k]);
+  const c = (11 - s%11) % 11;
+  return b + (c===10 ? 'X' : c);
+}
+const yen = v => v==null ? '(未入力)' : '¥'+v.toLocaleString();
+function showPanel(b){
+  document.getElementById('p-cover').src = b.cover || coverCanvas(b.coverText,b.author,b.bg,b.fg,b.style).toDataURL();
+  document.getElementById('p-title').textContent = b.title;
+  document.getElementById('p-author').textContent = b.author;
+  const dl = document.getElementById('p-dl'); dl.textContent = '';
+  [['出版社',b.publisher],['発行年',b.year],['価格',yen(b.price)],['ページ',b.pages==null?'(未入力)':b.pages+'p'],['ISBN',b.isbn]].forEach(([k,v])=>{
+    const dt=document.createElement('dt'), dd=document.createElement('dd'); dt.textContent=k; dd.textContent=v; dl.append(dt,dd);
+  });
+  document.getElementById('p-sum').textContent = b.summary || '(紹介文なし)';
+  const amz = document.getElementById('p-amz'), i10 = isbn10(b.isbn||'');
+  amz.hidden = !i10;
+  if(i10) amz.href = 'https://www.amazon.co.jp/dp/' + i10;
+  panel.classList.add('open');
+}
+// スポットライト: 本をアップにしている間だけ点灯し、店内の明かりを落とす
+const spot = new THREE.SpotLight(0xfff0d0, 0, 6, 0.28, 0.6, 1.2);
+scene.add(spot, spot.target);
+const DIM = 0.15;                    // 店内の明るさ(通常=1 → アップ中=DIM)
+let focus = 0, focusGoal = 0;
+function applyFocus(k){
+  hemi.intensity = 0.75*(1-k*(1-DIM));
+  sun.intensity = 0.8*(1-k*(1-DIM));
+  pendants.forEach(l=>l.intensity = 0.35*(1-k*(1-DIM)));
+  spot.intensity = 2.2*k;
+}
+let tween = null, homePose = null;
+function flyTo(pos, target){
+  tween = {t:0, p0:camera.position.clone(), t0:controls.target.clone(), p1:pos, t1:target};
+}
+function zoomToBook(mesh){
+  if(!homePose) homePose = {pos:camera.position.clone(), target:controls.target.clone()};
+  mesh.updateWorldMatrix(true,false);
+  const center = new THREE.Box3().setFromObject(mesh).getCenter(new THREE.Vector3());
+  const q = mesh.getWorldQuaternion(new THREE.Quaternion());
+  const normal = new THREE.Vector3(0,0,1).applyQuaternion(q);   // 表紙の向き
+  const right = new THREE.Vector3(1,0,0).applyQuaternion(q);
+  const shift = right.multiplyScalar(0.2);                       // パネルに隠れない分だけ左へ寄せる
+  flyTo(center.clone().addScaledVector(normal,1.1).add(shift), center.clone().add(shift));
+  spot.position.copy(center).addScaledVector(normal,1.6).add(new THREE.Vector3(0,0.9,0));
+  spot.target.position.copy(center);
+  focusGoal = 1;
+  showPanel(mesh.userData.book);
+}
+function closeBook(){
+  panel.classList.remove('open');
+  focusGoal = 0;
+  if(homePose){ flyTo(homePose.pos, homePose.target); homePose = null; }
+}
+document.getElementById('close').onclick = closeBook;
+addEventListener('keydown', e=>{ if(e.key==='Escape') closeBook(); });
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
+let down = null;
+renderer.domElement.addEventListener('pointerdown', e=>{ down = [e.clientX,e.clientY]; });
+renderer.domElement.addEventListener('pointerup', e=>{
+  if(!down || Math.hypot(e.clientX-down[0], e.clientY-down[1]) > 5) return;
+  mouse.set(e.clientX/innerWidth*2-1, -(e.clientY/innerHeight)*2+1);
+  ray.setFromCamera(mouse, camera);
+  const hit = ray.intersectObjects(bookMeshes)[0];
+  if(hit) zoomToBook(hit.object);
+});
+
+addEventListener('resize', ()=>{
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+const clock = new THREE.Clock();
+(function loop(){ requestAnimationFrame(loop);
+  const dt = clock.getDelta();
+  if(tween){ tween.t = Math.min(1, tween.t + dt/0.9); const k = tween.t*tween.t*(3-2*tween.t);
+    camera.position.lerpVectors(tween.p0, tween.p1, k); controls.target.lerpVectors(tween.t0, tween.t1, k);
+    if(tween.t>=1) tween = null; }
+  focus += (focusGoal-focus)*Math.min(1,dt*4); applyFocus(focus);
+  controls.update(); renderer.render(scene,camera); })();
+</script>
+</body>
+</html>

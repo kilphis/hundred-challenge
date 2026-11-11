@@ -1,0 +1,18 @@
+# OS / editor
+.DS_Store
+
+# Python
+__pycache__/
+.venv/
+.pytest_cache/
+
+# Rust
+target/
+
+# 録画(大きいので git に入れない。見せるときは GitHub の README/Release に別途アップロード)
+*.mov
+*.mp4
+
+# 非公開(作業メモ)
+CLAUDE.md
+proposals.md

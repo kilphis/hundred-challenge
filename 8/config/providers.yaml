@@ -1,0 +1,8 @@
+default: mflux
+budget:
+  monthly_usd_cap: 0   # クラウドは既定で無効
+providers:
+  local_comfy: {kind: comfyui, url: "http://127.0.0.1:8188", model: flux2-klein-4b}
+  local_drawthings: {kind: drawthings, url: "http://127.0.0.1:7860"}
+  mflux: {kind: mflux, model: flux2-klein-4b, steps: 4}
+  mock: {kind: mock}

@@ -1,0 +1,7 @@
+id: hero_expressions
+base_ref: hero_base          # 基準画像: 正面・無表情・単色背景
+refs: [hero_base, hero_outfit]
+size: [1024, 1024]
+background: transparent
+keep: "same face, hairstyle, outfit, art style"
+variants: [neutral, smile, angry, sad, surprised, embarrassed, sleepy, wink]

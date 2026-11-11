@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>day5</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #0f0c1a; color: #f0dcb4; font-family: "Hiragino Sans", "Noto Sans JP", sans-serif; }
+  #game {
+    display: grid;
+    grid-template-columns: 1fr 20%;
+    grid-template-rows: 1fr 28%;
+    height: 100vh;
+    gap: 8px;
+    padding: 8px;
+  }
+  .box { border: 3px solid #e8a33a; background: rgba(22,18,36,.92); border-radius: 8px; }
+
+  /* 中央:メインキャラ */
+  #stage { grid-column: 1; grid-row: 1; position: relative; overflow: hidden; display: flex; align-items: flex-end; justify-content: center;
+           background: #161224 url(bg_night.png) center / cover no-repeat; }
+  #chara { height: 88%; max-width: 60%; object-fit: contain; }
+
+  #money { position: absolute; top: 10px; left: 14px; font-size: 1.3rem; color: #e8a33a; text-shadow: 0 0 6px #000; }
+  #clock { position: absolute; top: 10px; right: 14px; font-size: 1.6rem; color: #e8a33a; text-shadow: 0 0 6px #000; }
+
+  /* 右:メニュー */
+  #menu { grid-column: 2; grid-row: 1; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+  #menu h2 { font-size: 1rem; text-align: center; }
+  #menu button { flex: 1; font: inherit; border: 2px solid #e8a33a; border-radius: 6px; background: #1c1730; color: #f0dcb4; cursor: pointer; }
+  #menu button:hover { background: #3a2c1c; }
+
+  #menu button.sub { flex: .5; font-size: .85rem; }
+  #choices { position: absolute; inset: 0; gap: 10px; padding: 16px; background: rgba(0,0,0,.35); }
+  #choices { display: none; flex-wrap: wrap; flex-direction: row; align-content: center; justify-content: center; }
+  #choices button { width: 44%; padding: 10px 12px; font: inherit; font-size: 1.05rem; border: 2px solid #e8a33a; border-radius: 6px; background: #1c1730; color: #f0dcb4; cursor: pointer; }
+  #choices button:hover { background: #3a2c1c; }
+  #log { position: fixed; inset: 5% 10%; display: none; flex-direction: column; z-index: 10; padding: 16px; background: rgba(22,18,36,.97); }
+  #log .head { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  #logbody { overflow-y: auto; flex: 1; line-height: 1.7; }
+  #logbody b { color: #e8a33a; }
+  #log button { font: inherit; border: 2px solid #e8a33a; border-radius: 6px; background: #1c1730; color: #f0dcb4; cursor: pointer; padding: 2px 10px; }
+
+  /* 下:会話ウィンドウ */
+  #talk { grid-column: 1 / 3; grid-row: 2; padding: 14px 18px; cursor: pointer; position: relative; }
+  #name { font-weight: bold; margin-bottom: 6px; }
+  #text { font-size: 1.2rem; line-height: 1.7; white-space: pre-wrap; }
+  #ans { display: none; width: 70%; font: inherit; font-size: 1.1rem; padding: 6px 10px; margin-top: 6px; color: #f0dcb4; background: #1c1730; border: 2px solid #e8a33a; border-radius: 6px; }
+  #next { position: absolute; right: 16px; bottom: 10px; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+</style>
+</head>
+<body>
+<div id="game">
+  <div id="stage" class="box"><div id="money"></div><div id="clock"></div><img id="chara" src="chara.png" alt="IRIS"><div id="choices"></div></div>
+  <div id="menu" class="box">
+    <h2>menu</h2>
+    <button data-i="0">会話</button>
+    <button data-i="1">注文</button>
+    <button data-i="2">読書</button>
+    <button data-i="3">会計</button>
+    <button class="sub" id="b-log">ログ</button>
+    <button class="sub" id="b-save">セーブ</button>
+    <button class="sub" id="b-load">ロード</button>
+  </div>
+  <div id="talk" class="box">
+    <div id="name"></div>
+    <div id="text"></div>
+    <input id="ans" type="text" placeholder="入力して Enter" autocomplete="off">
+    <div id="next">▼</div>
+  </div>
+</div>
+<div id="log" class="box"><div class="head"><span>ログ</span><button id="log-close">閉じる</button></div><div id="logbody"></div></div>
+
+<script>
+// 台本。場面(scene)ごとの配列。要素は次のどれか。
+//   {name, text}                    台詞
+//   {choices:[{text, goto}, ...]}   選択肢(選ぶと goto の場面へ)
+//   {goto: "場面名"}                 別の場面へ移る
+// 中身はすべて差し替え用の仮の内容。
+const scenes = {
+  start: [
+    { name: "IRIS", text: "こんにちは。" },
+    { name: "IRIS", text: "ここに会話が入ります。" },
+    { name: "IRIS", text: "クリックかスペースキーで次へ進みます。" },
+  ],
+  order: [
+    { name: "IRIS", text: "ご注文は？" },
+    { choices: "menu" },
+  ],
+  order_cancel: [{ name: "IRIS", text: "（注文をやめた）" }],
+  pay: [{ name: "IRIS", text: "（会計）" }],
+};
+
+// メニュー(相場の仮価格)。名前は差し替え用。
+const MENU = [
+  { id: "hamburg", talk: ["鉄板の音を聞いていると、お腹が空いてきますよね。", "ソースは自家製なんです。お口に合うといいのですが。"], lines: ["ハンバーグステーキですね。", "じっくり焼きますので、少しお待ちください。熱い鉄板でお出ししますね。"],  name: "ハンバーグステーキ", price: 1500 },
+  { id: "cocktailU1", talk: ["グラスの中の色、きれいですよね。", "ひと口目と、少し置いてからとで、香りが変わるんです。"], lines: ["上級カクテルAですね。", "丁寧に作りますので、少しお時間をください。ゆっくり味わってみてください。"], name: "上級カクテルA", price: 1600 },
+  { id: "cocktailU2", talk: ["お味はいかがですか？", "強いお酒なので、お水も一緒にどうぞ。"], lines: ["上級カクテルBですね。", "こちらは少し強めです。無理のない速さでお楽しみください。"], name: "上級カクテルB", price: 1800 },
+  { id: "cocktailL1", talk: ["気取らずに飲めるのが、このお酒のいいところです。", "もう一杯、というときも気軽に声をかけてくださいね。"], lines: ["下級カクテルAですね。", "すぐにお作りします。気軽に飲めるお味ですよ。"], name: "下級カクテルA", price: 800 },
+  { id: "cocktailL2", talk: ["お仕事帰りの方に、よく頼まれる一杯です。", "のんびりしていってください。"], lines: ["下級カクテルBですね。", "かしこまりました。すぐにお持ちします。"], name: "下級カクテルB", price: 800 },
+  { id: "cocktailL3", talk: ["甘さが控えめで、食事にも合うんですよ。", "ゆっくり楽しんでくださいね。"], lines: ["下級カクテルCですね。", "はい、すぐにお持ちします。飲みやすい一杯です。"], name: "下級カクテルC", price: 900 },
+  { id: "pudding", talk: ["プリンは、カラメルの苦みが好きなんです。", "スプーンですくうとき、少しわくわくしますよね。"], lines: ["プリンですね。", "昔ながらのやさしい甘さです。少しだけお待ちください。"],  name: "プリン", price: 500 },
+  { id: "alamode", talk: ["果物は、その日いちばん状態のいいものを選んでいます。", "どこから食べるか、迷ってしまいますよね。"], lines: ["プリンアラモードですね。", "果物とクリームを添えてお出ししますね。見た目も楽しんでください。"],  name: "プリンアラモード", price: 1000 },
+];
+const yen = n => n.toLocaleString() + "円";
+let money = 5000;       // 入店時の所持金
+let tab = [];           // 注文済み(未会計)のメニューid
+let lastOrder = null;   // 直近に頼んだメニューid。会計で空になる
+const tabTotal = () => tab.reduce((s, id) => s + MENU.find(m => m.id === id).price, 0);
+const moneyEl = document.getElementById("money");
+function drawMoney() { moneyEl.textContent = "所持金 " + yen(money); }
+drawMoney();
+// 時間。読書中だけ流れる。現実の1秒 = ゲーム内の1分。
+const MIN_PER_SEC = 1;
+const LONG_MIN = 30;           // 読書がこの分数以上なら「長い」
+let clockMin = 21 * 60;        // 開始時刻 21:00
+let reading = false, readMin = 0;   // readMin: 直近の読書の長さ(分)
+const clockEl = document.getElementById("clock");
+function drawClock() {
+  const h = Math.floor(clockMin / 60) % 24, m = Math.floor(clockMin % 60);
+  clockEl.textContent = String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+}
+let dotN = 0, startHold = 0;   // startHold: 開始メッセージを出しておく秒数
+setInterval(() => {
+  if (!reading) return;
+  clockMin += MIN_PER_SEC; readMin += MIN_PER_SEC; drawClock();
+  if (startHold > 0) { startHold--; return; }
+  nextEl.style.visibility = "hidden";
+  dotN = dotN % 3 + 1;                       // 読書中は . → .. → ... を繰り返す
+  textEl.textContent = ".".repeat(dotN);
+}, 1000);
+drawClock();
+
+// ニュース(serve.py の /news が NHK RSS を取得して返す)。取れなければ null のまま
+let news = null;
+fetch("/news").then(r => r.json()).then(j => { news = j; }).catch(() => {});
+const usedNews = new Set();
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+const TOPICS = [
+  { text: "文化・暮らし", cat: "culture" },
+  { text: "科学・医療", cat: "science" },
+  { text: "経済", cat: "economy" },
+  { text: "国際", cat: "world" },
+  { text: "スポーツ", cat: "sports" },
+  { text: "おまかせ", cat: "main" },
+];
+const smallTalk = ["いらっしゃいませ。", "今夜は静かな夜ですね。ゆっくりしていってください。"];
+
+const firstSentence = d => { const m = d.match(/^[^。]*。/); return (m ? m[0] : d).slice(0, 80); };
+// 記事1件ぶんの店主の台詞
+function itemLines(it) {
+  usedNews.add(it.title);
+  const l = [pick(["そういえば、こんなニュースがありました。", "今日は、こんなニュースを見かけましたよ。"]), "「" + it.title + "」"];
+  if (it.desc) l.push(firstSentence(it.desc));
+  l.push(pick(["お客さんは、どう思いますか？", "気になりますよね。"]));
+  return l;
+}
+function newsTalk(cat) {
+  const list = news && news[cat] && news[cat].length ? news[cat] : null;
+  if (!list) return ["今日は新聞がまだ届いていないみたいです。", "（ニュースを取得できなかった。serve.py を起動しているか確認）"];
+  return itemLines(list.find(x => !usedNews.has(x.title)) || pick(list));
+}
+// 本の感想と近い記事を、2文字連続の一致数でざっくり選ぶ。一致が無ければ null
+function matchItem(text) {
+  if (!news) return null;
+  const bg = t => { const s = new Set(); for (let i = 0; i < t.length - 1; i++) s.add(t.slice(i, i + 2)); return s; };
+  const mine = bg(text.replace(/\s/g, ""));
+  let best = null, bs = 0;
+  for (const cat in news) for (const it of news[cat]) {
+    let sc = 0; for (const g of bg(it.title + it.desc)) if (mine.has(g)) sc++;
+    if (sc > bs) { bs = sc; best = it; }
+  }
+  return bs >= 2 ? best : null;
+}
+
+const line = t => ({ name: "IRIS", text: t });
+const actions = {
+  0() { // 会話: 簡単な雑談 → 話題を振る
+    const l = lastOrder ? MENU.find(m => m.id === lastOrder).talk : smallTalk;
+    return l.map(line).concat([line("どんなお話がしたいですか？"), { choices: TOPICS }]);
+  },
+  1() { return { scene: "order" }; },
+  2() { // 読書: 黙って時間が過ぎる(点の表示は時計のタイマー側)
+    reading = true; readMin = 0; dotN = 0; startHold = 2;
+    show({ name: "", text: "（読書を開始した）" });
+    return null;
+  },
+  3() { // 会計
+    const t = tabTotal();
+    if (t === 0) return line("（注文がない）");
+    if (t > money) return line("（" + yen(t) + "。所持金が足りない）");
+    money -= t; tab = []; lastOrder = null; drawMoney();
+    return line("（" + yen(t) + "を支払った。残り " + yen(money) + "）");
+  },
+};
+
+const nameEl = document.getElementById("name");
+const textEl = document.getElementById("text");
+const nextEl = document.getElementById("next");
+const choicesEl = document.getElementById("choices");
+let queue = [];
+let cur = null;                 // 表示中の台詞
+let backlog = [];               // {name, text}
+let full = "", shown = 0, timer = null;
+
+function show(line) {
+  cur = line;
+  backlog.push({ name: line.name, text: line.text });
+  nameEl.textContent = line.name;
+  full = line.text; shown = 0;
+  textEl.textContent = "";
+  nextEl.style.visibility = "hidden";
+  clearInterval(timer);
+  timer = setInterval(() => {
+    shown++;
+    textEl.textContent = full.slice(0, shown);
+    if (shown >= full.length) { clearInterval(timer); timer = null; nextEl.style.visibility = "visible"; }
+  }, 40);
+}
+
+function play(id) { queue = scenes[id].slice(); step(); }
+
+// キューの先頭を処理する
+function step() {
+  hideChoices(); hideAsk();
+  const n = queue.shift();
+  if (!n) return;
+  if (n.ask) return showAsk();
+  if (n.goto) return play(n.goto);
+  if (n.choices) return showChoices(n.choices === "menu" ? menuChoices() : n.choices);
+  show(n);
+}
+
+function menuChoices() {
+  const l = MENU.map(m => ({ text: m.name + "　" + yen(m.price), add: m.id, goto: "order_added" }));
+  l.push({ text: "やめる", goto: "order_cancel" });
+  return l;
+}
+
+function showChoices(list) {
+  nextEl.style.visibility = "hidden";
+  choicesEl.innerHTML = "";
+  list.forEach(c => {
+    const b = document.createElement("button");
+    b.textContent = c.text;
+    b.onclick = () => {
+      backlog.push({ name: "▶", text: c.text });
+      if (c.add) { tab.push(c.add); lastOrder = c.add; const m = MENU.find(m => m.id === c.add);
+        scenes.order_added = m.lines.map(line).concat([{ name: "IRIS", text: "（注文の合計 " + yen(tabTotal()) + "）" }, { goto: "order" }]); }
+      if (c.cat) { scenes.news_tmp = newsTalk(c.cat).map(line); play("news_tmp"); return; }
+      play(c.goto);
+    };
+    choicesEl.appendChild(b);
+  });
+  choicesEl.style.display = "flex";
+  queue = [{ choices: list }];   // セーブ時に選択肢を復元するため
+}
+const ansEl = document.getElementById("ans");
+function showAsk() {
+  nextEl.style.visibility = "hidden";
+  queue = [{ ask: true }];       // セーブ時に入力待ちを復元するため
+  ansEl.value = ""; ansEl.style.display = "block"; ansEl.focus();
+}
+function hideAsk() { ansEl.style.display = "none"; }
+ansEl.addEventListener("keydown", e => {
+  e.stopPropagation();
+  if (e.key !== "Enter" || e.isComposing) return;
+  const v = ansEl.value.trim();
+  if (!v) return;
+  hideAsk();
+  backlog.push({ name: "あなた", text: v });
+  const it = matchItem(v);
+  const l = ["「" + v + "」ですか。", "聞いているだけで、読んでみたくなりました。"];
+  l.push(it ? "それで思い出しました。" : "ところで、本とは関係ないのですが。");
+  const rest = it ? itemLines(it).slice(1) : newsTalk("main").slice(1);
+  scenes.book_reply = l.concat(rest).map(line);
+  play("book_reply");
+});
+function hideChoices() { choicesEl.style.display = "none"; }
+
+function advance() {
+  if (timer) { // 文字送り中なら全文表示
+    clearInterval(timer); timer = null;
+    textEl.textContent = full; nextEl.style.visibility = "visible";
+    return;
+  }
+  if (choicesEl.style.display === "flex" || ansEl.style.display === "block") return;  // 選択肢・入力中は進まない
+  step();
+}
+
+// ログ
+const logEl = document.getElementById("log"), logBody = document.getElementById("logbody");
+function openLog() {
+  logBody.innerHTML = backlog.map(l => "<div><b>" + l.name + "</b>　" + l.text.replace(/</g, "&lt;") + "</div>").join("");
+  logEl.style.display = "flex"; logBody.scrollTop = logBody.scrollHeight;
+}
+function closeLog() { logEl.style.display = "none"; }
+document.getElementById("b-log").onclick = openLog;
+document.getElementById("log-close").onclick = closeLog;
+
+// セーブ/ロード(ブラウザの localStorage に1枠)
+const SAVE_KEY = "day5-save";
+document.getElementById("b-save").onclick = () => {
+  localStorage.setItem(SAVE_KEY, JSON.stringify({ money, tab, lastOrder, clockMin, readMin, reading, cur, queue, backlog }));
+  show(line("（セーブした）"));
+};
+document.getElementById("b-load").onclick = () => {
+  const d = JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
+  if (!d) return show(line("（セーブデータがない）"));
+  ({ clockMin, readMin } = d);
+  money = d.money ?? 5000; tab = d.tab || []; lastOrder = d.lastOrder || null; drawMoney();
+  drawClock();
+  const saved = d.backlog;
+  queue = d.queue;
+  show(d.cur);
+  backlog = saved;               // show() で足された分を戻す
+  reading = false;
+  if (queue[0] && queue[0].choices) { const l = queue[0].choices; queue = []; showChoices(l); }
+  else if (queue[0] && queue[0].ask) showAsk();
+};
+
+document.getElementById("talk").addEventListener("click", advance);
+document.addEventListener("keydown", e => {
+  if (e.target === ansEl) return;
+  if (e.code === "Escape") closeLog();
+  if (e.code === "KeyL") return logEl.style.display === "flex" ? closeLog() : openLog();
+  if (e.code === "Space" || e.code === "Enter") { e.preventDefault(); advance(); }
+});
+document.querySelectorAll("#menu button[data-i]").forEach(b =>
+  b.addEventListener("click", () => {
+    const i = +b.dataset.i;
+    hideChoices(); hideAsk();
+    if (reading && i === 2) {   // 読書を終える → 店主が本のことを聞く
+      reading = false;
+      const l = [];
+      if (readMin >= LONG_MIN) l.push(line("お疲れさまです。"));
+      l.push(line("どんな本でしたか？"), { ask: true });
+      queue = l.slice(1); show(l[0]);
+      return;
+    }
+    reading = false;
+    const r = actions[i]();
+    if (r === null) { queue = []; return; }
+    if (r.scene) { play(r.scene); return; }
+    if (Array.isArray(r)) { queue = r.slice(1); show(r[0]); }
+    else { queue = []; show(r); }
+  }));
+
+play("start");
+</script>
+</body>
+</html>
