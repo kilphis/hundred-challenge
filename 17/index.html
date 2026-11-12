@@ -1,0 +1,198 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>ネズミのリビング</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#000}canvas{display:block}
+#help{position:fixed;left:12px;bottom:10px;color:#fff;font:13px/1.6 "Hiragino Sans",sans-serif;text-shadow:0 1px 3px #000;opacity:.85;pointer-events:none}
+#start{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font:18px "Hiragino Sans",sans-serif;background:rgba(0,0,0,.45);cursor:pointer}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head><body>
+<div id="help"></div>
+<div id="start">クリックで開始</div>
+<script>
+// ---- モデル読み込み(無いものは灰色の箱で代用) ----
+const FILES=['mouse','human','room','wallInside','dining','lounge','storage'];
+const DBG=new URLSearchParams(location.search);
+let pending=FILES.length;
+for(const f of FILES){const s=document.createElement('script');s.src='models/'+f+'.js';
+  s.onload=s.onerror=()=>{if(--pending===0)init()};document.head.appendChild(s);}
+window.MODELS=window.MODELS||{};
+function make(name){
+  if(window.MODELS[name]){try{return window.MODELS[name]()}catch(e){console.error(name,e)}}
+  const g=new THREE.Group();const m=new THREE.Mesh(new THREE.BoxGeometry(20,20,20),new THREE.MeshStandardMaterial({color:0x888888}));m.position.y=10;g.add(m);g.userData.colliders=[[-10,0,-10,10,20,10]];return g;
+}
+
+// ---- 配置(家具の位置はClaudeが仮決め) ----
+const H=Math.PI/2;
+const LAYOUT=[
+  ['room',0,0,0],['wallInside',0,0,0],
+  ['diningTable',-170,-130,0],
+  ['diningChair',-205,-185,0],['diningChair',-135,-185,0],
+  ['diningChair',-205,-75,2*H],['diningChair',-135,-75,2*H],
+  ['rug',60,78,0],['coffeeTable',60,100,0],['sofa',60,195,2*H],
+  ['tvStand',60,-218,0],
+  ['bookshelf',-283,-20,H],
+  ['floorLamp',-75,180,2*H],
+  ['plant',262,-212,0],
+];
+
+let R,S,cam,player,parts,humanObj,humanCols=[],colliders=[],sun,hemi,ceil,holeLights=[];
+function init(){
+  R=new THREE.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(innerWidth,innerHeight);
+  R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;document.body.appendChild(R.domElement);
+  S=new THREE.Scene();S.background=new THREE.Color(0x0d0d10);
+  cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.3,3000);
+
+  // ライト: 部屋全体のぼんやりした光 + 窓(右の壁)から差す日光 + 天井照明
+  hemi=new THREE.HemisphereLight(0xfff6e8,0x4a4038,0.5);S.add(hemi);
+  sun=new THREE.DirectionalLight(0xfff1dc,0.8);sun.position.set(700,420,-150);sun.target.position.set(0,0,-20);S.add(sun,sun.target);
+  sun.castShadow=true;sun.shadow.mapSize.set(4096,4096);const sc=sun.shadow.camera;sc.left=-420;sc.right=420;sc.top=380;sc.bottom=-380;sc.near=100;sc.far=1600;sun.shadow.bias=-0.0004;sun.shadow.normalBias=0.3;
+  ceil=new THREE.PointLight(0xffe2b8,0.3,900);ceil.position.set(0,225,0);S.add(ceil);
+  // 壁の穴から空洞の中へ漏れる光
+  for(const p of [[150,5,-255.7],[-305.7,5,120]]){const l=new THREE.PointLight(0xffe7c4,0.6,60,2);l.position.set(...p);S.add(l);holeLights.push(l);}
+
+  for(const [name,x,z,ry] of LAYOUT){
+    const o=make(name);o.position.set(x,0,z);o.rotation.y=ry;S.add(o);
+    for(const c of (o.userData.colliders||[]))colliders.push(xformBox(c,x,z,ry));
+  }
+  player=make('mouse');S.add(player);parts=player.userData.parts||null;
+  player.position.set(60,0,20);P.pos.set(60,0,20);P.yaw=Math.PI;camYaw=P.yaw;
+  humanObj=make('human');S.add(humanObj);placeHuman();
+  if(DBG.get('human')==='1')setMode(true); // テスト用: ?human=1 で人間視点から始める
+  addEventListener('resize',()=>{R.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()});
+  if(DBG.get('cam')){ // 撮影用: ?cam=x,y,z&look=x,y,z
+    const c=DBG.get('cam').split(',').map(Number),l=(DBG.get('look')||'0,0,0').split(',').map(Number);
+    if(DBG.get('at')){const a=DBG.get('at').split(',').map(Number);P.pos.set(a[0],a[1],a[2]);P.yaw=+(DBG.get('yaw')||0);}
+    camFixed=[new THREE.Vector3(...c),new THREE.Vector3(...l)];document.getElementById('start').remove();
+  }
+  if(DBG.get('keys')){ // テスト用: ?at=x,y,z&cyaw=r&keys=KeyW&dur=秒
+    const a=DBG.get('at').split(',').map(Number);P.pos.set(a[0],a[1],a[2]);camYaw=+(DBG.get('cyaw')||0);P.yaw=camYaw+Math.PI;
+    for(const k of DBG.get('keys').split(','))keys[k]=true;document.getElementById('start').remove();
+    autoEnd=+(DBG.get('dur')||1);
+    if(DBG.get('sim')){let tt=0;const T=+DBG.get('sim');while(tt<T){physics(1/60);tt+=1/60;if(tt>autoEnd)for(const k in keys)keys[k]=false;}autoEnd=0;
+      document.getElementById('help').textContent='sim pos '+P.pos.toArray().map(v=>v.toFixed(1)).join(', ')+' jumps '+(window.__jumps||0);camYaw=+(DBG.get('cyaw')||0);}
+  }
+  last=performance.now();requestAnimationFrame(loop);
+}
+let autoEnd=0,autoT=0;
+let camFixed=null;
+function xformBox(c,x,z,ry){ // ローカルAABB → ワールドAABB(y軸90度単位の回転のみ)
+  const k=Math.round(ry/H)&3,cs=[[1,0],[0,1],[-1,0],[0,-1]][k];
+  const xs=[c[0],c[3]],zs=[c[2],c[5]];let a=[1e9,c[1],1e9,-1e9,c[4],-1e9];
+  for(const lx of xs)for(const lz of zs){const wx=x+lx*cs[0]+lz*cs[1],wz=z-lx*cs[1]+lz*cs[0];
+    a[0]=Math.min(a[0],wx);a[3]=Math.max(a[3],wx);a[2]=Math.min(a[2],wz);a[5]=Math.max(a[5],wz);}
+  return a;
+}
+
+// ---- 入力 ----
+const keys={};addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space')e.preventDefault()});addEventListener('keyup',e=>keys[e.code]=false);
+let camYaw=0,camPitch=0.35,camDist=32;
+document.getElementById('start').onclick=e=>{R.domElement.requestPointerLock();};
+document.addEventListener('pointerlockchange',()=>{document.getElementById('start').style.display=document.pointerLockElement?'none':'flex'});
+addEventListener('mousemove',e=>{if(!document.pointerLockElement)return;camYaw-=e.movementX*0.0025;
+  camPitch=HUMAN?Math.max(-1.45,Math.min(1.45,camPitch-e.movementY*0.0025)):Math.max(-0.3,Math.min(1.3,camPitch+e.movementY*0.0025));});
+addEventListener('wheel',e=>{if(HUMAN)return;camDist=Math.max(10,Math.min(120,camDist*(1+Math.sign(e.deltaY)*0.1)))});
+
+// ---- プレイヤーの物理(箱どうしの当たり判定) ----
+const G=980;
+// ネズミと人間の2つの体。P が今操作している方
+const MB={pos:new THREE.Vector3(),vel:new THREE.Vector3(),onGround:false,yaw:0,phase:0,home:[60,0,20],cy:0,cp:0.35};
+const HB={pos:new THREE.Vector3(220,0,190),vel:new THREE.Vector3(),onGround:false,yaw:0,phase:0,home:[220,0,190],cy:0,cp:-0.15};
+let P=MB,HUMAN=false,PW,PH,STEP,JUMP,SPD;
+const HELP={mouse:'ネズミ視点 ・ WASD / 矢印: 移動 ・ Shift: ダッシュ ・ Space: ジャンプ ・ マウス: 視点 ・ ホイール: カメラ距離 ・ H: 人間視点へ ・ Esc: マウス解放',
+  human:'人間視点 ・ WASD / 矢印: 歩く ・ Shift: 小走り ・ Space: ジャンプ ・ マウス: 見回す ・ H: ネズミ視点へ ・ Esc: マウス解放'};
+function setMode(h){
+  P.cy=camYaw;P.cp=camPitch;HUMAN=h;P=h?HB:MB;camYaw=P.cy;camPitch=P.cp;
+  // 人間: 肩幅40cm・身長160cm・視点の高さ133cm・20cmまでの段差はまたぐ
+  PW=h?20:2.2;PH=h?160:6;STEP=h?20:2.5;JUMP=Math.sqrt(2*G*(h?35:30));SPD=h?[140,320]:[85,170];
+  document.getElementById('help').textContent=h?HELP.human:HELP.mouse;
+  if(humanObj)placeHuman();
+}
+// 人間の体: ネズミ視点のときはその場に立っていて、ネズミがぶつかる。人間視点のときは隠す
+const EYE=133;
+function placeHuman(){
+  humanObj.visible=!HUMAN;humanObj.position.copy(HB.pos);
+  const ry=(HUMAN?camYaw:HB.cy)+Math.PI;humanObj.rotation.y=ry;
+  const c=Math.cos(ry),sn=Math.sin(ry);humanCols=[];
+  if(HUMAN)return;
+  for(const a of (humanObj.userData.colliders||[])){let b=[1e9,a[1],1e9,-1e9,a[4],-1e9];
+    for(const lx of [a[0],a[3]])for(const lz of [a[2],a[5]]){const wx=HB.pos.x+lx*c+lz*sn,wz=HB.pos.z-lx*sn+lz*c;
+      b[0]=Math.min(b[0],wx);b[3]=Math.max(b[3],wx);b[2]=Math.min(b[2],wz);b[5]=Math.max(b[5],wz);}
+    b[1]+=HB.pos.y;b[4]+=HB.pos.y;humanCols.push(b);}
+}
+setMode(false);
+addEventListener('keydown',e=>{if(e.code==='KeyH'&&!e.repeat)setMode(!HUMAN)});
+function hits(x,y,z){const x0=x-PW,x1=x+PW,z0=z-PW,z1=z+PW,y0=y,y1=y+PH;let top=null;
+  for(const c of humanCols){if(x1>c[0]&&x0<c[3]&&z1>c[2]&&z0<c[5]&&y1>c[1]&&y0<c[4]){if(top===null||c[4]>top)top=c[4];}}
+  for(const c of colliders){if(x1>c[0]&&x0<c[3]&&z1>c[2]&&z0<c[5]&&y1>c[1]&&y0<c[4]){if(top===null||c[4]>top)top=c[4];}}return top;}
+function moveAxis(axis,d){
+  const p=P.pos.clone();p[axis]+=d;const t=hits(p.x,p.y,p.z);
+  if(t===null){P.pos[axis]=p[axis];return}
+  if(P.onGround&&t-P.pos.y<=STEP&&hits(p.x,t+0.01,p.z)===null){P.pos[axis]=p[axis];P.pos.y=t+0.01;return}
+  // 角に引っかかったら横に少しずらして滑り込ませる(狭い隙間を通りやすく)
+  const o=axis==='x'?'z':'x';
+  for(const k of [0.5,1,1.5,2,2.5,3])for(const sg of [1,-1]){const q=p.clone();q[o]+=k*sg;
+    if(hits(q.x,q.y,q.z)===null&&hits(P.pos.x+(o==='x'?k*sg:0),P.pos.y,P.pos.z+(o==='z'?k*sg:0))===null){P.pos[o]+=Math.sign(k*sg)*Math.min(Math.abs(d)*1.5,k);return}}
+}
+function physics(dt){
+  let ix=0,iz=0;if(keys.KeyW||keys.ArrowUp)iz-=1;if(keys.KeyS||keys.ArrowDown)iz+=1;if(keys.KeyA||keys.ArrowLeft)ix-=1;if(keys.KeyD||keys.ArrowRight)ix+=1;
+  const speed=(keys.ShiftLeft||keys.ShiftRight)?SPD[1]:SPD[0];let moving=false;
+  if(ix||iz){const l=Math.hypot(ix,iz);ix/=l;iz/=l;
+    const fx=-Math.sin(camYaw),fz=-Math.cos(camYaw),rx=Math.cos(camYaw),rz=-Math.sin(camYaw);
+    const dx=(fx*-iz+rx*ix),dz=(fz*-iz+rz*ix);
+    const tv=new THREE.Vector2(dx*speed,dz*speed);P.vel.x+= (tv.x-P.vel.x)*Math.min(1,dt*14);P.vel.z+=(tv.y-P.vel.z)*Math.min(1,dt*14);
+    const ty=Math.atan2(dx,dz);let d=ty-P.yaw;d=Math.atan2(Math.sin(d),Math.cos(d));P.yaw+=d*Math.min(1,dt*12);moving=true;
+  }else{P.vel.x*=Math.max(0,1-dt*14);P.vel.z*=Math.max(0,1-dt*14);}
+  if(keys.Space&&P.onGround){P.vel.y=JUMP;P.onGround=false;window.__jumps=(window.__jumps||0)+1;}
+  P.vel.y-=G*dt;
+  const n=Math.ceil(Math.max(Math.abs(P.vel.x),Math.abs(P.vel.z),Math.abs(P.vel.y))*dt/1.5)||1;
+  for(let i=0;i<n;i++){
+    moveAxis('x',P.vel.x*dt/n);moveAxis('z',P.vel.z*dt/n);
+    const ny=P.pos.y+P.vel.y*dt/n;const t=hits(P.pos.x,ny,P.pos.z);
+    if(t===null){P.pos.y=ny;P.onGround=false}
+    else{if(P.vel.y<0){if(t-P.pos.y<=STEP)P.pos.y=t;P.onGround=true}P.vel.y=0;}
+  }
+  if(P.onGround&&hits(P.pos.x,P.pos.y-0.05,P.pos.z)===null)P.onGround=false;
+  if(P.pos.y<-50){P.pos.set(...P.home);P.vel.set(0,0,0)}
+  return moving;
+}
+
+// ---- 見た目のアニメ ----
+function animate(t,dt,moving){
+  player.position.copy(MB.pos);player.rotation.y=MB.yaw;
+  const sp=Math.hypot(MB.vel.x,MB.vel.z);MB.phase+=dt*sp*0.22;
+  if(!parts)return;const a=Math.min(1,sp/85),s=Math.sin(MB.phase);
+  if(parts.legs){const L=parts.legs;const k=0.7*a;
+    if(L.fl)L.fl.rotation.x=s*k;if(L.br)L.br.rotation.x=s*k;if(L.fr)L.fr.rotation.x=-s*k;if(L.bl)L.bl.rotation.x=-s*k;
+    if(!MB.onGround){for(const l of Object.values(L))if(l)l.rotation.x=0.5*(l===L.fl||l===L.fr?1:-1)}}
+  if(parts.body){parts.body.position.y=(parts.body.userData.y0??(parts.body.userData.y0=parts.body.position.y))+Math.abs(s)*0.4*a;}
+  if(parts.tail){parts.tail.forEach((g,i)=>{const b=g.userData.r0||(g.userData.r0={x:g.rotation.x,y:g.rotation.y});g.rotation.y=b.y+Math.sin(t*3+i*0.6-MB.phase*0.5)*(0.08+0.04*(1-a));g.rotation.x=b.x+0.02*Math.sin(t*2+i);});}
+  if(parts.whiskers)parts.whiskers.rotation.y=Math.sin(t*20)*0.04*(1-a);
+  if(parts.head)parts.head.rotation.x=Math.sin(t*1.3)*0.05*(1-a);
+}
+
+// ---- カメラ(ネズミの斜め後ろ上。間に物があれば手前に寄る) ----
+const ray=new THREE.Ray();
+function camUpdate(dt){
+  if(camFixed){cam.position.copy(camFixed[0]);cam.lookAt(camFixed[1]);return}
+  if(HUMAN){ // 一人称: 目の高さ160cm。歩くと少し上下に揺れる
+    const sp=Math.hypot(P.vel.x,P.vel.z);P.phase+=dt*sp*0.05;
+    cam.position.set(P.pos.x,P.pos.y+EYE+(P.onGround?Math.sin(P.phase*2)*0.8*Math.min(1,sp/140):0),P.pos.z);
+    cam.lookAt(cam.position.x-Math.sin(camYaw)*Math.cos(camPitch),cam.position.y+Math.sin(camPitch),cam.position.z-Math.cos(camYaw)*Math.cos(camPitch));return}
+  const tgt=P.pos.clone();tgt.y+=5;
+  const dir=new THREE.Vector3(Math.sin(camYaw)*Math.cos(camPitch),Math.sin(camPitch),Math.cos(camYaw)*Math.cos(camPitch));
+  let d=camDist;ray.set(tgt,dir);const b=new THREE.Box3(),hp=new THREE.Vector3();
+  for(const c of colliders){b.min.set(c[0]-0.6,c[1]-0.6,c[2]-0.6);b.max.set(c[3]+0.6,c[4]+0.6,c[5]+0.6);
+    if(b.containsPoint(tgt))continue;if(ray.intersectBox(b,hp)){const e=hp.distanceTo(tgt);if(e<d)d=e;}}
+  d=Math.max(1.5,d);cam.position.copy(tgt).addScaledVector(dir,d);cam.lookAt(tgt);
+}
+
+// 壁の中にいるときは部屋の光を落とす
+function lighting(dt){
+  const inside=(P.pos.z<-251.2&&P.pos.z>-260.2)||(P.pos.x<-301.2&&P.pos.x>-310.2);
+  const k=Math.min(1,dt*3);hemi.intensity+=((inside?0.12:0.5)-hemi.intensity)*k;ceil.intensity+=((inside?0.05:0.3)-ceil.intensity)*k;
+}
+
+let last=0;
+function loop(now){const dt=Math.max(0,Math.min(0.05,(now-last)/1000));last=now;
+  if(autoEnd){autoT+=dt;if(autoT>autoEnd){for(const k in keys)keys[k]=false;autoEnd=0;}
+    document.getElementById('help').textContent='pos '+P.pos.toArray().map(v=>v.toFixed(1)).join(', ')+' t='+autoT.toFixed(2);}
+  const mv=camFixed&&!DBG.get('play')?false:physics(dt);animate(now/1000,dt,mv);lighting(dt);camUpdate(dt);R.render(S,cam);requestAnimationFrame(loop);}
+</script></body></html>

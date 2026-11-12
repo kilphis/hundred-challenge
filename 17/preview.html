@@ -1,0 +1,40 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>model preview</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#cfd3d8}canvas{display:block}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head><body><script>
+const Q=new URLSearchParams(location.search);
+const file=Q.get('m')||'mouse', fn=Q.get('f')||file;
+const s=document.createElement('script');s.src='models/'+file+'.js?'+Date.now();s.onload=start;document.head.appendChild(s);
+function v3(str){return str?new THREE.Vector3(...str.split(',').map(Number)):null}
+function start(){
+ const R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+ R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(innerWidth,innerHeight);
+ R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+ 
+ document.body.appendChild(R.domElement);
+ const S=new THREE.Scene();S.background=new THREE.Color(0xcfd3d8);
+ const obj=window.MODELS[fn]();S.add(obj);
+ const box=new THREE.Box3().setFromObject(obj),size=box.getSize(new THREE.Vector3()),c=box.getCenter(new THREE.Vector3());
+ const r=Math.max(size.x,size.y,size.z);
+ if(Q.get('floor')!=='0'){const fl=new THREE.Mesh(new THREE.PlaneGeometry(r*6,r*6),new THREE.MeshStandardMaterial({color:0x9a9a9a,roughness:.9}));fl.rotation.x=-Math.PI/2;fl.position.y=-0.01;fl.receiveShadow=true;S.add(fl);}
+ S.add(new THREE.HemisphereLight(0xfff6e8,0x4a4038,0.5));
+ const d=new THREE.DirectionalLight(0xfff1dc,0.8);d.position.set(c.x+r*1.2,c.y+r*2,c.z+r*0.8);d.target.position.copy(c);S.add(d,d.target);
+ d.castShadow=true;d.shadow.mapSize.set(2048,2048);const sc=d.shadow.camera;sc.left=sc.bottom=-r*1.5;sc.right=sc.top=r*1.5;sc.near=1;sc.far=r*6;d.shadow.bias=-0.0005;
+ const p=new THREE.PointLight(0xffe2b8,0.3,r*8);p.position.set(c.x-r,c.y+r*0.6,c.z+r);S.add(p);
+ if(Q.get('col')==='1'&&obj.userData.colliders){for(const a of obj.userData.colliders){const b=new THREE.Box3(new THREE.Vector3(a[0],a[1],a[2]),new THREE.Vector3(a[3],a[4],a[5]));const h=new THREE.Box3Helper(b,0xff0000);obj.add(h);}}
+ const cam=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.3,r*20);
+ const views={persp:[1.1,0.8,1.4],front:[0,0.15,2.2],side:[2.2,0.15,0],top:[0.001,2.4,0.01],close:[0.45,0.08,0.7]};
+ const vw=views[Q.get('view')||'persp']||views.persp;
+ let look=v3(Q.get('look'))||c.clone();
+ if(Q.get('view')==='close')look=new THREE.Vector3(c.x,box.min.y+size.y*0.25,c.z);
+ const pos=v3(Q.get('cam'))||new THREE.Vector3(c.x+vw[0]*r,c.y+vw[1]*r,c.z+vw[2]*r);
+ cam.position.copy(pos);
+ const oc=new THREE.OrbitControls(cam,R.domElement);oc.target.copy(look);oc.update();
+ (function loop(){R.render(S,cam);requestAnimationFrame(loop)})();
+ const info=document.createElement('div');info.style.cssText='position:fixed;left:8px;top:6px;font:12px monospace;color:#222';
+ info.textContent=`${fn}  size ${size.x.toFixed(1)} x ${size.y.toFixed(1)} x ${size.z.toFixed(1)} cm  min(${box.min.toArray().map(v=>v.toFixed(1))})  colliders:${(obj.userData.colliders||[]).length}  calls:~${countMeshes(obj)}`;
+ document.body.appendChild(info);
+}
+function countMeshes(o){let n=0;o.traverse(x=>{if(x.isMesh)n++});return n}
+</script></body></html>
