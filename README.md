@@ -19,6 +19,8 @@
 | 13 | Rust | `cd 13_typing_battle && cargo run` |
 | 14 | farm(Rust) | `cd 14_farm && cargo run` |
 | 15 | 騎馬戦(Rust + macroquad, WASM) | `cd 15_kibasen && ./build_web.sh` → [`15_kibasen/web/`](https://kilphis.github.io/hundred-challenge/15_kibasen/web/) を配信 |
+| 16 | ロボット手術シミュレーション(C# + Raylib-cs) | `cd 16_robot_surgery && dotnet run` |
+| 17 | ネズミになってリビングと壁裏を走るゲーム(Three.js) | [`17_mouse_run/index.html`](https://kilphis.github.io/hundred-challenge/17_mouse_run/index.html) |
 
 ブラウザで動く日は表のリンクから遊べる(GitHub Pages)。
 
