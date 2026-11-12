@@ -21,6 +21,8 @@
 | 15 | 騎馬戦(Rust + macroquad, WASM) | `cd 15_kibasen && ./build_web.sh` → [`15_kibasen/web/`](https://kilphis.github.io/hundred-challenge/15_kibasen/web/) を配信 |
 | 16 | ロボット手術シミュレーション(C# + Raylib-cs) | `cd 16_robot_surgery && dotnet run` |
 | 17 | ネズミになってリビングと壁裏を走るゲーム(Three.js) | [`17_mouse_run/index.html`](https://kilphis.github.io/hundred-challenge/17_mouse_run/index.html) |
+| 18 | 雲の巨人(PixiJS) | [`18_cloud_giant/index.html`](https://kilphis.github.io/hundred-challenge/18_cloud_giant/index.html) |
+| 19 | 侍の3Dモデル(Three.js) | [`19_samurai/motion_check.html`](https://kilphis.github.io/hundred-challenge/19_samurai/motion_check.html) |
 
 ブラウザで動く日は表のリンクから遊べる(GitHub Pages)。
 
