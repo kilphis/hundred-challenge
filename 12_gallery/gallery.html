@@ -27,7 +27,7 @@ html,body{margin:0;height:100%;background:#15151c;color:#e8e6df;font:14px/1.5 "H
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="sprites.js"></script>
-<script src="../day6/grid.js"></script>
+<script src="../6_image_grid/grid.js"></script>
 </head>
 <body>
 <div id="app">
@@ -371,9 +371,9 @@ const GROUPS = [
     c2('敵:泥棒(緑、黄色い核=鍵持ち)', 'thief', ''), c2('鍵', 'key', ''), c2('敵弾', 'shot', ''),
     c2('扉(施錠)', 'doorLocked', ''), c2('扉(開)', 'doorOpen', ''), c2('スイッチ(OFF)', 'swOff', ''), c2('スイッチ(ON)', 'swOn', ''),
     c2('川', 'river', ''), c2('橋', 'bridge', ''), c2('ゴール', 'goal', ''), c2('攻撃判定', 'attack', '') ] },
-  { day: 'day5  会話ゲーム', items: [{ kind: 'image', name: 'IRIS', note: 'メインキャラ(自作の絵)', src: '../day5/chara.png' },
-    { kind: 'image', name: '背景(昼)', note: '', src: '../day5/bg.png' }, { kind: 'image', name: '背景(夜)', note: '', src: '../day5/bg_night.png' }] },
-  { day: 'day6  ドット絵の顔', items: [{ kind: 'image', name: '元絵', note: 'Face.png', src: '../day6/Face.png' }, ...Object.keys(FACE.EX).map(faceItem)] },
+  { day: 'day5  会話ゲーム', items: [{ kind: 'image', name: 'IRIS', note: 'メインキャラ(自作の絵)', src: '../5_kaiwa_game/chara.png' },
+    { kind: 'image', name: '背景(昼)', note: '', src: '../5_kaiwa_game/bg.png' }, { kind: 'image', name: '背景(夜)', note: '', src: '../5_kaiwa_game/bg_night.png' }] },
+  { day: 'day6  ドット絵の顔', items: [{ kind: 'image', name: '元絵', note: 'Face.png', src: '../6_image_grid/Face.png' }, ...Object.keys(FACE.EX).map(faceItem)] },
   { day: 'day7  跳ねるボール', items: [{ kind: 'canvas', name: 'ボール', note: 'ターミナル上の「O」1文字', draw: cv => { cv.width = 300; cv.height = 300; const g = cv.getContext('2d'); g.fillStyle = '#111'; g.fillRect(0, 0, 300, 300); g.fillStyle = '#eee'; g.font = 'bold 220px monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('O', 150, 160); } }] },
   { day: 'day8  asset-stack', items: [] },
   { day: 'day9  ドライブ', items: [
