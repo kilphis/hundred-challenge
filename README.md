@@ -23,6 +23,10 @@
 | 17 | ネズミになってリビングと壁裏を走るゲーム(Three.js) | [`17_mouse_run/index.html`](https://kilphis.github.io/hundred-challenge/17_mouse_run/index.html) |
 | 18 | 雲の巨人(PixiJS) | [`18_cloud_giant/index.html`](https://kilphis.github.io/hundred-challenge/18_cloud_giant/index.html) |
 | 19 | 侍の3Dモデル(Three.js) | [`19_samurai/motion_check.html`](https://kilphis.github.io/hundred-challenge/19_samurai/motion_check.html) |
+| 20 | 侍との立ち合い(Three.js)| [`20_samurai_duel/index.html`](https://kilphis.github.io/hundred-challenge/20_samurai_duel/index.html) |
+| 21 | ネズミの壁のぼり(Three.js)| [`21_mouse_climb/index.html`](https://kilphis.github.io/hundred-challenge/21_mouse_climb/index.html) |
+| 22 | TDA 分析チュートリアル(Three.js)| [`22_tda_tutorial/index.html`](https://kilphis.github.io/hundred-challenge/22_tda_tutorial/index.html) |
+| 23 | 画像解析タスク看板 | [`23_task_board/index.html`](https://kilphis.github.io/hundred-challenge/23_task_board/index.html) |
 
 ブラウザで動く日は表のリンクから遊べる(GitHub Pages)。
 

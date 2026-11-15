@@ -1,6 +1,6 @@
 # day21 ネズミの壁のぼり(横から平行投影の2Dアクション)
 
-起動: `21/index.html` をブラウザで開く。撮影は `./shot.sh <名前> "x=..&y=..&face=1|-1[&climb=1]"`。
+起動: `21_mouse_climb/index.html` をブラウザで開く。撮影は `./shot.sh <名前> "x=..&y=..&face=1|-1[&climb=1]"`。
 確認用URL引数: `hold=ArrowRight,...`(押しっぱなし)、`jump=1`、`sim=<フレーム数>`(開始時にその分だけ進める)、`dbg=1`(タイトルに x,y,vx,vy,壁中)。
 
 ## ユーザーが決めたこと
