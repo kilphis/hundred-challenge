@@ -1,0 +1,279 @@
+---
+title: "神経細胞の z スタックとジグザグ持続:Mata et al. 2015 の再現"
+subtitle: "公開画像 83 スタックで、人の数えた樹状突起の本数と突き合わせる"
+date: 2026-11-14
+lang: ja
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    code-fold: true
+    code-summary: "コード"
+    embed-resources: true
+    fig-width: 9
+execute:
+  warning: false
+jupyter: python3
+---
+
+```{python}
+#| include: false
+import json, warnings, itertools
+warnings.filterwarnings("ignore")
+import numpy as np, pandas as pd, matplotlib.pyplot as plt, matplotlib as mpl
+from IPython.display import Markdown
+from neuro import *
+mpl.rcParams["font.family"] = "Hiragino Sans"
+mpl.rcParams["figure.dpi"] = 110
+R = json.load(open("results.json"))
+THRS = ["huang", "li", "otsu"]
+AREAS = [25, 50, 100, 200, 400, 800, 1600]
+LENS = [1, 2, 3, 4, 6, 8, 12, 16]
+
+def zz_count(r, key, L):
+    return n_long(r["runs"][key]["bars"], min(L, r["n"]))
+
+def d3_count(r, key, L):
+    return sum(1 for z in r["runs"][key]["z3d"] if z >= min(L, r["n"]))
+
+def md(df):
+    return Markdown(df.to_markdown(index=False))
+```
+
+## 1. 元の論文は何をしたか
+
+**G. Mata, M. Morales, A. Romero, J. Rubio. *Zigzag persistent homology for processing neuronal images.* Pattern Recognition Letters 62 (2015) 55–60.**
+
+- **データ**:海馬の神経細胞を共焦点顕微鏡で撮った z スタック。標識は2種類あります(説明は作者のページと画像に付いた readme による)。
+  - **GFP**(ラットの海馬神経細胞の培養に Actin-GFP を発現させたもの):スライスは 3〜8 枚と少なく、1枚は 1024×1024。
+  - **DiI**(トランスジェニックマウスの海馬 CA1 錐体細胞を DiI で染めたもの、組織標本):スライスは 20〜120 枚と多く、1枚は数百ピクセル四方。
+- **目的**:スタックの中の樹状突起(神経の枝)を見つけ、ノイズと分けること。最大値投影(全スライスを重ねた像)では交差して見えるが、3D では触れていない2本を、別々に数えられることを売りにしています。
+- **方法**:2値化したスライスを、和集合 ∪ または最大値投影 ⊔ でつないでジグザグ列にし、H0 のバーコードを取ります。長いバー = 樹状突起です。Fiji プラグイン NeuronZigzagJ として公開されています。
+- **検証**(作者の[検証資料](https://www.unirioja.es/cu/gamata/files/NeuronZigzagJvalidation.pdf)):
+  - **実験1**:23 スタック(GFP 12, DiI 11)。人が数えた「主な成分の数」とプラグインの出力を比べています。
+  - **実験2**:60 スタック(GFP 30, DiI 30)。3人の観察者が元画像とプラグイン出力の両方で、樹状突起の本数と交差の数を数えています。プラグインの「当たり」は GFP 90%、DiI 77.6% と報告されています。
+
+### このレポートで再現できたこと・できなかったこと
+
+- 画像(2つの実験の全 83 スタック)と、プラグインの出力画像は公開されていて、取得できました。人の数えた値は検証資料の表から**手で写しました**(`neuro.py` の `EXP1`, `EXP2_OBS`)。
+- 論文本文は出版社のサイトで読めず、**前処理(フィルタと閾値の決め方)の正確な中身は分かりません**。そこで前処理は一般的な手順で組み、パラメータを格子で振り、**実験1で選んで実験2で確かめる**形にしました。
+- つなぎ方は和集合 ∪ だけを実装しました。最大値投影 ⊔ は、包含関係が成り立つように閾値をどう決めるかが本文なしでは分からないためです。
+
+## 2. データを見る
+
+```{python}
+fig, axs = plt.subplots(3, 4, figsize=(13, 9.6))
+for j, n in enumerate(["DiI01", "DiI05", "GFP01", "GFP05"]):
+    st, m, res = load_exp2(n)
+    axs[0, j].imshow(st[len(st) // 3], cmap="gray"); axs[0, j].set_title(f"{n}:{len(st) // 3} 枚目 / {len(st)} 枚", fontsize=9)
+    axs[1, j].imshow(m, cmap="gray"); axs[1, j].set_title("最大値投影", fontsize=9)
+    axs[2, j].imshow(res); axs[2, j].set_title("プラグインの出力", fontsize=9)
+    for a in axs[:, j]: a.set_xticks([]); a.set_yticks([])
+plt.tight_layout(); plt.show()
+```
+
+- 上段:1枚のスライス。中段:全スライスの最大値投影。下段:作者のプラグインの出力で、**色の付いた塊が「樹状突起」と判定されたもの**、白はそれ以外の前景です。
+- DiI05 では、投影像で2本の樹状突起が交差して見えます。プラグインは、それを別の色(別の成分)に塗り分けています。
+
+## 3. 再現の手順
+
+1. **縮小**:長い辺が 512 ピクセル以下になるよう平均で縮小(GFP は 1024→512)。16bit のスタックは 8bit にそろえます。
+2. **ノイズ除去**:スライスごとに 3×3 のメディアンフィルタ。
+3. **2値化**:スタック全体で1つの閾値。方法は **Huang / Li / 大津** の3通りを試します。
+4. **小さい塊の除去**:各スライスで面積 `min_area` 以下の塊を消します(縮小後のピクセル数。25〜1600 を試す)。
+5. **ジグザグ持続**:$S_0 \to S_0\cup S_1 \leftarrow S_1 \to \cdots$ の H0 バーコード(8 近傍)。
+6. **数える**:`min_len` 枚以上のスライスにまたがって続くバーの本数を「樹状突起の数」とします(1〜16 枚を試す。スライス数より大きいときはスライス数で頭打ち)。
+
+**比較対象(3D ラベリング)**:同じ2値画像を 3D で連結成分ラベリング(26 近傍)し、z 方向に `min_len` 枚以上またがる成分を数えます。「ジグザグでなくても、普通の 3D 処理で同じことができるか」を見るためです。
+
+::: {.callout-note collapse="true"}
+## 計算の高速化と検算(クリックで開く)
+ピクセルをそのまま単体にすると、dionysus のジグザグ計算は 4 枚のスタックでも 18 秒かかりました。そこで、各スライスの塊を1点に縮め、和集合の中で同じ成分に入る塊どうしを辺でつないだ小さなグラフで計算しています(`zz.py` の `zigzag_h0_fast`)。H0 は「どの塊がどの塊に入るか」だけで決まるので、バーコードは変わりません。ランダムな 2 値スタック 840 例でピクセル版と完全に一致することを確かめました。
+:::
+
+## 4. 実験1でパラメータを選ぶ
+
+```{python}
+def score(rows, f, target):
+    pred = np.array([f(r) for r in rows]); y = np.array([target(r) for r in rows])
+    return (pred == y).mean(), np.abs(pred - y).mean()
+
+E1 = [r for r in R if r["exp"] == 1]
+best = {}
+grid_tab = {}
+for method, fn in [("zigzag", zz_count), ("3D", d3_count)]:
+    for stain in ["GFP", "DiI"]:
+        rows = [r for r in E1 if r["stain"] == stain]
+        cand = []
+        for thr, ma, L in itertools.product(THRS, AREAS, LENS):
+            acc, mae = score(rows, lambda r: fn(r, f"{thr}/{ma}", L), lambda r: r["human"])
+            cand.append((acc, -mae, thr, ma, L))
+        cand.sort(reverse=True)
+        best[(method, stain)] = cand[0]
+        grid_tab[(method, stain)] = cand
+
+md(pd.DataFrame([dict(方法=m, 標識=s, 一致率=f"{c[0]:.0%}", 平均誤差=f"{-c[1]:.2f}", 閾値=c[2], min_area=c[3], min_len=c[4])
+                 for (m, s), c in best.items()]))
+```
+
+上の表は、実験1で**人の数えた値と完全に一致したスタックの割合**が最も高くなった設定です(同率なら平均誤差の小さい方)。
+
+**これは同じデータで選んだ値なので、楽観的な数字です。** 本当の性能は、次の節で別のデータ(実験2)に当てて確かめます。
+
+```{python}
+fig, axs = plt.subplots(1, 2, figsize=(12, 4.2))
+for ax, stain in zip(axs, ["GFP", "DiI"]):
+    thr = best[("zigzag", stain)][2]
+    rows = [r for r in E1 if r["stain"] == stain]
+    M = np.array([[score(rows, lambda r: zz_count(r, f"{thr}/{ma}", L), lambda r: r["human"])[0] for L in LENS] for ma in AREAS])
+    im = ax.imshow(M, vmin=0, vmax=1, cmap="viridis", origin="lower")
+    ax.set_xticks(range(len(LENS)), LENS); ax.set_yticks(range(len(AREAS)), AREAS)
+    ax.set_xlabel("min_len(枚)"); ax.set_ylabel("min_area(px)"); ax.set_title(f"{stain}(閾値 {thr}):ジグザグの一致率")
+    for i in range(len(AREAS)):
+        for j in range(len(LENS)):
+            ax.text(j, i, f"{M[i, j]:.0%}", ha="center", va="center", fontsize=7, color="w" if M[i, j] < .6 else "k")
+plt.colorbar(im, ax=axs, shrink=.8); plt.show()
+```
+
+一致率がパラメータでどれだけ変わるかを示した図です。明るい領域が広いほど、設定に左右されにくいことを意味します。
+
+```{python}
+rows = []
+for r in E1:
+    k = (r["stain"])
+    _, _, thr, ma, L = best[("zigzag", k)]
+    _, _, thr3, ma3, L3 = best[("3D", k)]
+    rows.append(dict(スタック=r["name"], 標識=k, 枚数=r["n"], 人=r["human"],
+                     ジグザグ=zz_count(r, f"{thr}/{ma}", L), **{"3D": d3_count(r, f"{thr3}/{ma3}", L3)}))
+md(pd.DataFrame(rows))
+```
+
+## 5. 実験2で確かめる
+
+実験1で選んだ設定をそのまま実験2の 60 スタックに当て、各観察者が**元画像で数えた樹状突起の本数**と比べます。観察者は画像ごとに1〜3人いるので、(画像, 観察者) の組ごとに数えます。
+
+**元のプラグインの成績**も同じ尺度で並べます。
+
+- **プラグイン(人の目で)**:同じ観察者がプラグインの出力を見て数えた本数。検証資料の表に載っている値です。
+- **プラグイン(色を数える)**:出力画像の色の数(黒・白以外で、面積 0.1% 以上の色)を自動で数えた値。
+
+```{python}
+def plugin_colors(name):
+    res = load_exp2(name)[2]
+    if res is None or res.ndim == 2:
+        return np.nan
+    c, cnt = np.unique(res.reshape(-1, 3), axis=0, return_counts=True)
+    keep = [(tuple(x), k) for x, k in zip(c, cnt) if k > 0.001 * res.shape[0] * res.shape[1]
+            and not (x == 0).all() and not (x == 255).all()]
+    return len(keep)
+
+E2 = [r for r in R if r["exp"] == 2]
+pairs = []
+for r in E2:
+    s = r["stain"]
+    _, _, thr, ma, L = best[("zigzag", s)]
+    _, _, thr3, ma3, L3 = best[("3D", s)]
+    zzc, d3c, pc = zz_count(r, f"{thr}/{ma}", L), d3_count(r, f"{thr3}/{ma3}", L3), plugin_colors(r["name"])
+    for o, (oi, pi) in r["observers"].items():
+        pairs.append(dict(画像=r["name"], 標識=s, 枚数=r["n"], 観察者=o, 人_元画像=oi, プラグイン_人の目=pi,
+                          プラグイン_色=pc, ジグザグ=zzc, **{"3D": d3c}))
+P = pd.DataFrame(pairs)
+summ = []
+for s in ["GFP", "DiI"]:
+    q = P[P.標識 == s]
+    for col in ["プラグイン_人の目", "プラグイン_色", "ジグザグ", "3D"]:
+        v = q.dropna(subset=[col])
+        summ.append(dict(標識=s, 方法=col, 組の数=len(v), 一致率=f"{(v[col] == v.人_元画像).mean():.0%}",
+                         平均誤差=f"{(v[col] - v.人_元画像).abs().mean():.2f}",
+                         多く数えた=int((v[col] > v.人_元画像).sum()), 少なく数えた=int((v[col] < v.人_元画像).sum())))
+md(pd.DataFrame(summ))
+```
+
+```{python}
+fig, axs = plt.subplots(1, 2, figsize=(12, 4.5))
+for ax, s in zip(axs, ["GFP", "DiI"]):
+    q = P[P.標識 == s]
+    m = max(q[["人_元画像", "ジグザグ", "プラグイン_人の目"]].max()) + 1
+    jit = np.random.default_rng(0).uniform(-.15, .15, len(q))
+    ax.scatter(q.人_元画像 + jit, q.ジグザグ, s=22, label="ジグザグ(再現)", color="#3b6fb6")
+    ax.scatter(q.人_元画像 + jit, q.プラグイン_人の目 + .1, s=22, marker="x", label="プラグイン(人の目)", color="#d1495b")
+    ax.plot([0, m], [0, m], color="#999", lw=1)
+    ax.set_xlabel("人が元画像で数えた本数"); ax.set_ylabel("方法の出した本数"); ax.set_title(s); ax.legend(fontsize=8)
+plt.tight_layout(); plt.show()
+```
+
+<details><summary>画像ごとの表(クリックで開く)</summary>
+
+```{python}
+md(P)
+```
+
+</details>
+
+## 6. 交差の例:投影では1つ、ジグザグでは2本のバー
+
+論文が売りにしている場面を DiI01 で確かめます。最大値投影を同じ設定で2値化して数えた連結成分、3D ラベリング、ジグザグのバーを並べました。
+
+```{python}
+s = "DiI"
+_, _, thr, ma, L = best[("zigzag", s)]
+st, m, res = load_exp2("DiI01")
+B, sm, th, f = preprocess(st, min_area=ma, thr=thr)
+bars = zigzag_h0_fast(B)
+mip = B.max(0)
+Lm = measure.label(mip, connectivity=2)
+L3 = measure.label(B, connectivity=3)
+fig = plt.figure(figsize=(13, 7))
+gs = fig.add_gridspec(2, 3, height_ratios=[1.2, 1])
+ax = fig.add_subplot(gs[0, 0]); ax.imshow(m, cmap="gray"); ax.set_title("最大値投影(輝度)")
+ax = fig.add_subplot(gs[0, 1]); ax.imshow(Lm, cmap="tab20", interpolation="nearest"); ax.set_title(f"投影を2値化:成分 {Lm.max()} 個")
+ax = fig.add_subplot(gs[0, 2]); ax.imshow(np.where(L3.max(0) > 0, L3.max(0), np.nan), cmap="tab10", interpolation="nearest"); ax.set_title(f"3D ラベル(上から見た図):{L3.max()} 個")
+for a in fig.axes: a.set_xticks([]); a.set_yticks([])
+ax = fig.add_subplot(gs[1, :])
+y = 0
+for a_, e_ in sorted(bars, key=lambda b: (b[0], -b[1])):
+    ln = e_ // 2 - (a_ + 1) // 2 + 1
+    ax.plot([a_ / 2, e_ / 2], [y, y], lw=3 if ln >= L else 1.2, color="#3b6fb6" if ln >= L else "#bbb"); y += 1
+ax.set_ylim(y, -1); ax.set_yticks([]); ax.set_xlabel("スライス番号"); ax.set_xlim(-.5, len(B) - .5)
+ax.set_title(f"ジグザグの H0 バーコード(太線 = {L} 枚以上続く = 樹状突起と数えるもの:{n_long(bars, L)} 本)")
+plt.tight_layout(); plt.show()
+print("観察者の数えた本数(元画像):", E2[[r["name"] for r in E2].index("DiI01")]["observers"])
+```
+
+- 最大値投影では2本の樹状突起がくっついて、**1つの成分**になります。
+- ジグザグでは**2本のバー**に分かれます(7〜10.5 枚目と 14.5〜20.5 枚目)。この画像は実験1の R3N2S2C3 と同じもので、検証資料の表は「7〜12 枚目から1成分、14〜23 枚目から1成分」としています。**バーの位置は論文の結果とよく合っています。**
+- ただし前者は 4 枚しか続かないため、実験1で選んだ「6 枚以上」の規則では数えられず、本数は 1 になりました。外れの原因は分離の失敗ではなく、**数え方の規則**にあります。
+- 3D ラベリングでも2つに分かれます。この例に限れば、ジグザグでなくても同じ答えが出ます。
+
+## 7. 分かったこと
+
+```{python}
+#| echo: false
+def acc(col, s):
+    q = P[P.標識 == s].dropna(subset=[col]); return (q[col] == q.人_元画像).mean()
+txt = []
+for s in ["GFP", "DiI"]:
+    txt.append(f"- **{s}**:ジグザグ(再現){acc('ジグザグ', s):.0%}、3D ラベリング {acc('3D', s):.0%}、"
+               f"プラグイン(人の目){acc('プラグイン_人の目', s):.0%}、プラグイン(色){acc('プラグイン_色', s):.0%}")
+Markdown("実験2で人の数えた本数と完全に一致した割合:\n\n" + "\n".join(txt))
+```
+
+1. **再現版のジグザグは、別データ(実験2)で人と一致したのが 4 割強でした。** 人がプラグインの出力を読んだ場合(GFP 83%、DiI 68%)には遠く及びません。
+2. **普通の 3D ラベリングと同程度か、むしろ少し下でした。** スライスが全部そろったスタックで「塊を数える」だけなら、ジグザグ固有の利点は今回の比べ方では見えませんでした。これは理屈とも合います。全スライスがあるとき、H0 のジグザグが持つ情報は 3D の連結成分とその枝分かれ・合流の仕方で、本数を数える用途では差が出にくいからです。
+3. **外れの多くは「少なく数えた」側です。** 斜めに走る樹状突起は短いバーに分かれ、長さの規則で落ちます。2本が途中で接するとバーが1本にまとまります。第6節の例のように、**バーの位置は合っていても、本数の数え方で外れます。**
+4. **設定に敏感です。** 実験1の一致率の図では、最良の設定が周りから浮いた1マスでした。実験1の 73〜75% は、その1マスを選んだ結果の過適合です。実験2で下がったのはそのためです。
+5. **プラグインの高い成績は「人が使う」ことを含んでいます。** プラグインは、人が選んだ開始スライスから届く成分だけを色付けします。そのため出力の色を自動で数えると、一致は GFP 44%、DiI 34% まで下がります。検証資料も、バーコードを見て開始スライスを選ぶ使い方を勧めています。論文の「当たり 90% / 77.6%」は、**人とツールの組み合わせの成績**として読むのが妥当です。
+
+### この再現の限界
+
+- 前処理は論文本文を読めなかったので推測で組んでいます。実際のプラグインは塊を太らせる処理をしているように見えます(第2節の出力画像)。この違いは結果に効いているはずです。
+- 最大値投影 ⊔ でのつなぎ方は実装していません。
+- 人の数えた値は PDF の表から手で写しました。写し間違いがあり得ます。
+- 実験1の「主な成分」と実験2の「樹状突起の本数」は、数えている対象が少し違います。
+
+## 参考
+
+- G. Mata, M. Morales, A. Romero, J. Rubio. *Zigzag persistent homology for processing neuronal images.* Pattern Recognition Letters 62 (2015) 55–60. <https://doi.org/10.1016/j.patrec.2015.05.010>
+- G. Mata ほか. *Validation process of the plugin NeuronZigzagJ.* <https://www.unirioja.es/cu/gamata/files/NeuronZigzagJvalidation.pdf>
+- 画像:<https://www.unirioja.es/cu/gamata/repository-of-images.html>(取得手順は `fetch_data.sh`)
+- J. Heras ほか. *Neuron detection in stack images: a persistent homology interpretation.* arXiv:1509.04420(同じグループの、ジグザグでない版)

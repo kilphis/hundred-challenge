@@ -2,7 +2,7 @@
  "cactus_sonnet": {
   "fn": "cactus",
   "pose": "",
-  "versions": 0,
+  "versions": 3,
   "events": [
    {
     "time": "17:59:36",
@@ -13,8 +13,10 @@
    {
     "time": "18:01:39",
     "elapsed": 123,
-    "kind": "shot",
-    "text": "mkdir -p /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/bench/2026-11-12 && cat > /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/bench/2026-11-…"
+    "kind": "edit",
+    "version": 1,
+    "lines": 353,
+    "text": "v01(全体) ← mkdir -p _3dkit/bench/2026-11-12 && cat > _3dkit/bench/2026-11-12/cactus_sonnet.js <<'EOF' // Saguaro (Carnegiea gigantea) の若い株を素焼き鉢+受け皿に植えたもの。1 = 1cm。 (function () { window.MODELS = window.MODELS ||…"
    },
    {
     "time": "18:01:51",
@@ -31,14 +33,16 @@
    {
     "time": "18:01:56",
     "elapsed": 140,
-    "kind": "shot",
+    "kind": "error",
     "text": "sed -i '/const sb = new THREE.SpineBuilder/d' bench/2026-11-12/cactus_sonnet.js && node --check bench/2026-11-12/cactus_sonnet.js && cat shot.sh | head -30"
    },
    {
     "time": "18:01:59",
     "elapsed": 143,
-    "kind": "shot",
-    "text": "sed -i '' '/const sb = new THREE.SpineBuilder/d' bench/2026-11-12/cactus_sonnet.js && node --check bench/2026-11-12/cactus_sonnet.js && echo ok; ./shot.sh bench/2026-11-12/cactus_sonnet.js cactus 2>&…"
+    "kind": "edit",
+    "version": 2,
+    "lines": 352,
+    "text": "v02(-1行) ← sed -i '' '/const sb = new THREE.SpineBuilder/d' bench/2026-11-12/cactus_sonnet.js && node --check bench/2026-11-12/cactus_sonnet.js && echo ok; ./shot.sh bench/2026-11-12/cactus_sonnet.js cactus 2>&…"
    },
    {
     "time": "18:02:41",
@@ -55,8 +59,10 @@
    {
     "time": "18:02:51",
     "elapsed": 195,
-    "kind": "shot",
-    "text": "f=bench/2026-11-12/cactus_sonnet.js && sed -i '' -e 's/new THREE.MeshStandardMaterial({ map: sTex, roughness: 0.85, side: THREE.DoubleSide })/new THREE.MeshStandardMaterial({ map: sTex, color: 0xc8b4…"
+    "kind": "edit",
+    "version": 3,
+    "lines": 352,
+    "text": "v03(+0行) ← f=bench/2026-11-12/cactus_sonnet.js && sed -i '' -e 's/new THREE.MeshStandardMaterial({ map: sTex, roughness: 0.85, side: THREE.DoubleSide })/new THREE.MeshStandardMaterial({ map: sTex, color: 0xc8b4…"
    },
    {
     "time": "18:02:52",
@@ -99,7 +105,7 @@
     "time": "17:59:42",
     "elapsed": 6,
     "kind": "bash",
-    "text": "ls -la /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/bench/"
+    "text": "ls -la _3dkit/bench/"
    },
    {
     "time": "17:59:45",
@@ -112,9 +118,8 @@
     "elapsed": 27,
     "kind": "edit",
     "version": 1,
-    "text": "全体を書く(252行)",
     "lines": 252,
-    "first": true
+    "text": "v01(全体) ← Write で全体を書く"
    },
    {
     "time": "18:00:04",
@@ -126,7 +131,7 @@
     "time": "18:00:05",
     "elapsed": 29,
     "kind": "shot",
-    "text": "bash shot.sh /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/bench/2026-11-12/cactus_haiku.js cactus"
+    "text": "bash shot.sh _3dkit/bench/2026-11-12/cactus_haiku.js cactus"
    },
    {
     "time": "18:00:12",
@@ -162,7 +167,7 @@
     "time": "18:00:19",
     "elapsed": 43,
     "kind": "bash",
-    "text": "ls -la /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/*.html"
+    "text": "ls -la _3dkit/*.html"
    },
    {
     "time": "18:00:21",
@@ -199,9 +204,8 @@
     "elapsed": 78,
     "kind": "edit",
     "version": 2,
-    "text": "全体を書く(254行)",
     "lines": 254,
-    "first": false
+    "text": "v02(+2行) ← Write で全体を書く"
    },
    {
     "time": "18:00:56",
@@ -213,7 +217,7 @@
     "time": "18:00:57",
     "elapsed": 81,
     "kind": "shot",
-    "text": "rm -rf bench/2026-11-12/shots/ && bash shot.sh /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/bench/2026-11-12/cactus_haiku.js cactus"
+    "text": "rm -rf bench/2026-11-12/shots/ && bash shot.sh _3dkit/bench/2026-11-12/cactus_haiku.js cactus"
    },
    {
     "time": "18:01:12",
@@ -310,9 +314,8 @@
     "elapsed": 165,
     "kind": "edit",
     "version": 3,
-    "text": "一部を書き換え(+0行): // 5-6 spines per cluster, larger and more visible",
     "lines": 254,
-    "first": false
+    "text": "v03(+0行) ← Edit: // 5-6 spines per cluster, larger and more visible"
    },
    {
     "time": "18:02:23",
@@ -325,9 +328,8 @@
     "elapsed": 169,
     "kind": "edit",
     "version": 4,
-    "text": "一部を書き換え(+0行): const spineMat = new THREE.MeshStandardMaterial({",
     "lines": 254,
-    "first": false
+    "text": "v04(+0行) ← Edit: const spineMat = new THREE.MeshStandardMaterial({"
    },
    {
     "time": "18:02:27",
@@ -340,9 +342,8 @@
     "elapsed": 172,
     "kind": "edit",
     "version": 5,
-    "text": "一部を書き換え(+1行): const cactusMatGreen = new THREE.MeshStandardMaterial({",
     "lines": 255,
-    "first": false
+    "text": "v05(+1行) ← Edit: const cactusMatGreen = new THREE.MeshStandardMaterial({"
    },
    {
     "time": "18:02:30",
@@ -354,7 +355,7 @@
     "time": "18:02:31",
     "elapsed": 175,
     "kind": "shot",
-    "text": "rm -rf bench/2026-11-12/shots/ && bash shot.sh /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/bench/2026-11-12/cactus_haiku.js cactus"
+    "text": "rm -rf bench/2026-11-12/shots/ && bash shot.sh _3dkit/bench/2026-11-12/cactus_haiku.js cactus"
    },
    {
     "time": "18:02:44",
@@ -390,7 +391,7 @@
     "time": "18:02:54",
     "elapsed": 198,
     "kind": "shot",
-    "text": "bash shot.sh /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/bench/2026-11-12/cactus_haiku.js cactus \"detail\" \"cam=3.5,15,3.5&look=0,15,0\""
+    "text": "bash shot.sh _3dkit/bench/2026-11-12/cactus_haiku.js cactus \"detail\" \"cam=3.5,15,3.5&look=0,15,0\""
    },
    {
     "time": "18:03:05",
@@ -414,7 +415,7 @@
     "time": "18:03:14",
     "elapsed": 218,
     "kind": "bash",
-    "text": "wc -l /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/bench/2026-11-12/cactus_haiku.js && ls -lh /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/…"
+    "text": "wc -l _3dkit/bench/2026-11-12/cactus_haiku.js && ls -lh _3dkit/bench/2026-11-12/shots/"
    },
    {
     "time": "18:03:18",
@@ -425,8 +426,8 @@
    {
     "time": "18:03:18",
     "elapsed": 222,
-    "kind": "bash",
-    "text": "rm /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/bench/2026-11-12/shots/cactus_sonnet_*.png"
+    "kind": "error",
+    "text": "rm _3dkit/bench/2026-11-12/shots/cactus_sonnet_*.png"
    },
    {
     "time": "18:03:27",
@@ -437,8 +438,8 @@
    {
     "time": "18:03:28",
     "elapsed": 232,
-    "kind": "bash",
-    "text": "head -20 /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/bench/2026-11-12/cactus_haiku.js && tail -20 /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3…"
+    "kind": "error",
+    "text": "head -20 _3dkit/bench/2026-11-12/cactus_haiku.js && tail -20 _3dkit/bench/2026-11-12/cactus_haiku.js"
    },
    {
     "time": "18:03:41",
@@ -481,7 +482,7 @@
  "samurai_sonnet": {
   "fn": "samurai",
   "pose": "",
-  "versions": 0,
+  "versions": 2,
   "events": [
    {
     "time": "22:47:24",
@@ -492,8 +493,10 @@
    {
     "time": "22:51:40",
     "elapsed": 255,
-    "kind": "shot",
-    "text": "mkdir -p /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/bench/2026-11-12 && cat > /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/bench/2026-11-…"
+    "kind": "edit",
+    "version": 1,
+    "lines": 322,
+    "text": "v01(全体) ← mkdir -p _3dkit/bench/2026-11-12 && cat > _3dkit/bench/2026-11-12/samurai_sonnet.js <<'EOF' // 剣を構えて走る侍 (Three.js r128) -- window.MODELS.samurai (function () { window.MODELS = window.MODELS || {}; le…"
    },
    {
     "time": "22:51:55",
@@ -516,8 +519,10 @@
    {
     "time": "22:52:06",
     "elapsed": 281,
-    "kind": "shot",
-    "text": "cd /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit/bench/2026-11-12 && python3 - <<'EOF' p='samurai_sonnet.js' s=open(p).read() s=s.replace(\"V(9, 59, 27.6), V(9, 20, 12), V…"
+    "kind": "edit",
+    "version": 2,
+    "lines": 322,
+    "text": "v02(+0行) ← cd _3dkit/bench/2026-11-12 && python3 - <<'EOF' p='samurai_sonnet.js' s=open(p).read() s=s.replace(\"V(9, 59, 27.6), V(9, 20, 12), V(0, 0.3, 0.95)\",\"V(9, 68, 35.7), V(9, 28.4, 23), V(0, -0.1, 1)\") s=s…"
    },
    {
     "time": "22:52:06",
@@ -573,9 +578,8 @@
     "elapsed": 37,
     "kind": "edit",
     "version": 1,
-    "text": "全体を書く(454行)",
     "lines": 454,
-    "first": true
+    "text": "v01(全体) ← Write で全体を書く"
    },
    {
     "time": "18:00:15",
@@ -636,9 +640,8 @@
     "elapsed": 74,
     "kind": "edit",
     "version": 2,
-    "text": "一部を書き換え(+1行): window.MODELS = window.MODELS || {};",
     "lines": 455,
-    "first": false
+    "text": "v02(+1行) ← Edit: window.MODELS = window.MODELS || {};"
    },
    {
     "time": "18:00:53",
@@ -690,29 +693,10 @@
    }
   ]
  },
- "samurai_sonnet_failed": {
-  "fn": "samurai",
-  "pose": "",
-  "versions": 0,
-  "events": [
-   {
-    "time": "17:59:35",
-    "elapsed": 0,
-    "kind": "read",
-    "text": "SPEC.md"
-   },
-   {
-    "time": "17:59:36",
-    "elapsed": 0,
-    "kind": "shot",
-    "text": "cd /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit; ls; ls bench bench/*; cat shot.sh"
-   }
-  ]
- },
  "day19_samurai": {
   "fn": "samurai",
   "pose": "idle",
-  "versions": 0,
+  "versions": 5,
   "events": [
    {
     "time": "22:47:25",
@@ -736,25 +720,31 @@
     "time": "22:47:32",
     "elapsed": 6,
     "kind": "bash",
-    "text": "cd /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/_3dkit; cat preview.html | head -120"
+    "text": "cd _3dkit; cat preview.html | head -120"
    },
    {
     "time": "23:00:01",
     "elapsed": 755,
-    "kind": "bash",
-    "text": "mkdir -p /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/19/models && cat > /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/19/models/samurai.js <<'EOF' // 侍(関…"
+    "kind": "edit",
+    "version": 1,
+    "lines": 482,
+    "text": "v01(全体) ← mkdir -p 19/models && cat > 19/models/samurai.js <<'EOF' // 侍(関節つき・モーション差分つき) Three.js r128 / 1 = 1cm / 原点=足元中央 / 正面 +Z / 身長 約170cm // 登録: window.MODELS.samurai // 左右はキャラクター基準: 左 = +X, 右 = -X(刀は右手持ち)…"
    },
    {
     "time": "23:00:15",
     "elapsed": 770,
-    "kind": "bash",
-    "text": "cd /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/19 && python3 - <<'EOF' p='models/samurai.js';s=open(p).read() s=s.replace(\"function solve2(S, T, l1\",\"function solve2(S, Tg, l1…"
+    "kind": "edit",
+    "version": 2,
+    "lines": 482,
+    "text": "v02(+0行) ← cd 19 && python3 - <<'EOF' p='models/samurai.js';s=open(p).read() s=s.replace(\"function solve2(S, T, l1\",\"function solve2(S, Tg, l1\").replace(\"const d = T.clone().sub(S); let D\",\"const d = Tg.clone()…"
    },
    {
     "time": "23:00:35",
     "elapsed": 789,
-    "kind": "bash",
-    "text": "cd /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/19 && python3 - <<'EOF' p='models/samurai.js';s=open(p).read() s=s.replace(\"V3(0, 9, -14).applyQuaternion(qf)\",\"V3(0, 9, -18).ap…"
+    "kind": "edit",
+    "version": 3,
+    "lines": 482,
+    "text": "v03(+0行) ← cd 19 && python3 - <<'EOF' p='models/samurai.js';s=open(p).read() s=s.replace(\"V3(0, 9, -14).applyQuaternion(qf)\",\"V3(0, 9, -18).applyQuaternion(qf)\") open(p,'w').write(s) t=open('_test.html').read()…"
    },
    {
     "time": "23:00:44",
@@ -784,7 +774,7 @@
     "time": "23:01:46",
     "elapsed": 860,
     "kind": "bash",
-    "text": "cd /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/19 && cat > _test2.html <<'EOF' <!DOCTYPE html><html><body><pre id=\"o\"></pre> <script src=\"https://cdnjs.cloudflare.com/ajax/lib…"
+    "text": "cd 19 && cat > _test2.html <<'EOF' <!DOCTYPE html><html><body><pre id=\"o\"></pre> <script src=\"https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js\"></script> <script src=\"models/samurai.…"
    },
    {
     "time": "23:02:06",
@@ -831,8 +821,10 @@
    {
     "time": "23:03:12",
     "elapsed": 946,
-    "kind": "shot",
-    "text": "cd /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/19 && python3 - <<'EOF' p='models/samurai.js';s=open(p).read() def rep(a,b): global s assert a in s,a s=s.replace(a,b) rep(\"cons…"
+    "kind": "edit",
+    "version": 4,
+    "lines": 483,
+    "text": "v04(+1行) ← cd 19 && python3 - <<'EOF' p='models/samurai.js';s=open(p).read() def rep(a,b): global s assert a in s,a s=s.replace(a,b) rep(\"const a = P.alpha, ca\",\"const a = P.alpha + lean, ca\") rep(\"alpha: (15 +…"
    },
    {
     "time": "23:03:22",
@@ -879,8 +871,10 @@
    {
     "time": "23:03:57",
     "elapsed": 991,
-    "kind": "shot",
-    "text": "cd /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/19 && python3 - <<'EOF' p='models/samurai.js';s=open(p).read() def rep(a,b): global s assert a in s,a s=s.replace(a,b) rep(\"add(…"
+    "kind": "edit",
+    "version": 5,
+    "lines": 483,
+    "text": "v05(+0行) ← cd 19 && python3 - <<'EOF' p='models/samurai.js';s=open(p).read() def rep(a,b): global s assert a in s,a s=s.replace(a,b) rep(\"add(head, new T.SphereGeometry(1, 24, 16), matSkin, 0, 2.2, 1.7).scale.s…"
    },
    {
     "time": "23:04:09",
@@ -892,19 +886,19 @@
     "time": "23:04:42",
     "elapsed": 1036,
     "kind": "bash",
-    "text": "cd /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/19 && rm -f _test.html _test2.html && cat > motion_check.html <<'EOF' <!DOCTYPE html> <html lang=\"ja\"><head><meta charset=\"UTF-8…"
+    "text": "cd 19 && rm -f _test.html _test2.html && cat > motion_check.html <<'EOF' <!DOCTYPE html> <html lang=\"ja\"><head><meta charset=\"UTF-8\"><title>侍モーション確認</title> <meta name=\"viewport\" content=\"width=devic…"
    },
    {
     "time": "23:04:54",
     "elapsed": 1048,
-    "kind": "bash",
-    "text": "cd /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/19 && sed -i 's#gt.offset.y-=m.speed\\*dt\\*sp/TILE/ (1/12)\\*(1/12);#gt.offset.y-=m.speed*dt*sp/TILE;#' motion_check.html && grep …"
+    "kind": "error",
+    "text": "cd 19 && sed -i 's#gt.offset.y-=m.speed\\*dt\\*sp/TILE/ (1/12)\\*(1/12);#gt.offset.y-=m.speed*dt*sp/TILE;#' motion_check.html && grep -n \"offset.y\" motion_check.html && \"/Applications/Google Chrome.app/…"
    },
    {
     "time": "23:05:02",
     "elapsed": 1057,
     "kind": "bash",
-    "text": "cd /Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge/19 && python3 - <<'EOF' p='motion_check.html';s=open(p).read() s=s.replace(\"gt.offset.y-=m.speed*dt*sp/TILE/ (1/12)*(1/12);\",\"gt…"
+    "text": "cd 19 && python3 - <<'EOF' p='motion_check.html';s=open(p).read() s=s.replace(\"gt.offset.y-=m.speed*dt*sp/TILE/ (1/12)*(1/12);\",\"gt.offset.y-=m.speed*dt*sp/TILE;\") open(p,'w').write(s) EOF grep -n \"o…"
    },
    {
     "time": "23:05:30",

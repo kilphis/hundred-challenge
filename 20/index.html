@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><title>侍の立ち合い</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#20242b;font:14px/1.5 -apple-system,"Hiragino Sans",sans-serif;color:#eee}
+#help{position:fixed;left:12px;top:10px;background:rgba(0,0,0,.45);padding:8px 12px;border-radius:6px;font-size:13px}
+#msg{position:fixed;left:0;right:0;top:38%;text-align:center;font-size:56px;font-weight:700;letter-spacing:.2em;text-shadow:0 2px 10px #000;pointer-events:none}
+#sub{position:fixed;left:0;right:0;top:calc(38% + 80px);text-align:center;font-size:16px;text-shadow:0 1px 4px #000;pointer-events:none}
+canvas{display:block}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="models/samurai.js"></script>
+</head><body>
+<div id="help">WASD / 矢印: 移動 Shift: 構え中はステップ / 押しっぱなしでダッシュ J / Space / クリック: 上段斬り R: やり直し</div>
+<div id="msg"></div><div id="sub"></div>
+<script>
+(function(){
+'use strict';
+const T=THREE;
+// ---------------------------------------------------------------- 調整値(cm, 秒)
+const RING_R=500;          // リング半径
+const WALK=120;            // 歩く速さ(walk モーションは 55cm/s 基準なので再生を速める)
+const DASH=320;            // ダッシュの速さ
+const BODY_R=35;           // 体の半径(押し合い)
+const REACH=175;           // 斬りが届く距離(中心間)
+const CONE=0.6;            // 斬りが当たる正面の角度(ラジアン、片側)
+const HIT_T0=0.36,HIT_T1=0.48; // attack の位相のうち当たりが出る区間
+const TURN=8;              // 向き直りの速さ
+const STEP_D=160;          // ステップで動く距離
+const STEP_TIME=0.28;      // ステップにかかる時間
+
+// ---------------------------------------------------------------- 描画
+const R=new T.WebGLRenderer({antialias:true});
+R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(innerWidth,innerHeight);
+R.shadowMap.enabled=true;R.shadowMap.type=T.PCFSoftShadowMap;document.body.appendChild(R.domElement);
+const S=new T.Scene();S.background=new T.Color(0x20242b);S.fog=new T.Fog(0x20242b,1500,4000);
+const cam=new T.PerspectiveCamera(45,innerWidth/innerHeight,5,6000);
+S.add(new T.HemisphereLight(0xfff6e8,0x4a4038,0.55));
+const sun=new T.DirectionalLight(0xfff1dc,0.85);sun.position.set(300,700,250);S.add(sun,sun.target);
+sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
+{const c=sun.shadow.camera;c.left=c.bottom=-650;c.right=c.top=650;c.near=1;c.far=2000;sun.shadow.bias=-0.0005;}
+const pl=new T.PointLight(0xffe2b8,0.3,3000);pl.position.set(-400,300,400);S.add(pl);
+
+// リング(円形の土俵状の台)
+function sandCanvas(){
+  const c=document.createElement('canvas');c.width=c.height=512;const g=c.getContext('2d');
+  g.fillStyle='#8f7c5c';g.fillRect(0,0,512,512);
+  for(let i=0;i<9000;i++){g.globalAlpha=0.12;g.fillStyle=Math.random()<0.5?'#6c5c42':'#a8987a';g.fillRect(Math.random()*512,Math.random()*512,1+Math.random()*2,1+Math.random()*2);}
+  g.globalAlpha=1;return c;
+}
+const sandT=new T.CanvasTexture(sandCanvas());sandT.wrapS=sandT.wrapT=T.RepeatWrapping;sandT.repeat.set(4,4);sandT.anisotropy=4;
+const ring=new T.Mesh(new T.CylinderGeometry(RING_R+40,RING_R+60,30,96),[
+  new T.MeshStandardMaterial({color:0x8a7656,roughness:.95}),
+  new T.MeshStandardMaterial({map:sandT,roughness:.95}),
+  new T.MeshStandardMaterial({color:0x8a7656,roughness:.95})]);
+ring.position.y=-15;ring.receiveShadow=true;S.add(ring);
+const edge=new T.Mesh(new T.TorusGeometry(RING_R,6,8,96),new T.MeshStandardMaterial({color:0xe8e0cc,roughness:.8}));
+edge.rotation.x=-Math.PI/2;edge.position.y=2;edge.receiveShadow=true;S.add(edge);
+const floor=new T.Mesh(new T.PlaneGeometry(8000,8000),new T.MeshStandardMaterial({color:0x3a3530,roughness:1}));
+floor.rotation.x=-Math.PI/2;floor.position.y=-30;floor.receiveShadow=true;S.add(floor);
+
+// ---------------------------------------------------------------- 侍
+// CPU は着物の色を変えて見分ける(藍 → 臙脂)
+function recolor(model){
+  const done=new Map();
+  model.traverse(o=>{
+    if(!o.isMesh)return;const m=o.material;
+    if(!m.map||!(m.map.image instanceof HTMLCanvasElement))return;
+    if(!(m.roughness===0.92||m.roughness===0.9))return; // 着物と前腕の布
+    const src=m.map.image;
+    if(!done.has(src)){
+      const c=document.createElement('canvas');c.width=src.width;c.height=src.height;const g=c.getContext('2d');
+      g.filter='hue-rotate(150deg) saturate(1.3)';g.drawImage(src,0,0);done.set(src,c);
+    }
+    const t=m.map.clone();t.image=done.get(src);t.needsUpdate=true;m.map=t;
+  });
+}
+function makeFighter(isCpu,x,z){
+  const holder=new T.Group(),fall=new T.Group(),model=window.MODELS.samurai();
+  if(isCpu)recolor(model);
+  fall.add(model);holder.add(fall);S.add(holder);
+  return {isCpu,holder,fall,U:model.userData,pos:new T.Vector2(x,z),yaw:0,
+    state:'idle',anim:'idle',t:0,atkT:0,hitDone:false,dead:false,deadT:0,
+    move:new T.Vector2(),dash:false,
+    // CPU 用
+    think:0,plan:'wait',planDir:1,cool:0};
+}
+let P,C,over,overT,startT;
+function reset(){
+  if(P){S.remove(P.holder);S.remove(C.holder);}
+  P=makeFighter(false,0,-300);C=makeFighter(true,0,300);
+  P.yaw=0;C.yaw=Math.PI;
+  over=null;overT=0;startT=1.0;
+  setMsg('始め','');
+}
+const $msg=document.getElementById('msg'),$sub=document.getElementById('sub');
+function setMsg(a,b){$msg.textContent=a;$sub.textContent=b;}
+
+// ---------------------------------------------------------------- 入力
+const keys={};
+addEventListener('keydown',e=>{
+  keys[e.code]=true;
+  if(e.code==='Space'||e.code==='KeyJ')attackReq=true;
+  if(e.code==='KeyR')reset();
+  if((e.code==='ShiftLeft'||e.code==='ShiftRight')&&!e.repeat)stepReq=true;
+  if(e.code.startsWith('Arrow')||e.code==='Space')e.preventDefault();
+});
+addEventListener('keyup',e=>{keys[e.code]=false;});
+addEventListener('mousedown',e=>{if(e.button===0)attackReq=true;});
+let attackReq=false,stepReq=false;
+
+// ---------------------------------------------------------------- 共通の動き
+const v2=new T.Vector2();
+function angDiff(a,b){let d=a-b;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;return d;}
+// ステップ: 構え(待機・すり足)中に、dir の向きへ素早く動く。向きは相手のまま
+function startStep(f,dir){
+  if(f.state!=='idle'||f.dead||f.anim==='run'||dir.lengthSq()<0.01)return false;
+  f.state='step';f.stepT=0;f.stepDir=dir.clone().normalize();return true;
+}
+function startAttack(f){if(f.state==='attack'||f.state==='step'||f.dead)return;f.state='attack';f.atkT=0;f.hitDone=false;}
+// f.move: 移動したい向き(長さ0..1)。f.dash: ダッシュ中か
+function stepFighter(f,o,dt){
+  if(f.dead){
+    f.deadT+=dt;const u=Math.min(f.deadT/0.7,1);
+    f.fall.rotation.x=-1.45*u*u;f.fall.position.y=6*u;
+    f.U.setPose(f.anim,f.t);return;
+  }
+  const toO=Math.atan2(o.pos.x-f.pos.x,o.pos.y-f.pos.y);
+  if(f.state==='attack'){
+    f.atkT+=dt/f.U.motions.attack.duration;
+    if(f.atkT>=1){f.state='idle';f.atkT=0;}
+    else{f.anim='attack';f.t=f.atkT;}
+  }
+  if(f.state==='step'){
+    const e=u=>1-(1-u)*(1-u),t0=f.stepT;
+    f.stepT=Math.min(1,f.stepT+dt/STEP_TIME);
+    f.pos.addScaledVector(f.stepDir,STEP_D*(e(f.stepT)-e(t0)));
+    f.yaw+=angDiff(toO,f.yaw)*Math.min(1,TURN*dt);
+    if(f.anim!=='idle'){f.anim='idle';f.t=0;}
+    if(f.stepT>=1)f.state='idle';
+  }
+  else if(f.state!=='attack'){
+    const m=f.move,len=Math.min(m.length(),1);
+    let targetYaw=toO;
+    if(len>0.05){
+      const sp=f.dash?DASH:WALK;
+      f.pos.x+=m.x/Math.max(m.length(),1)*sp*dt;f.pos.y+=m.y/Math.max(m.length(),1)*sp*dt;
+      if(f.dash){
+        targetYaw=Math.atan2(m.x,m.y);
+        if(f.anim!=='run'){f.anim='run';f.t=0;}
+        f.t+=dt*sp/f.U.motions.run.speed/f.U.motions.run.duration;
+      }else{
+        // 体の向きに対する前後成分で、歩きを前進/後退で再生
+        const fwd=m.x*Math.sin(f.yaw)+m.y*Math.cos(f.yaw);
+        if(f.anim!=='walk'){f.anim='walk';f.t=0;}
+        f.t+=dt*(fwd<-0.3?-1:1)*sp/f.U.motions.walk.speed/f.U.motions.walk.duration;
+      }
+    }else{
+      if(f.anim!=='idle'){f.anim='idle';f.t=0;}
+      f.t+=dt/f.U.motions.idle.duration;
+    }
+    f.yaw+=angDiff(targetYaw,f.yaw)*Math.min(1,TURN*dt);
+  }
+  // リングの外に出ない
+  const r=f.pos.length();if(r>RING_R-BODY_R)f.pos.multiplyScalar((RING_R-BODY_R)/r);
+  f.U.setPose(f.anim,f.t);
+}
+function separate(a,b){
+  v2.copy(b.pos).sub(a.pos);const d=v2.length(),min=BODY_R*2;
+  if(d<min&&d>1e-3){v2.multiplyScalar((min-d)/d/2);a.pos.sub(v2);b.pos.add(v2);}
+}
+// 当たり判定: 斬りの区間に、相手が届く距離・正面の角度に入っていれば当たり
+function checkHit(f,o){
+  if(f.state!=='attack'||f.hitDone||f.dead||o.dead)return false;
+  if(f.atkT<HIT_T0||f.atkT>HIT_T1)return false;
+  const d=f.pos.distanceTo(o.pos),toO=Math.atan2(o.pos.x-f.pos.x,o.pos.y-f.pos.y);
+  if(d<=REACH&&Math.abs(angDiff(toO,f.yaw))<=CONE){f.hitDone=true;return true;}
+  return false;
+}
+function place(f){f.holder.position.set(f.pos.x,0,f.pos.y);f.holder.rotation.y=f.yaw;}
+
+// ---------------------------------------------------------------- プレイヤー入力 → move
+const camFwd=new T.Vector2(0,1);
+let playerControl=function(){
+  let ix=0,iz=0;
+  if(keys.KeyW||keys.ArrowUp)iz+=1;if(keys.KeyS||keys.ArrowDown)iz-=1;
+  if(keys.KeyD||keys.ArrowRight)ix+=1;if(keys.KeyA||keys.ArrowLeft)ix-=1;
+  // カメラの前 = camFwd、右 = (-fz, fx) ではなく画面右(Three は +X が右、カメラ前 (fx,fz) の右は (-fz, fx))
+  const fx=camFwd.x,fz=camFwd.y,rx=-fz,rz=fx;
+  P.move.set(fx*iz+rx*ix,fz*iz+rz*ix);
+  P.dash=!!(keys.ShiftLeft||keys.ShiftRight);
+  if(stepReq&&startStep(P,P.move))P.dash=false;
+  stepReq=false;
+  if(attackReq){startAttack(P);}
+  attackReq=false;
+};
+
+// ---------------------------------------------------------------- CPU
+function cpuControl(dt){
+  C.move.set(0,0);C.dash=false;
+  if(startT>0||over)return;
+  C.cool-=dt;C.think-=dt;
+  v2.copy(P.pos).sub(C.pos);const d=v2.length();const dir=v2.clone().normalize();
+  const side=new T.Vector2(-dir.y,dir.x).multiplyScalar(C.planDir);
+  if(C.think<=0){
+    C.think=0.25+Math.random()*0.3;
+    // プレイヤーが振りかぶっていて近いと、ときどき下がる
+    if(P.state==='attack'&&P.atkT<HIT_T0&&d<REACH+40&&Math.random()<0.45)C.plan='back';
+    else if(d>380)C.plan='dash';
+    else if(d>REACH-10)C.plan=Math.random()<0.25?'side':'walk';
+    else if(C.cool<=0&&Math.random()<0.65)C.plan='attack';
+    else C.plan=Math.random()<0.5?'back':'side';
+    if(Math.random()<0.3)C.planDir*=-1;
+  }
+  switch(C.plan){
+    case 'dash':C.move.copy(dir);C.dash=true;if(d<300)C.plan='walk';break;
+    case 'walk':C.move.copy(dir);if(d<REACH-20&&C.cool<=0)C.plan='attack';break;
+    case 'side':C.move.copy(side).addScaledVector(dir,d>REACH?0.3:0);break;
+    case 'back':C.move.copy(dir).multiplyScalar(-1);break;
+    case 'attack':startAttack(C);C.cool=0.6+Math.random()*0.9;C.plan='wait';break;
+  }
+}
+
+// ---------------------------------------------------------------- カメラ
+const camPos=new T.Vector3(0,260,-750),look=new T.Vector3();
+function updateCam(dt){
+  v2.copy(C.pos).sub(P.pos);
+  if(v2.lengthSq()<1)v2.set(Math.sin(P.yaw),Math.cos(P.yaw));
+  v2.normalize();
+  const want=new T.Vector3(P.pos.x-v2.x*420-v2.y*70,240,P.pos.y-v2.y*420+v2.x*70);
+  const k=Math.min(1,4*dt);camPos.lerp(want,k);
+  const lk=new T.Vector3((P.pos.x+C.pos.x)/2,90,(P.pos.y+C.pos.y)/2);look.lerp(lk,k);
+  cam.position.copy(camPos);cam.lookAt(look);
+  camFwd.set(look.x-camPos.x,look.z-camPos.z).normalize();
+}
+
+// ---------------------------------------------------------------- ループ
+reset();
+look.set(0,90,0);
+function tick(dt){
+  if(startT>0){startT-=dt;if(startT<=0)setMsg('','');P.move.set(0,0);attackReq=false;stepReq=false;}
+  else if(!over)playerControl();else{P.move.set(0,0);attackReq=false;stepReq=false;}
+  cpuControl(dt);
+  stepFighter(P,C,dt);stepFighter(C,P,dt);
+  if(!P.dead&&!C.dead)separate(P,C);
+  if(!over){
+    const hp=checkHit(P,C),hc=checkHit(C,P);
+    if(hp)C.dead=true;if(hc)P.dead=true;
+    if(hp&&hc){over='相打ち';}else if(hp)over='勝ち';else if(hc)over='負け';
+    if(over)setMsg(over,'R でもう一度');
+  }
+  place(P);place(C);
+  updateCam(dt);
+}
+// 確認用: ?sim=秒 でその時間ぶん進めてから描く。?auto=1 でプレイヤーも自動で前進して斬る
+const Q=new URLSearchParams(location.search);
+if(Q.get('auto')){const pc=playerControl;playerControl=function(){pc();P.move.copy(camFwd);if(P.pos.distanceTo(C.pos)<REACH-15)startAttack(P);};}
+if(Q.get('step')){const pc=playerControl;playerControl=function(){pc();if(C.state==='attack'&&C.atkT>0.2&&C.atkT<0.3){const s=new T.Vector2(-camFwd.y,camFwd.x);P.move.copy(s);stepReq=true;startStep(P,s);}};}
+for(let i=0,n=Number(Q.get('sim')||0)*60;i<n;i++)tick(1/60);
+let last=performance.now();
+(function loop(now){
+  requestAnimationFrame(loop);
+  const dt=Math.min((now-last)/1000,0.05);last=now;
+  tick(dt);
+  R.render(S,cam);
+})(performance.now());
+addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();R.setSize(innerWidth,innerHeight);});
+})();
+</script></body></html>

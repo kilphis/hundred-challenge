@@ -1,0 +1,329 @@
+---
+title: "シリアル3次元画像をジグザグ持続ホモロジーで読む"
+subtitle: "共焦点顕微鏡の z スタック(skimage `cells3d`)で試す"
+date: 2026-11-13
+lang: ja
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    code-fold: true
+    code-summary: "コード"
+    embed-resources: true
+    fig-width: 9
+execute:
+  warning: false
+jupyter: python3
+---
+
+```{python}
+#| include: false
+import numpy as np, matplotlib.pyplot as plt, matplotlib as mpl
+import plotly.graph_objects as go
+from skimage import data, filters, transform, measure
+from zz import zigzag, presence
+mpl.rcParams["font.family"] = "Hiragino Sans"
+mpl.rcParams["figure.dpi"] = 110
+
+def alive(bars, t):
+    return sum(1 for a, e in bars if a <= t <= e)
+
+def barcode(ax, res, n, dims=(0, 1), colors=("#3b6fb6", "#d1495b"), title=None, loc="lower right"):
+    """横軸 = スライス番号(.5 は隣との和集合)。"""
+    y = 0
+    for k in dims:
+        bars = sorted(res.get(k, []), key=lambda b: (b[0], -b[1]))
+        for a, e in bars:
+            x0, x1 = a / 2, e / 2
+            if x1 > x0:
+                ax.plot([x0, x1], [y, y], color=colors[k], lw=2.2, solid_capstyle="butt")
+            else:
+                ax.plot([x0], [y], "o", color=colors[k], ms=3)
+            y += 1
+        y += 1
+    ax.set_xlim(-0.5, n - 0.5); ax.set_ylim(y, -1); ax.set_yticks([])
+    ax.set_xlabel("スライス番号(z)")
+    from matplotlib.lines import Line2D
+    ax.legend([Line2D([], [], color=colors[k], lw=3) for k in dims],
+              [f"H{k}(" + ("塊" if k == 0 else "穴") + ")" for k in dims], loc=loc)
+    if title: ax.set_title(title)
+```
+
+## 1. シリアル3次元画像とは
+
+**同じ物体を少しずつ位置をずらしながら撮った 2D 画像の束**のことです。1枚1枚を「スライス」、束を「スタック」と呼びます。
+
+| 撮り方 | 何をずらすか | 例 |
+|---|---|---|
+| 共焦点顕微鏡の **z スタック** | 焦点面の深さ | 細胞・組織の蛍光像 |
+| **連続切片**(serial section)電子顕微鏡 | 物理的に薄く切った切片の順番 | 脳の神経回路の再構成 |
+| CT / MRI | 体軸方向の位置 | 医用画像 |
+| (変種)**3D の時系列** | 時刻 | 生きた細胞の分裂の追跡 |
+
+並べると3次元のボリュームになりますが、データとしてはあくまで「スライスの列」です。スライスどうしの位置がずれていたり、深いほど暗くなったりします。
+
+このレポートで使うのは scikit-image に付属の `cells3d` です。培養細胞を共焦点顕微鏡で撮った **60 枚の z スタック**で、チャンネルは2つあります(0 = 細胞膜、1 = 核)。
+
+```{python}
+V = data.cells3d()                      # (z, ch, y, x) = (60, 2, 256, 256)
+print("形:", V.shape, " ボクセル間隔(公式): z 0.29 µm, xy 0.26 µm")
+zs = [5, 15, 25, 35, 45, 55]
+fig, axs = plt.subplots(2, 6, figsize=(12, 4.4))
+for j, z in enumerate(zs):
+    for c, name in [(1, "核"), (0, "膜")]:
+        ax = axs[0 if c == 1 else 1, j]
+        ax.imshow(V[z, c], cmap="magma"); ax.set_xticks([]); ax.set_yticks([])
+        ax.set_title(f"z={z} {name}", fontsize=9)
+plt.tight_layout(); plt.show()
+```
+
+同じ視野で深さだけが変わっています。核(上段)は浅いところには写らず、中ほどの深さで大きく写り、また消えていきます。
+
+## 2. 何をしたいか:スライスをまたいで「同じもの」を数える
+
+1枚ごとに核の塊を数えるのは簡単です(連結成分ラベリング)。問題は **次のスライスのどの塊が前のどれと同じか** です。塊はスライスを進むうちに
+
+- 現れる/消える
+- 1つが2つに分かれる/2つが1つにくっつく
+- 輪っか(穴)ができる/ふさがる
+
+と変化します。これを手で対応付けると、規則をどう書くかで答えが変わってしまいます。
+
+### ジグザグ持続ホモロジー
+
+隣り合うスライス $S_i, S_{i+1}$ は包含関係にない(どちらかが他方に含まれるわけではない)ので、普通の持続ホモロジー(大きくなっていく列 $X_0\subset X_1\subset\cdots$)は使えません。そこで **和集合をはさんで、矢印の向きを交互に** します。
+
+$$
+S_0 \hookrightarrow S_0\cup S_1 \hookleftarrow S_1 \hookrightarrow S_1\cup S_2 \hookleftarrow S_2 \hookrightarrow \cdots
+$$
+
+和集合 $S_i\cup S_{i+1}$ は「2枚を重ねた画像」です。$S_i$ の塊と $S_{i+1}$ の塊が重ねた画像の中でつながっていれば、**同じものが続いている**とみなされます。
+
+このジグザグ列にも普通の持続ホモロジーと同じく**バーコード**が一意に定まります(Carlsson–de Silva 2010)。各バーは
+
+- **H0 のバー**:ある塊が「何枚目から何枚目まで」続いたか
+- **H1 のバー**:ある穴(輪っかに囲まれた領域)が「何枚目から何枚目まで」続いたか
+
+を表します。バーの始まりと終わりは「現れた・分かれた・くっついた・消えた」のどれかです。
+
+::: {.callout-note collapse="true"}
+## 実装の中身(クリックで開く)
+- 各スライスを2値化し、前景ピクセルを頂点とする **8 近傍のクリーク複体**にする(2×2 ブロックは四面体まで埋める)。こうすると H0 = 8 連結の塊、H1 = 4 連結の背景の穴 になり、画像処理の普通の数え方と一致します。
+- 時刻 $t=0,1,2,\dots$ を「偶数 = スライス $S_{t/2}$、奇数 = 和集合」とし、各単体がどの時刻に存在するかを並べて、[dionysus 2](https://mrzv.org/software/dionysus2/) の `zigzag_homology_persistence` に渡しています。コードは `zz.py`。
+- 図の横軸は**スライス番号**で、`.5` は「その2枚の和集合の段階」です。たとえば 20.5 で終わるバーは、20枚目にはあるが、20枚目と21枚目を重ねた段階で他の塊に吸収された、ということです。
+:::
+
+## 3. 答えが分かっている人工データで読み方を練習
+
+まず作り物で確かめます。30 枚のスライスに3つの物体を置きました。
+
+- **A:Y 字の管** — 下から1本で上がってきて、15 枚目で2本に分かれる
+- **B:中空の筒** — 5〜20 枚目だけにある。断面は輪っか
+- **C:Λ 字** — 2本で上がってきて、18 枚目で1本にくっつく
+
+```{python}
+n, H, W = 30, 40, 60
+yy, xx = np.mgrid[:H, :W]
+toy = np.zeros((n, H, W), bool)
+for z in range(n):
+    # A: Y字
+    if z < 15:
+        toy[z] |= (xx - 10) ** 2 + (yy - 20) ** 2 <= 9
+    else:
+        dx = (z - 15) * 0.6 + 3
+        toy[z] |= (xx - 10) ** 2 + (yy - 20 + dx) ** 2 <= 6
+        toy[z] |= (xx - 10) ** 2 + (yy - 20 - dx) ** 2 <= 6
+    # B: 筒
+    if 5 <= z <= 20:
+        r2 = (xx - 30) ** 2 + (yy - 20) ** 2
+        toy[z] |= (r2 <= 49) & (r2 >= 16)
+    # C: Λ字
+    if z < 18:
+        dx = (18 - z) * 0.6 + 2.6
+        toy[z] |= (xx - 50) ** 2 + (yy - 20 + dx) ** 2 <= 5
+        toy[z] |= (xx - 50) ** 2 + (yy - 20 - dx) ** 2 <= 5
+    else:
+        toy[z] |= (xx - 50) ** 2 + (yy - 20) ** 2 <= 9
+res_toy, T = zigzag(toy)
+
+fig = plt.figure(figsize=(12, 5.2))
+gs = fig.add_gridspec(2, 6, height_ratios=[1, 1.5])
+for j, z in enumerate([2, 8, 14, 17, 20, 26]):
+    ax = fig.add_subplot(gs[0, j]); ax.imshow(toy[z], cmap="gray_r")
+    ax.set_title(f"z={z}", fontsize=9); ax.set_xticks([]); ax.set_yticks([])
+    for x, lab in [(10, "A"), (30, "B"), (50, "C")]:
+        ax.text(x, 38, lab, ha="center", fontsize=8, color="#888")
+ax = fig.add_subplot(gs[1, :]); barcode(ax, res_toy, n, title="人工データのバーコード")
+plt.tight_layout(); plt.show()
+```
+
+3次元で見るとこうなります(ドラッグで回転できます。上に行くほどスライス番号が大きい)。
+
+```{python}
+tz, ty, tx = np.mgrid[:n, :H, :W]
+fig = go.Figure(go.Isosurface(
+    x=tx.ravel(), y=ty.ravel(), z=tz.ravel(), value=toy.astype(np.float32).ravel(),
+    isomin=0.5, isomax=1, surface_count=1, colorscale=[[0, "#3b6fb6"], [1, "#3b6fb6"]], showscale=False,
+    caps=dict(x_show=False, y_show=False, z_show=False)))
+for x, lab in [(10, "A:Y字"), (30, "B:筒"), (50, "C:Λ字")]:
+    fig.add_trace(go.Scatter3d(x=[x], y=[-6], z=[0], mode="text", text=[lab], showlegend=False))
+fig.update_layout(height=480, margin=dict(l=0, r=0, t=0, b=0),
+                  scene=dict(aspectmode="data", xaxis_title="x", yaxis_title="y", zaxis_title="スライス番号",
+                             camera=dict(eye=dict(x=0.2, y=-1.9, z=0.5))))
+fig.show()
+```
+
+```{python}
+#| echo: false
+from IPython.display import Markdown
+rows = [f"| H{k} | {a/2:g} | {e/2:g} |" for k in (0, 1) for a, e in sorted(res_toy[k])]
+Markdown("| 次元 | 始まり | 終わり |\n|---|---|---|\n" + "\n".join(rows))
+```
+
+読み方:
+
+- **0〜29 の長い H0 が2本**:A の幹と、C のうち合流後も続く側。
+- **15〜29 の H0**:A が分かれて**新しく生まれた**枝。分岐は「バーの誕生」として出ます。
+- **0〜17 の H0**:C の片方の脚。17 枚目と 18 枚目を重ねた段階でもう片方とつながり、**片方が死にます**。最後に単独で存在したのは 17 枚目なので、17 で終わります。
+- **4.5〜20.5 の H0 と H1 が1本ずつ**:B の筒の「塊」と「穴」。B があるのは 5〜20 枚目ですが、4 枚目と 5 枚目を重ねた段階で既に写っているので、バーは 4.5 から始まります(終わりの 20.5 も同様)。現れる・消えるは .5 に、分かれる・くっつくは整数に出ます。
+
+注意点が1つあります。Y で分かれた2本のうち**どちらが元の幹か**は数学的には決まりません。バーの本数と長さは一意ですが、「どの塊がどのバーか」の割り当ては一意ではないのです。
+
+## 4. 実データ:核チャンネル
+
+### 前処理
+
+- xy を 1/4 に縮小(256→64。計算量のため。1 ピクセル ≈ 1 µm)
+- 軽くぼかしてから、**スタック全体で1つの閾値**(大津の方法)で2値化
+
+```{python}
+v = transform.downscale_local_mean(V[:, 1].astype(float), (1, 4, 4))
+v = filters.gaussian(v, sigma=(0.5, 1, 1))
+th = filters.threshold_otsu(v)
+S = v > th
+nz = len(S)
+fig, axs = plt.subplots(2, 10, figsize=(13, 3.2))
+for j, z in enumerate(range(14, 60, 5)):
+    axs[0, j].imshow(v[z], cmap="magma", vmax=v.max()); axs[1, j].imshow(S[z], cmap="gray_r")
+    axs[0, j].set_title(f"z={z}", fontsize=8)
+    for a in axs[:, j]: a.set_xticks([]); a.set_yticks([])
+axs[0, 0].set_ylabel("輝度", fontsize=8); axs[1, 0].set_ylabel("2値", fontsize=8)
+plt.tight_layout(); plt.show()
+```
+
+3次元で見るとこうなります(ドラッグで回転できます。z は実寸比)。
+
+```{python}
+L3 = measure.label(S, connectivity=3)
+vs = transform.downscale_local_mean(v, (2, 2, 2)).astype(np.float32)  # 表示用に間引く
+zz_, yy_, xx_ = np.mgrid[:vs.shape[0], :32, :32].astype(np.float32)
+fig = go.Figure(go.Isosurface(
+    x=xx_.ravel() * 2.08, y=yy_.ravel() * 2.08, z=zz_.ravel() * 0.58, value=vs.ravel(),
+    isomin=th, isomax=v.max(), surface_count=1, colorscale="Viridis", showscale=False,
+    caps=dict(x_show=False, y_show=False, z_show=False), opacity=0.9))
+fig.update_layout(height=520, margin=dict(l=0, r=0, t=0, b=0),
+                  scene=dict(aspectmode="data", xaxis_title="x (µm)", yaxis_title="y (µm)", zaxis_title="z (µm)"))
+fig.show()
+```
+
+### ジグザグ持続の計算と検算
+
+```{python}
+res, T = zigzag(S)
+ok = all(alive(res[0], 2 * i) == measure.label(S[i], connectivity=2).max()
+         and alive(res[0], 2 * i) - alive(res[1], 2 * i) == measure.euler_number(S[i], connectivity=2)
+         for i in range(nz))
+print(f"H0 バー {len(res[0])} 本, H1 バー {len(res[1])} 本")
+print("検算: 全スライスで『生きている H0 本数 = 2D の連結成分数』『H0−H1 = オイラー数』:", ok)
+```
+
+検算の意味:どのスライスの時点でも、その瞬間に生きているバーの本数が、そのスライス単独で数えた塊・穴の数と一致しなければなりません。全 60 枚で一致しました。
+
+```{python}
+fig, axs = plt.subplots(2, 1, figsize=(10, 8.5), height_ratios=[1, 3.4], sharex=True)
+axs[0].plot(range(nz), [measure.label(s, connectivity=2).max() for s in S], "-o", ms=3, color="#3b6fb6", label="2D 連結成分数")
+axs[0].plot(range(nz), [alive(res[1], 2 * i) for i in range(nz)], "-o", ms=3, color="#d1495b", label="2D 穴の数")
+axs[0].legend(); axs[0].set_ylabel("個数"); axs[0].grid(alpha=.3)
+barcode(axs[1], res, nz, title="核チャンネルのバーコード", loc="upper left")
+axs[1].tick_params(labelbottom=True)
+plt.tight_layout(); plt.show()
+```
+
+上の折れ線は「各スライスで数えた塊の数」です。下のバーコードは、その数の増減を**どの塊が生まれ、どの塊が消えたか**に分解したものです。上のグラフの各 z で縦に切ると、そこを通るバーの本数が上の値になります。
+
+### 3D の連結成分と比べる
+
+ボリューム全体を3次元で連結成分ラベリングすると、塊は `{python} int(L3.max())` 個です。一方 H0 のバーは `{python} len(res[0])` 本あります。食い違うのは、**3D では1つの塊でも、スライスで見ると何本かの脚が途中で合流している**からです(人工データの Λ と同じ)。
+
+```{python}
+#| echo: false
+from IPython.display import Markdown
+props = sorted(measure.regionprops(L3), key=lambda p: -p.area)
+rows = []
+for p in props:
+    z0, z1 = p.bbox[0], p.bbox[3] - 1
+    sub = (L3 == p.label)
+    rz, _ = zigzag(sub)
+    n_long = sum(1 for a, e in rz[0] if (e - a) / 2 >= 3)
+    rows.append(f"| {p.label} | {int(p.area)} | {z0}–{z1} | {len(rz[0])} | {n_long} | {len(rz.get(1, []))} |")
+Markdown("| 3D 成分 | ボクセル数 | z の範囲 | H0 バー | うち 3 枚以上続く | H1 バー |\n|---|---|---|---|---|---|\n" + "\n".join(rows))
+```
+
+成分ごとに切り出して同じ計算をした表です。大きな成分(核が何個かくっついて写ったもの)ほど H0 バーが多く、小さな成分はほぼ1本です。
+
+**3D ラベリングは「最終的につながっているか」しか言いません。ジグザグのバーコードは「どの深さで、何本の脚がどこで合流するか」まで言います。** 2つの核が接していて 3D では1つに見えるとき、バーコードでは「途中まで別々の2本のバー」として現れ、分ける手がかりになります。
+
+## 5. うまくいかない例:膜チャンネル
+
+膜は細胞の輪郭なので、断面は「穴のある網目」になります。H1 のバー(穴が何枚続くか)は、**1つの細胞が何枚のスライスにまたがっているか**を表すはずです。
+
+ただし、深くなるほど暗くなるので、**スライスごとに**大津の閾値を取りました。
+
+```{python}
+m = transform.downscale_local_mean(V[:, 0].astype(float), (1, 4, 4))
+m = filters.gaussian(m, sigma=(0.5, 0.7, 0.7))
+M = np.stack([s > filters.threshold_otsu(s) for s in m])
+resM, _ = zigzag(M)
+fig = plt.figure(figsize=(12, 7.5))
+gs = fig.add_gridspec(2, 6, height_ratios=[1, 2.6])
+for j, z in enumerate([10, 20, 30, 40, 50, 58]):
+    ax = fig.add_subplot(gs[0, j]); ax.imshow(M[z], cmap="gray_r"); ax.set_title(f"z={z}", fontsize=9)
+    ax.set_xticks([]); ax.set_yticks([])
+ax = fig.add_subplot(gs[1, :4]); barcode(ax, resM, len(M), dims=(1,), title="膜チャンネルの H1 バーコード")
+ax = fig.add_subplot(gs[1, 4:])
+L = np.array([(e - a) / 2 for a, e in resM[1]])
+ax.hist(L, bins=np.arange(0, L.max() + 1, 0.5), color="#d1495b"); ax.set_xlabel("バーの長さ(枚)"); ax.set_ylabel("本数")
+plt.tight_layout(); plt.show()
+print(f"H1 バー {len(resM[1])} 本。長さの中央値 {np.median(L):g} 枚、最長 {L.max():g} 枚")
+```
+
+細胞1個は 10 枚以上にまたがるはずですが、ほとんどのバーが数枚で切れています。原因は次の2つです。
+
+- 縮小と2値化で膜の線があちこちで途切れ、**輪っかが閉じたり開いたりを繰り返す**。そのたびにバーが切れて、別のバーとして生まれ直す。
+- スライスごとに閾値を変えたので、閾値の揺れそのものがバーの切れ目になる。
+
+ジグザグ持続は「2値化したあとの形」を忠実に追うだけです。**2値化が不安定なら、出てくるバーも不安定**です。核の方がうまくいったのは、核がもともと詰まった塊で、2値化に強いからです。
+
+## 6. まとめ:何が言えて、何に気をつけるか
+
+**言えること**
+
+- シリアル画像の「塊・穴がどの深さからどの深さまで続くか」を、対応付けの規則を書かずに一意に要約できる。
+- 分岐・合流がバーの誕生・死として出るので、3D ラベリングでは1つに潰れる構造(接した核、枝分かれする管)を分解して見られる。
+- 検算(各スライスの連結成分数・オイラー数との一致)で、計算が正しいことを確かめられる。
+
+**気をつけること**
+
+1. **位置合わせ**:和集合で「重なる = 同じもの」とみなしている。スライス間のずれが大きいと偽のバーが出る。
+2. **2値化**:閾値1つで結果が変わる(第5節)。閾値も動かすと2パラメータの問題になり、バーコードという形の要約はなくなる。
+3. **割り当ては一意でない**:バーの本数と長さは一意だが、「どの塊がどのバーか」は一意でない(第3節の Y 字)。
+4. **z が全部そろったボリュームなら、普通の道具でも同じ情報が取れる**:今回の列は、3D 物体の高さ関数の「レベルセット・ジグザグ」と同じもの。これは extended persistence と1対1に対応する(Carlsson–de Silva–Morozov 2009)。ジグザグでしか扱えないのは、**フレーム間に包含がない 3D の時系列**の方です。
+
+## 参考
+
+- G. Carlsson, V. de Silva. *Zigzag Persistence.* Found. Comput. Math. 10 (2010).
+- G. Carlsson, V. de Silva, D. Morozov. *Zigzag persistent homology and real-valued functions.* SoCG 2009.
+- M. B. Botnan, M. Lesnick. *Algebraic stability of zigzag persistence modules.* AGT 18 (2018).
+- T. K. Dey, T. Hou. *Fast Computation of Zigzag Persistence.* ESA 2022.
+- D. Morozov. *Dionysus 2*. <https://mrzv.org/software/dionysus2/>
+- scikit-image `skimage.data.cells3d`(Allen Institute for Cell Science の画像に由来)

@@ -1,10 +1,10 @@
 """サブエージェントの作業記録(JSONL)から、モデルjsの途中版と作業の経過を取り出す。
 
 使い方: uv run --no-project _3dkit/history.py <出力先> <名前>=<jsonl>:<対象jsの絶対パス>:<関数名>[:<pose>] ...
-出力: <出力先>/<名前>/vNN.js(途中版) と <出力先>/history.json(経過)
-Write/Edit だけを再生する。Bash の sed 等での書き換えは拾えない(経過に「Bash」として残る)。
+出力: <出力先>/<名前>/vNN.js(途中版) と <出力先>/history.json・history.js(経過)。見るのは viewer.html
+Write/Edit と Bash を一時フォルダで記録順に再実行する(shot.sh は何もしない代わりに差し替える)。
 """
-import json, os, sys
+import json, os, shlex, shutil, subprocess, sys, tempfile
 from datetime import datetime, timedelta, timezone
 
 JST = timezone(timedelta(hours=9))
@@ -19,7 +19,22 @@ def short(s, n=160):
     return s if len(s) <= n else s[: n - 1] + "…"
 
 
+ROOT = "/Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge"
+
+
+def sandbox_run(box, cwd, cmd):
+    """記録の Bash コマンドを、パスを一時フォルダに差し替えて実行する。実行後の cwd を返す。"""
+    cmd = cmd.replace(ROOT, box)
+    script = f"cd {shlex.quote(cwd)} 2>/dev/null; {cmd}\npwd > {box}/.cwd"
+    subprocess.run(["bash", "-c", script], cwd=box, capture_output=True, timeout=60)
+    try:
+        return open(f"{box}/.cwd").read().strip()
+    except OSError:
+        return cwd
+
+
 def replay(jsonl, target):
+    """Write/Edit と Bash(cat >, sed, python 等)を一時フォルダで順に再実行し、対象jsが変わるたびに版を取る。"""
     rows = load(jsonl)
     errors = set()
     for r in rows:
@@ -28,6 +43,13 @@ def replay(jsonl, target):
             for b in c:
                 if b.get("type") == "tool_result" and b.get("is_error"):
                     errors.add(b.get("tool_use_id"))
+    box = tempfile.mkdtemp()
+    for d in ["_3dkit/bench/2026-11-12", "19/models"]:
+        os.makedirs(f"{box}/{d}", exist_ok=True)
+    stub = f"{box}/_3dkit/shot.sh"
+    open(stub, "w").write("#!/bin/bash\nexit 0\n"); os.chmod(stub, 0o755)
+    tgt = target.replace(ROOT, box)
+    cwd = box
     t0 = None
     text, versions, events = None, [], []
     for r in rows:
@@ -43,37 +65,40 @@ def replay(jsonl, target):
                 continue
             name, inp = b["name"], b["input"]
             failed = b["id"] in errors
-            fp = inp.get("file_path", "")
-            if name in ("Write", "Edit") and os.path.abspath(fp) == target:
-                if failed:
-                    events.append({**ev, "kind": "error", "text": f"{name} 失敗"})
-                    continue
-                before = text
-                if name == "Write":
-                    text = inp["content"]
-                    desc = f"全体を書く({text.count(chr(10)) + 1}行)"
-                else:
-                    if text is None or inp["old_string"] not in text:
-                        events.append({**ev, "kind": "error", "text": "Edit を再生できない(元の文字列なし)"})
-                        continue
-                    text = text.replace(inp["old_string"], inp["new_string"]) if inp.get("replace_all") \
-                        else text.replace(inp["old_string"], inp["new_string"], 1)
-                    d = inp["new_string"].count("\n") - inp["old_string"].count("\n")
-                    desc = f"一部を書き換え({d:+d}行): {short(inp['new_string'].strip().splitlines()[0] if inp['new_string'].strip() else '(削除)', 90)}"
-                versions.append(text)
-                events.append({**ev, "kind": "edit", "version": len(versions), "text": desc,
-                               "lines": text.count("\n") + 1, "first": before is None})
+            fp = os.path.abspath(inp.get("file_path", "")) if inp.get("file_path") else ""
+            if name == "Write" and fp and not failed:
+                p = fp.replace(ROOT, box); os.makedirs(os.path.dirname(p), exist_ok=True)
+                open(p, "w").write(inp["content"])
+            elif name == "Edit" and fp and not failed and os.path.exists(fp.replace(ROOT, box)):
+                p = fp.replace(ROOT, box); s = open(p).read()
+                s = s.replace(inp["old_string"], inp["new_string"]) if inp.get("replace_all") \
+                    else s.replace(inp["old_string"], inp["new_string"], 1)
+                open(p, "w").write(s)
+            elif name == "Bash" and not failed:
+                cwd = sandbox_run(box, cwd, inp.get("command", ""))
+            # 経過の記録
+            cmd = inp.get("command", "")
+            if name in ("Write", "Edit") and fp == target:
+                kind, desc = ("error", f"{name} 失敗") if failed else ("tool", "Write で全体を書く" if name == "Write" else
+                             f"Edit: {short(inp['new_string'].strip().splitlines()[0] if inp['new_string'].strip() else '(削除)', 90)}")
             elif name == "Bash":
-                cmd = inp.get("command", "")
-                kind = "shot" if "shot.sh" in cmd else "bash"
-                events.append({**ev, "kind": kind, "text": short(cmd, 200)})
+                kind = "error" if failed else ("shot" if "shot.sh" in cmd and "cat >" not in cmd else "bash")
+                desc = short(cmd.replace(ROOT + "/", ""), 200)
             elif name == "Read":
-                kind = "look" if fp.endswith(".png") else "read"
-                events.append({**ev, "kind": kind, "text": os.path.basename(fp)})
+                kind, desc = ("look" if fp.endswith(".png") else "read"), os.path.basename(fp)
             elif name == "SubagentHandback":
-                events.append({**ev, "kind": "done", "text": "完了報告"})
+                kind, desc = "done", "完了報告"
             else:
-                events.append({**ev, "kind": "other", "text": name})
+                kind, desc = "other", name
+            new = open(tgt).read() if os.path.exists(tgt) else None
+            if new is not None and new != text:
+                d = (new.count("\n") - text.count("\n")) if text else new.count("\n") + 1
+                versions.append(new); text = new
+                events.append({**ev, "kind": "edit", "version": len(versions), "lines": new.count("\n") + 1,
+                               "text": f"v{len(versions):02d}({'全体' if len(versions) == 1 else f'{d:+d}行'}) ← {desc}"})
+            else:
+                events.append({**ev, "kind": kind, "text": desc})
+    shutil.rmtree(box, ignore_errors=True)
     return versions, events
 
 
@@ -93,6 +118,8 @@ def main():
         result[name] = {"fn": fn, "pose": pose, "versions": len(versions), "events": events}
         print(name, len(versions), "versions", len(events), "events")
     json.dump(result, open(os.path.join(out, "history.json"), "w"), ensure_ascii=False, indent=1)
+    # file:// のページから読めるよう js でも出す(viewer.html が読む)
+    open(os.path.join(out, "history.js"), "w").write("window.HISTORY = " + json.dumps(result, ensure_ascii=False) + ";\n")
 
 
 if __name__ == "__main__":

@@ -1,32 +1,48 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>雲の巨人</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>html,body{margin:0;height:100%;overflow:hidden;background:#000}canvas{display:block}
-#ui{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:8px}
-#ui button{font:14px "Hiragino Sans",sans-serif;padding:7px 14px;border:1px solid rgba(255,255,255,.6);border-radius:18px;background:rgba(0,0,0,.35);color:#fff;cursor:pointer}
-#ui button.on{background:rgba(255,255,255,.85);color:#223}</style>
+#hud{position:fixed;left:12px;top:10px;color:#fff;font:13px/1.6 "Hiragino Sans",sans-serif;text-shadow:0 1px 3px #000;white-space:pre;pointer-events:none}
+#cam{position:fixed;right:12px;bottom:12px;width:200px;transform:scaleX(-1);border-radius:8px;opacity:.85;display:none}</style>
 <script src="https://cdn.jsdelivr.net/npm/pixi.js@8/dist/pixi.min.js"></script>
 </head><body>
-<div id="ui"></div>
+<div id="hud"></div><video id="cam" playsinline muted></video>
 <script>
+// 巨人の造形はユーザーのラフ「いかついが、どこかふとした時に優しそうなおじさん」に合わせる。
 // ---- 状態(数値はClaudeが仮決め) ----
 // size: 全体の大きさ / puff: 雲粒が外へふくらむ量 / dark: 雲の暗さ / rain: 雨量 / storm: 雷と風
-// arm: 腕の高さ(-1 下げる 〜 1 振り上げる) / brow: 眉(-1 困り 〜 1 怒り) / mouth: 口角(1 上がる 〜 -1 下がる)
-// open: 口の開き / lid: まぶたの下がり具合(0 見開く 〜 1 閉じる)
+// arm: 腕の高さ(-1 下げる 〜 1 振り上げる) / cross: 腕組み
+// brow: 眉(-1 困り 〜 1 怒り) / smile: 口角(-1 への字 〜 1 笑う) / grin: 歯を見せて笑う
+// open: 叫ぶ口 / lid: まぶた(0 丸く開く 〜 1 閉じる) / laugh: 笑って目をつぶる / blush: 頬の赤み
 const STATES=[
-  {key:'1',name:'ふつう',  size:1.00,puff:0.0,dark:0.00,rain:0,  storm:0,arm:0,   brow:0.3, mouth:-0.1,open:0,  lid:0.45,sky:[0x6fb6f0,0xd8eefc]},
-  {key:'2',name:'膨らむ',  size:1.30,puff:1.0,dark:0.00,rain:0,  storm:0,arm:0.35,brow:-0.1,mouth:0.8, open:0,  lid:0.65,sky:[0x5aa9ee,0xe6f4ff]},
-  {key:'3',name:'雨雲',    size:1.05,puff:0.2,dark:0.55,rain:1,  storm:0,arm:-1,  brow:-1,  mouth:-0.8,open:0,  lid:0.6, sky:[0x6f7d8c,0xa9b4bf]},
-  {key:'4',name:'ストーム',size:1.20,puff:0.5,dark:0.85,rain:2.2,storm:1,arm:1,   brow:1,   mouth:-0.6,open:1,  lid:0.1, sky:[0x1c2230,0x3d4656]},
+  {key:'1',name:'ふつう',  size:1.00,puff:0.0,dark:0.00,rain:0,  storm:0,arm:0,   cross:1,brow:0.8, smile:-0.6,grin:0,open:0,lid:0.1, laugh:0,blush:0,  sky:[0x6fb6f0,0xd8eefc]},
+  {key:'2',name:'膨らむ',  size:1.30,puff:1.0,dark:0.00,rain:0,  storm:0,arm:0.45,cross:0,brow:-0.1,smile:1,   grin:1,open:0,lid:0,   laugh:1,blush:0.3,sky:[0x5aa9ee,0xe6f4ff]},
+  {key:'3',name:'雨雲',    size:1.05,puff:0.2,dark:0.55,rain:1,  storm:0,arm:-1,  cross:0,brow:-1,  smile:-0.7,grin:0,open:0,lid:0.25,laugh:0,blush:0,  sky:[0x6f7d8c,0xa9b4bf]},
+  {key:'4',name:'ストーム',size:1.20,puff:0.5,dark:0.85,rain:2.2,storm:1,arm:1,   cross:0,brow:1.3, smile:-1,  grin:0,open:1,lid:0,   laugh:0,blush:0,  sky:[0x1c2230,0x3d4656]},
+  {key:'5',name:'ふとした時',size:1.00,puff:0.1,dark:0.00,rain:0, storm:0,arm:-0.4,cross:0,brow:-0.6,smile:0.55,grin:0,open:0,lid:0,   laugh:0,blush:0.7,sky:[0x6fb6f0,0xd8eefc]},
 ];
-const NUM=['size','puff','dark','rain','storm','arm','brow','mouth','open','lid'];
+// 見た目: 既定はピンク版。?photo=1 で夕焼けの風景版(ユーザーの写真に風景ごと寄せた試作)
+const PINK=!new URLSearchParams(location.search).get('photo');
+const NUM=['size','puff','dark','rain','storm','arm','cross','brow','smile','grin','open','lid','laugh','blush'];
 const W=1000,H=750;
 const Q=new URLSearchParams(location.search);
-let target=STATES[Math.max(0,Math.min(3,(+Q.get('s')||1)-1))];
-const cur=JSON.parse(JSON.stringify(target));
+// 表情の混ぜ具合 w(合計1)。数字キーを押している間、その状態へ連続的に寄っていく。離すとそこで止まる
+const w=STATES.map((_,i)=>i===Math.max(0,Math.min(STATES.length-1,(+Q.get('s')||1)-1))?1:0);
+const cur=JSON.parse(JSON.stringify(STATES[w.indexOf(1)]));
+// 天気: 表情とは別に Q/W/E/R の長押しで連続的に変える。表情が持つ天気(雨雲・ストーム)と重なったら強いほうを使う
+// sky: その天気の空の色(晴れは表情の空のまま)
+const WEATHER=[
+  {key:'q',name:'晴れ',dark:0,   rain:0,  storm:0,sky:null},
+  {key:'w',name:'曇り',dark:0.45,rain:0,  storm:0,sky:[0x7f8b98,0xb7c0c9]},
+  {key:'e',name:'雨',  dark:0.6, rain:1.3,storm:0,sky:[0x67727f,0x9aa5b0]},
+  {key:'r',name:'嵐',  dark:0.85,rain:2.4,storm:1,sky:[0x1c2230,0x3d4656]},
+];
+const ww=WEATHER.map((_,i)=>i===Math.max(0,Math.min(3,(+Q.get('wx')||1)-1))?1:0);
+{const W0=WEATHER[ww.indexOf(1)];for(const f of['dark','rain','storm'])cur[f]=Math.max(cur[f],W0[f]);if(W0.sky)cur.sky=W0.sky.slice();}
 
 // ---- 乱数(毎回同じ形になるよう固定シード) ----
 let seed=7;const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
 const lerp=(a,b,t)=>a+(b-a)*t;
+const lerp2=(a,b,t)=>[lerp(a[0],b[0],t),lerp(a[1],b[1],t)];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const lerpColor=(a,b,t)=>{const r=lerp(a>>16&255,b>>16&255,t),g=lerp(a>>8&255,b>>8&255,t),bl=lerp(a&255,b&255,t);return (r<<16)|(g<<8)|bl|0;};
 
@@ -39,83 +55,213 @@ function fit(){const s=Math.min(app.screen.width/W,app.screen.height/H);world.sc
 fit();window.addEventListener('resize',()=>setTimeout(fit,0));
 
 // ---- 空(縦グラデーションを小さなキャンバスで作って引き伸ばす) ----
-const skyCv=document.createElement('canvas');skyCv.width=2;skyCv.height=256;
+const skyCv=document.createElement('canvas');skyCv.width=PINK?2:384;skyCv.height=256;
 const skyTex=PIXI.Texture.from(skyCv);
 const sky=new PIXI.Sprite(skyTex);sky.width=W*3;sky.height=H*3;sky.position.set(-W,-H);world.addChild(sky);
+// 夕焼けの空: 上は青、地平線に向けて淡く、右下に夕日の光だまり。暗さ D で嵐の空へ
+let skyKey='';
+function drawSunset(D){
+  const key=D.toFixed(3);if(key===skyKey)return;skyKey=key;
+  const c=skyCv.getContext('2d'),cw=skyCv.width,ch=skyCv.height;
+  const X=x=>(x+W)/(3*W)*cw,Y=y=>(y+H)/(3*H)*ch,hex=v=>'#'+v.toString(16).padStart(6,'0');
+  const g=c.createLinearGradient(0,Y(0),0,Y(700));
+  g.addColorStop(0,hex(lerpColor(0x4a68a3,0x161b27,D)));
+  g.addColorStop(0.55,hex(lerpColor(0xaab8cf,0x2f3644,D)));
+  g.addColorStop(0.85,hex(lerpColor(0xe9c9a2,0x3d3c44,D)));
+  g.addColorStop(1,hex(lerpColor(0xf7b45e,0x4a4040,D)));
+  c.fillStyle=g;c.fillRect(0,0,cw,ch);
+  const r=c.createRadialGradient(X(900),Y(700),0,X(900),Y(700),X(560)-X(0));
+  r.addColorStop(0,`rgba(255,214,128,${0.95*(1-D)})`);r.addColorStop(0.45,`rgba(255,190,110,${0.4*(1-D)})`);r.addColorStop(1,'rgba(255,180,100,0)');
+  c.fillStyle=r;c.fillRect(0,0,cw,ch);skyTex.source.update();}
 function drawSky(top,bot){const c=skyCv.getContext('2d');const g=c.createLinearGradient(0,85,0,171);
   g.addColorStop(0,'#'+top.toString(16).padStart(6,'0'));g.addColorStop(1,'#'+bot.toString(16).padStart(6,'0'));
   c.fillStyle=g;c.fillRect(0,0,2,256);skyTex.source.update();}
 
 // ---- 地面 ----
 const ground=new PIXI.Graphics();
-ground.poly([-W,H*3,-W,690,0,690,150,665,330,680,520,660,700,678,860,662,1000,676,2*W,690,2*W,H*3]).fill(0x5d8a4e);
-ground.poly([-W,H*3,-W,715,120,705,300,720,480,708,680,722,880,706,2*W,715,2*W,H*3]).fill(0x4a733e);
+if(PINK){
+  ground.poly([-W,H*3,-W,690,0,690,150,665,330,680,520,660,700,678,860,662,1000,676,2*W,690,2*W,H*3]).fill(0x5d8a4e);
+  ground.poly([-W,H*3,-W,715,120,705,300,720,480,708,680,722,880,706,2*W,715,2*W,H*3]).fill(0x4a733e);
+}else{
+  // 町のシルエット(雲より手前): 細い帯に木立・家並み・電柱と電線
+  const S=0x14151b,B=732;
+  ground.rect(-W,B,W*3,H*3).fill(S);
+  for(const[x,y,r]of[[120,718,16],[140,708,20],[165,714,18],[190,704,22],[214,712,18],[236,720,14],[-30,722,18],[0,718,15],[60,722,13]])ground.circle(x,y,r).fill(S);
+  ground.rect(40,716,200,20).fill(S);
+  let x=300;for(const[w,h,roof]of[[24,10,7],[30,14,9],[20,8,6],[36,16,10],[26,12,8],[44,18,12],[32,14,9],[46,20,13],[36,16,10],[52,22,14],[40,18,11],[30,12,8],[48,20,12],[26,10,7]]){
+    ground.rect(x,B-h,w,h).fill(S);ground.poly([x-2,B-h,x+w/2,B-h-roof,x+w+2,B-h]).fill(S);x+=w+5;}
+  const poles=[[30,610],[420,672],[640,686],[860,676],[1080,650]];
+  for(const[px,top]of poles){ground.rect(px-2,top,4,B-top).fill(S);ground.rect(px-12,top+7,24,2.5).fill(S);ground.rect(px-8,top+15,16,2).fill(S);}
+  for(let i=0;i<poles.length-1;i++)for(const dy of[8,16]){const[a,ta]=poles[i],[b,tb]=poles[i+1];
+    ground.moveTo(a,ta+dy).quadraticCurveTo((a+b)/2,(ta+tb)/2+dy+16,b,tb+dy);}
+  for(const dy of[8,16])ground.moveTo(-W,650+dy).quadraticCurveTo(-W/2,640+dy,30,610+dy);
+  ground.stroke({width:1.1,color:S});
+}
 world.addChild(ground);
 
 // ---- テクスチャ ----
 function radial(stops){const cv=document.createElement('canvas');cv.width=cv.height=128;const c=cv.getContext('2d');
   const g=c.createRadialGradient(64,64,0,64,64,64);for(const[o,a]of stops)g.addColorStop(o,`rgba(255,255,255,${a})`);
   c.fillStyle=g;c.fillRect(0,0,128,128);return PIXI.Texture.from(cv);}
-const bodyTex=radial([[0,1],[0.68,1],[0.86,0.6],[1,0]]);   // 雲粒の本体(縁だけぼける)
-const hairTex=radial([[0,1],[0.5,0.95],[0.8,0.45],[1,0]]); // 眉・ひげ用(縁が柔らかい)
+const bodyTex=PINK?radial([[0,1],[0.68,1],[0.86,0.6],[1,0]]):radial([[0,1],[0.5,0.95],[0.8,0.45],[1,0]]); // 雲粒の本体(写真版は縁をよりぼかす)
+const hairTex=radial([[0,1],[0.5,0.9],[1,0]]);          // 毛の粒(縁がやわらかい)
 const hiTex=radial([[0,1],[0.4,0.6],[1,0]]);              // 光の当たる面・影の塗り
 
 // ---- 巨人 ----
 // 雲粒は1粒ごとに「影色の本体 → 左上にずらした光」を重ねて描く。粒が重なるたびに凹凸が出る。
-const giant=new PIXI.Container();giant.position.set(500,450);
+const giant=new PIXI.Container();giant.position.set(500,PINK?450:470);
 const groundShadow=new PIXI.Sprite(hiTex);groundShadow.anchor.set(0.5);world.addChild(groundShadow);
 world.addChild(giant);
-const L={};for(const n of['base','aoBase','body','aoHead','head','faceShade','face','lines','top'])L[n]=giant.addChild(n==='lines'?new PIXI.Graphics():new PIXI.Container());
-const BODY={head:[0,-320],torso:[0,-150],base:[0,20]};
+if(!PINK)world.addChild(ground); // 写真版: 雲は遠く、町が手前
+const LAYERS=['base','aoBase','torso','aoTorso','arms','aoHead','crown','ears','head','hair','faceShade','eyes','face','faceLight','mouth','faceHair','lines'];
+const L={};for(const n of LAYERS)L[n]=giant.addChild(n==='lines'||n==='eyes'?new PIXI.Graphics():new PIXI.Container());
+const HEAD=[0,-330];
+const BODY={head:HEAD,hair:HEAD,ear:HEAD,crown:HEAD,torso:[0,-150],base:[0,20]};
 const puffs=[],shades=[];
+const FACEP=new Set(['head','hair','ear','fx']);
 function addPuff(layer,part,dx,dy,r,o={}){
-  const b=new PIXI.Sprite(o.hv!==undefined?hairTex:bodyTex),h=new PIXI.Sprite(hiTex);b.anchor.set(0.5);h.anchor.set(0.5);
+  const b=new PIXI.Sprite(o.soft?hairTex:bodyTex),h=new PIXI.Sprite(hiTex);b.anchor.set(0.5);h.anchor.set(0.5);
   L[layer].addChild(b,h);
   const p={part,dx,dy,r,ph:rnd()*6.28,sp:0.6+rnd()*0.8,b,h,x:0,y:0,...o};puffs.push(p);return p;
 }
-function blob(layer,part,rx,ry,n,rmin,rmax){for(let i=0;i<n;i++){const a=rnd()*6.28,d=Math.sqrt(rnd());addPuff(layer,part,Math.cos(a)*rx*d,Math.sin(a)*ry*d,lerp(rmin,rmax,rnd()));}}
-// 影の塗り(頭の下の胴、目のくぼみ、鼻の下など)
-function addShade(layer,x,y,rx,ry,a){const s=new PIXI.Sprite(hiTex);s.anchor.set(0.5);L[layer].addChild(s);shades.push({s,x,y,rx,ry,a});}
+// (cx,cy) を中心に楕円内へ n 粒。座標は絶対値で書き、部位の中心からの差に直して持つ。
+function blobAt(layer,part,cx,cy,rx,ry,n,rmin,rmax,o){const C=BODY[part]||[0,0];
+  for(let i=0;i<n;i++){const a=rnd()*6.28,d=Math.sqrt(rnd());addPuff(layer,part,cx-C[0]+Math.cos(a)*rx*d,cy-C[1]+Math.sin(a)*ry*d,lerp(rmin,rmax,rnd()),o);}}
+// 影の塗り(color 省略で影色。blush は頬の赤み)
+function addShade(layer,x,y,rx,ry,a,kind){const s=new PIXI.Sprite(hiTex);s.anchor.set(0.5);L[layer].addChild(s);shades.push({s,x,y,rx,ry,a,kind});}
 
-blob('base','base',330,45,40,45,80);
-addShade('aoBase',0,-25,190,45,0.55);                 // 胴の付け根が台に落とす影
-blob('body','torso',115,120,32,48,72);
+// 雲の台(大小ふぞろい)
+blobAt('base','base',0,20,330,45,34,55,95);
+blobAt('base','base',0,10,360,55,26,22,40);
+addShade('aoBase',0,-25,200,45,0.55);                  // 胴の付け根が台に落とす影
+// 胴: 腹 → 脇腹 → 胸 → 肩 → 僧帽筋 → 太い首。粒の大きさはばらつかせる
+blobAt('torso','torso',0,-85,85,50,9,40,66);
+for(const s of[-1,1])blobAt('torso','torso',s*95,-60,25,30,3,34,54);
+for(const s of[-1,1])blobAt('torso','torso',s*58,-158,42,26,5,40,62);
+for(const s of[-1,1])blobAt('torso','torso',s*160,-200,28,28,4,44,68);
+for(const s of[-1,1])blobAt('torso','torso',s*92,-220,36,16,3,30,46);
+blobAt('torso','torso',0,-228,52,20,6,36,52);
+for(let i=0;i<22;i++){const s=rnd()<.5?-1:1,y=lerp(-225,-40,rnd()),x=s*lerp(120,200,clamp((-y-40)/170,0,1))+(rnd()-.5)*24; // 輪郭の小粒
+  addPuff('torso','torso',x,y+150,lerp(16,30,rnd()));}
+for(const s of[-1,1])addShade('aoTorso',s*60,-112,62,14,0.35);   // 胸の下の影
+addShade('aoTorso',0,-150,8,40,0.22);                            // 胸の谷
+// 腕: 肩→肘→拳。上腕に力こぶ。芯の粒+まわりの小粒
 for(const side of['L','R']){
-  for(let i=0;i<12;i++){const t=i/11;addPuff('body','arm'+side,(rnd()-.5)*18,(rnd()-.5)*18,lerp(46,34,t),{t});}
-  blob('body','hand'+side,30,30,6,28,40);
+  for(let i=0;i<13;i++){const t=i/12;addPuff('arms','arm'+side,(rnd()-.5)*28,(rnd()-.5)*28,(lerp(54,40,t)+(t<0.5?Math.sin(t*2*Math.PI)*10:0))*lerp(0.75,1.15,rnd()),{t});}
+  for(let i=0;i<6;i++)addPuff('arms','arm'+side,(rnd()-.5)*70,(rnd()-.5)*70,lerp(18,28,rnd()),{t:rnd(),hiK:0.5});
+  blobAt('arms','hand'+side,0,0,24,24,6,22,38);
+  blobAt('arms','hand'+side,0,0,38,38,4,12,20);
+  if(side==='L')addShade('arms',0,0,80,20,0.5,'cross'); // 腕組みで上の腕が下の腕に落とす影
 }
-addShade('aoHead',0,-238,105,38,0.6);                 // 頭とひげが胸に落とす影
-// 頭: 外周の粒 + 顔になる大きな粒1つ(顔の面をなめらかにする)
-for(let i=0;i<16;i++){const a=i/16*6.28+rnd()*0.3;addPuff('head','head',Math.cos(a)*lerp(62,80,rnd()),Math.sin(a)*lerp(52,66,rnd())-8,lerp(34,48,rnd()));}
-addPuff('head','head',0,-4,80,{calm:1});
-// 顔の陰影
-for(const s of[-1,1]){
-  addShade('faceShade',s*30,-328,30,20,0.55);          // 目のくぼみ
-  addShade('faceShade',s*58,-292,22,34,0.3);           // 頬骨の下
-}
-addShade('faceShade',0,-292,26,10,0.5);                // 鼻の下
-addShade('faceShade',0,-352,16,12,0.25);               // 眉間
-// 鼻
-addPuff('face','nose',0,-330,13,{calm:1});
-addPuff('face','nose',0,-310,17,{calm:1});
-for(const s of[-1,1])addPuff('face','nose',s*14,-303,10,{calm:1});
-// ひげ(顎から胸へ)
-for(let i=0;i<36;i++){const t=Math.sqrt(rnd());addPuff('top','beard',(rnd()*2-1),0,lerp(25,14,t),{t,calm:1,hiK:0.8,hv:rnd()});}
-addShade('top',0,-274,50,13,0.55);                    // 口ひげの下の影
-const mouthG=L.top.addChild(new PIXI.Graphics());     // 口はひげの上・口ひげの下
-// 口ひげ(左右6粒ずつ、口角で曲がる)
-for(const s of[-1,1])for(let i=0;i<6;i++)addPuff('top','must',s,0,lerp(17,10,i/5),{t:i/5,calm:1,hiK:0.8,hv:rnd(),jx:(rnd()-.5)*4,jy:(rnd()-.5)*4});
-// 眉(太くて毛羽立った雲)
-for(const s of[-1,1])addShade('top',s*32,-334,30,9,0.4); // 眉が目に落とす影
-for(const s of[-1,1])for(let i=0;i<11;i++)addPuff('top','brow',s,0,lerp(13,8,i/10),{t:i/10,calm:1,hiK:0.8,hv:rnd(),jx:(rnd()-.5)*5,jy:(rnd()-.5)*7});
-// 口ひげ・眉は奥から手前へ: ひげ→口ひげ→眉 の順はそのまま
+addShade('aoHead',0,-222,100,26,0.6);                  // あごが首と胸に落とす影
+// 耳
+for(const s of[-1,1]){addPuff('ears','ear',s*100,-2,24,{calm:1});addPuff('ears','ear',s*104,12,17,{calm:1});}
+// 頭: 角ばった輪郭(下が広いあご) + 顔の面を埋める大きな粒
+for(let i=0;i<26;i++){const a=i/26*6.28,c=Math.cos(a),s=Math.sin(a);
+  const r=Math.pow(Math.pow(Math.abs(c),4)+Math.pow(Math.abs(s),4),-0.25);
+  addPuff('head','head',c*r*(s>0?98:90)*0.8,s*r*100*0.8,lerp(32,48,rnd()),{calm:1});}
+addPuff('head','head',0,-40,70,{calm:1});addPuff('head','head',0,30,72,{calm:1});
+for(const s of[-1,1])addPuff('head','head',s*40,-5,60,{calm:1});
+// 坊主頭(ピンクの毛)。生え際は額の上とこめかみ
+for(let i=0;i<34;i++){const x=(rnd()*2-1)*86,y=lerp(-112,-72,rnd());
+  if(Math.pow(Math.abs(x/94),4)+Math.pow(Math.abs(y/104),4)<1)addPuff('hair','hair',x,y,lerp(18,32,rnd()),{calm:1,hiK:0.5});}
+for(const s of[-1,1])for(let i=0;i<4;i++)addPuff('hair','hair',s*lerp(80,90,rnd()),lerp(-75,-35,rnd()),lerp(14,22,rnd()),{calm:1,hiK:0.5});
 
-const HAIR={brow:1,must:1,beard:1};
-function armPose(side,arm){ // 肩と手の位置
-  const s=side==='L'?-1:1;const sh=[s*120,-230];
-  const down=[s*200,-60],up=[s*230,-430],mid=[s*235,-200];
-  const h=arm>=0?[lerp(mid[0],up[0],arm),lerp(mid[1],up[1],arm)]:[lerp(mid[0],down[0],-arm),lerp(mid[1],down[1],-arm)];
-  return{sh,h};
+// ---- 顔: 線ではなく雲の盛り上がり(粒)と影で彫る ----
+// fx: 表情で位置が変わる粒。fs: 表情で位置・濃さが変わる影
+const fx=(layer,fn,r,o={})=>addPuff(layer,'fx',0,0,r,{calm:1,fn,...o});
+const fs=(layer,fn,kind)=>{const s=new PIXI.Sprite(kind==='hole'?bodyTex:hiTex);s.anchor.set(0.5);L[layer].addChild(s);shades.push({s,fn,kind});};
+// 眉の線(t=0 内側 〜 1 外側)
+const BL=(s,t,c)=>[s*lerp(14,76,t),lerp(-370+c.brow*10,-376-c.brow*5,t)-Math.sin(Math.PI*Math.min(1,t*1.1))*7];
+const EY=-342;const lidE={'-1':0,'1':0}; // 左右のまぶた(画面の左=-1・右=1)
+// 影
+for(const s of[-1,1]){
+  fs('faceShade',c=>{const[x,y]=BL(s,0.45,c);return[x,y+30,32,22,s<0?0.9:0.75];});         // 目のくぼみ(眉と一緒に動く)
+  addShade('faceShade',s*72,-288,18,30,0.35);                                     // 頬骨の下
+  fs('faceShade',c=>[s*40,-284,9,22,0.25+0.35*Math.max(0,c.smile)]);              // ほうれい線
+  addShade('faceShade',s*66,-262,24,26,0.45,'hair');                              // あごの無精ひげ
+  addShade('faceShade',s*62,-302,24,12,0.5,'blush');                              // 頬の赤み
+}
+fs('faceShade',c=>[0,-362,7,15,0.6*Math.max(0,c.brow)]);                          // 眉間の縦じわ
+fs('faceShade',c=>[0,-402,44,10,0.45*Math.max(0,-c.brow)]);                       // 困ったときの額
+addShade('faceShade',0,-287,26,8,0.6);                                            // 鼻の下
+addShade('faceShade',0,-243,26,15,0.45,'hair');                                   // あご髭の下地
+// 顔の大きな明暗(写真のような立体感): 光は右上から。影側の面・鼻の落とす影・こめかみ・あごの下を暗く
+addShade('faceShade',-52,-318,46,78,0.4);                                         // 顔の左半分(影側)
+addShade('faceShade',-16,-302,15,22,0.5);                                         // 鼻が左下に落とす影
+for(const s of[-1,1])addShade('faceShade',s*84,-352,14,32,s<0?0.45:0.2);          // こめかみ
+addShade('faceShade',0,-251,20,6,0.45);                                           // 下唇の下のくぼみ
+for(const s of[-1,1])addShade('faceShade',s*72,-288,18,30,s<0?0.5:0.3);           // 頬骨の下のくぼみ(深め)
+// 眉の盛り上がり(眉骨)
+for(const s of[-1,1])for(let i=0;i<5;i++){const t=i/4;fx('face',c=>{const[x,y]=BL(s,t,c);return[x,y+8];},lerp(17,13,t),{hiK:1.1});}
+// 光の当たる面(顔の粒の上に重ねる)
+addShade('faceLight',22,-398,46,20,0.55,'light');                                 // 額
+for(const s of[-1,1])fs('faceLight',c=>{const[x,y]=BL(s,0.5,c);return[x+6,y-4,24,7,s>0?0.6:0.25];},'light'); // 眉骨の上
+addShade('faceLight',5,-332,5,22,0.7,'light');                                    // 鼻筋
+addShade('faceLight',8,-310,9,8,0.7,'light');                                     // 鼻先
+addShade('faceLight',66,-318,22,11,0.6,'light');addShade('faceLight',-56,-318,18,9,0.2,'light'); // 頬骨
+fs('faceLight',c=>[8,-234+c.open*56,18,9,0.4],'light');                           // あご
+// まぶた: 上まぶたが下りると黒目を隠す。下は頬の押し上げ(笑うと上がる)
+for(const s of[-1,1]){
+  fx('face',()=>[s*40,EY-20+lidE[s]*17],12.5,{hiK:0.8});
+  fx('face',c=>[s*40,EY+22-c.laugh*7],11,{hiK:0.6});
+}
+// 頬骨
+for(const s of[-1,1]){fx('face',()=>[s*62,-312],21);fx('face',()=>[s*76,-298],17);}
+// 鼻: 太い鼻筋と丸い鼻先
+fx('face',()=>[0,-352],11,{hiK:0.9});fx('face',()=>[0,-333],14,{hiK:0.9});
+fx('face',()=>[0,-306],22,{hiK:1});
+for(const s of[-1,1])fx('face',()=>[s*19,-299],13,{hiK:0.8});
+// あご
+fx('face',c=>[0,-236+c.grin*6+c.open*56],26);
+for(const s of[-1,1])fx('face',c=>[s*22,-244+c.grin*5],18);
+// 下唇
+fx('face',c=>[0,-256-c.smile*2+c.grin*9+c.open*56],11,{hiK:1});
+for(const s of[-1,1])fx('face',c=>[s*9,-257-c.smile*2+c.grin*9+c.open*56],9);
+// 口: 閉じた口は影の点を曲線に並べる。笑う・叫ぶは暗い穴+雲の歯
+const MY=-268;
+const mouthLine=c=>clamp(1-c.grin-c.open,0,1);
+for(let i=0;i<7;i++){const u=i/6;fs('mouth',c=>{const mw=24+c.smile*5,cy=MY-c.smile*7,ctl=MY+c.smile*9;
+  return[lerp(-mw,mw,u),(1-u)*(1-u)*cy+2*u*(1-u)*ctl+u*u*cy,8,3.6,0.9*mouthLine(c)];},'mouth');}
+fs('mouth',c=>[0,MY+6,36,1+16*c.grin,c.grin],'mouth');
+// 開いた口は過剰に大きく: 縦に長い穴+奥の濃い影
+fs('mouth',c=>[0,MY+6+c.open*24,22+c.open*20,1+c.open*40,c.open],'hole');
+fs('mouth',c=>[0,MY+10+c.open*30,12+c.open*14,1+c.open*26,c.open*0.6],'hole');
+for(let i=0;i<6;i++)fx('mouth',c=>[lerp(-22,22,i/5),MY-2],6.5,{col:'teeth',hiK:0.3,vis:c=>c.grin});
+// 毛: 眉・口髭・あご髭はピンクの雲
+for(const s of[-1,1])for(let i=0;i<24;i++){const t=i/23,jx=(rnd()-.5)*3,jy=(rnd()-.5)*lerp(9,4,t);
+  fx('faceHair',c=>{const[x,y]=BL(s,t,c);return[x+jx,y+jy];},lerp(10,6,t)*lerp(0.9,1.1,rnd()),{col:'brow',hiK:0.3,soft:1});}
+for(const s of[-1,1])for(let i=0;i<16;i++){const t=rnd(),jx=(rnd()-.5)*4,jy=(rnd()-.5)*lerp(8,5,t);
+  fx('faceHair',c=>[s*lerp(3,40,t)+jx,-285+t*t*(10-c.smile*12)-c.grin*5-c.open*6+jy],lerp(7.5,5,t),{col:'hair',hiK:0.3,soft:1});}
+for(let i=0;i<34;i++){const a=rnd()*6.28,d=Math.sqrt(rnd()),gx=Math.cos(a)*30*d,gy=-238+Math.sin(a)*11*d;
+  fx('faceHair',c=>[gx,gy+c.grin*7+c.open*56],lerp(4.5,7,rnd()),{col:'hair',hiK:0.2,soft:1,alpha:0.75});}
+fx('faceHair',c=>[0,-251+c.grin*8+c.open*56],5,{col:'hair',hiK:0.2,soft:1});
+if(!PINK){
+  // 写真版: 暗い雲の豊かな口髭とあご髭(あごの線まで)
+  for(const s of[-1,1])for(let i=0;i<14;i++){const t=rnd(),jy=(rnd()-.5)*8;
+    fx('faceHair',c=>[s*lerp(6,50,t),-283+t*t*(16-c.smile*12)-c.grin*5-c.open*6+jy],lerp(14,9,t),{col:'hair',hiK:0.6,soft:1,alpha:0.7});}
+  fs('faceShade',c=>[0,-232+c.open*40,62,34,0.75],'hair');            // あご髭の下地(暗い雲)
+  for(const s2 of[-1,1])fs('faceShade',c=>[s2*66,-262+c.open*20,26,34,0.7],'hair');
+  for(let i=0;i<70;i++){const x=(rnd()*2-1)*86,y=lerp(-292,-200,rnd());
+    if((x/90)**2+((y+262)/66)**2>1)continue;
+    if(!(Math.abs(x)>40||y>-252))continue;            // 口のまわりは空ける
+    const drop=clamp((y+290)/80,0,1)*(Math.abs(x)<60?1:0.5);
+    fx('faceHair',c=>[x,y+c.grin*7*drop+c.open*56*drop],lerp(12,20,rnd()),{col:'hair',hiK:0.6,soft:1,alpha:0.55});}
+  // 頭のまわりに湧き上がる積乱雲(頭の後ろ)
+  for(let i=0;i<26;i++){const a=lerp(-3.0,-0.15,rnd()),d=lerp(105,175,rnd());
+    addPuff('crown','crown',Math.cos(a)*d*1.15,Math.sin(a)*d-10,lerp(38,72,rnd()));}
+  for(const s of[-1,1])for(let i=0;i<10;i++)addPuff('crown','crown',s*lerp(150,330,rnd()),lerp(-10,90,rnd()),lerp(30,62,rnd()));
+}
+
+function armPose(side){ // 肩・肘・拳の位置
+  const s=side==='L'?-1:1,a=cur.arm;const sh=[s*165,-205];
+  const mid={el:[s*240,-190],h:[s*320,-215]},down={el:[s*200,-110],h:[s*215,-20]},up={el:[s*250,-320],h:[s*240,-455]};
+  const o=a>=0?up:down,t=Math.abs(a);
+  let el=lerp2(mid.el,o.el,t),h=lerp2(mid.h,o.h,t);
+  // 腕組み: 前腕を胸の前で重ねる(右腕が上)
+  const cx={el:[s*170,-108],h:side==='L'?[95,-118]:[-95,-142]};
+  el=lerp2(el,cx.el,cur.cross);h=lerp2(h,cx.h,cur.cross);
+  return{sh,el,h};
 }
 
 // ---- 雨と雷(巨人の後ろ) ----
@@ -136,50 +282,143 @@ function makeBolt(){
 }
 
 // ---- 操作 ----
-const ui=document.getElementById('ui');
-STATES.forEach(s=>{const b=document.createElement('button');b.textContent=s.key+' '+s.name;b.onclick=()=>setState(s);s.btn=b;ui.appendChild(b);});
-function setState(s){target=s;STATES.forEach(x=>x.btn.classList.toggle('on',x===s));}
-setState(target);
-addEventListener('keydown',e=>{const s=STATES.find(x=>x.key===e.key);if(s)setState(s);});
+const held=new Set(),wheld=new Set();let hudOn=!Q.get('obs');
+const wIdx=e=>WEATHER.findIndex(x=>x.key===e.key.toLowerCase());
+addEventListener('keydown',e=>{const i=STATES.findIndex(x=>x.key===e.key);if(i>=0)held.add(i);if(wIdx(e)>=0)wheld.add(wIdx(e));
+  if(e.key==='t'||e.key==='T')startTracking();
+  if(e.key==='h'||e.key==='H')hudOn=!hudOn;});
+addEventListener('keyup',e=>{const i=STATES.findIndex(x=>x.key===e.key);if(i>=0)held.delete(i);wheld.delete(wIdx(e));});
+addEventListener('blur',()=>{held.clear();wheld.clear();});
+function mixTarget(dt){
+  const k=1-Math.exp(-dt*1.2); // 押し続けて約2秒でほぼその状態
+  for(const i of held)for(let j=0;j<w.length;j++)w[j]+=((j===i?1:0)-w[j])*k;
+  const t={};for(const f of NUM){t[f]=0;for(let j=0;j<w.length;j++)t[f]+=w[j]*STATES[j][f];}
+  t.sky=[0,1].map(n=>{let r=0,g=0,b=0;for(let j=0;j<w.length;j++){const c=STATES[j].sky[n];r+=w[j]*(c>>16&255);g+=w[j]*(c>>8&255);b+=w[j]*(c&255);}return(r<<16)|(g<<8)|b|0;});
+  // 天気を重ねる
+  for(const i of wheld)for(let j=0;j<ww.length;j++)ww[j]+=((j===i?1:0)-ww[j])*k;
+  for(const f of['dark','rain','storm']){let v=0;for(let j=0;j<ww.length;j++)v+=ww[j]*WEATHER[j][f];t[f]=Math.max(t[f],v);}
+  const f=1-ww[0]; // 晴れ以外の割合だけ、空の色を天気の空へ寄せる
+  if(f>0.001)t.sky=[0,1].map(n=>{let r=0,g=0,b=0;for(let j=1;j<ww.length;j++){const c=WEATHER[j].sky[n],q=ww[j]/f;r+=q*(c>>16&255);g+=q*(c>>8&255);b+=q*(c&255);}
+    return lerpColor(t.sky[n],(r<<16)|(g<<8)|b|0,f);});
+  return t;
+}
+
+// ---- 顔追跡(Webカメラ → MediaPipe 顔ランドマーク。映像はブラウザの外に出さない) ----
+// 鏡のように動く: 自分の右目を閉じると、画面の右側の目が閉じる
+const track={on:false,status:'',face:null,seen:0,base:null,n:0};
+const FLIP=Q.get('flip')?-1:1; // 左右が逆になる環境用
+async function startTracking(){
+  if(track.on)return;track.on=true;track.status='読み込み中…';
+  try{
+    const V='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
+    const {FaceLandmarker,FilesetResolver}=await import(V+'/vision_bundle.mjs');
+    const files=await FilesetResolver.forVisionTasks(V+'/wasm');
+    const opt=d=>({baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',delegate:d},
+      runningMode:'VIDEO',numFaces:1,outputFaceBlendshapes:true});
+    let lm;try{if(Q.get('cpu'))throw 0;lm=await FaceLandmarker.createFromOptions(files,opt('GPU'));}catch(e){lm=await FaceLandmarker.createFromOptions(files,opt('CPU'));}
+    track.status='カメラの許可を待っています';
+    const video=document.getElementById('cam');
+    video.srcObject=await navigator.mediaDevices.getUserMedia({video:{width:640,height:480},audio:false});
+    await video.play();video.style.display=hudOn?'block':'none';
+    track.status='顔を探しています';
+    let last=-1;
+    const loop=()=>{
+      if(video.readyState>=2&&video.currentTime!==last){last=video.currentTime;
+        const r=lm.detectForVideo(video,performance.now());
+        if(r.faceBlendshapes&&r.faceBlendshapes.length&&r.faceLandmarks.length){
+          const b={};for(const c of r.faceBlendshapes[0].categories)b[c.categoryName]=c.score;
+          track.face=readFace(b,r.faceLandmarks[0],video.videoWidth/video.videoHeight);track.seen=performance.now();track.status='追跡中';
+        }else track.status='顔が見つかりません';
+      }
+      requestAnimationFrame(loop);};
+    loop();
+  }catch(e){track.on=false;track.status='使えません: '+e.message;console.error(e);}
+}
+function readFace(b,P,asp){
+  const g=n=>b[n]||0,mx=p=>(FLIP>0?1-p.x:p.x)*asp; // 鏡像の座標(横は縦と同じ尺度に)
+  const side=(L,R)=>FLIP>0?[g(L),g(R)]:[g(R),g(L)];   // [画面左, 画面右]
+  const [bl,br]=side('eyeBlinkLeft','eyeBlinkRight');
+  const lid=v=>clamp((v-0.25)/0.4,0,1);
+  // 頭の傾き: 両目の外端を結ぶ線の角度。首振り: 両頬の中点から見た鼻先のずれ。うなずき: 目〜あごの間での鼻先の高さ
+  const roll=Math.atan2(P[33].y-P[263].y,mx(P[33])-mx(P[263]))*FLIP;
+  const mid=(mx(P[234])+mx(P[454]))/2,wd=Math.abs(mx(P[454])-mx(P[234]))||1;
+  const yaw=(mx(P[1])-mid)/wd*2;
+  const eyeY=(P[33].y+P[263].y)/2,ratio=(P[1].y-eyeY)/((P[152].y-eyeY)||1);
+  if(track.n<30){track.base=track.n?lerp(track.base,ratio,1/(track.n+1)):ratio;track.n++;} // 最初の約1秒を正面とする
+  const gx=((g('eyeLookInLeft')+g('eyeLookOutRight'))-(g('eyeLookOutLeft')+g('eyeLookInRight')))/2*FLIP;
+  const gy=((g('eyeLookDownLeft')+g('eyeLookDownRight'))-(g('eyeLookUpLeft')+g('eyeLookUpRight')))/2;
+  return{lidL:lid(bl),lidR:lid(br),
+    open:clamp((g('jawOpen')-0.03)*4,0,1), // 少し開けただけで大きく開く
+    smile:clamp((g('mouthSmileLeft')+g('mouthSmileRight'))*0.8-(g('mouthFrownLeft')+g('mouthFrownRight'))*1.25,-1,1),
+    brow:clamp((g('browDownLeft')+g('browDownRight'))*1.1-g('browInnerUp')*1.8,-1,1.3),
+    gx:clamp(gx*1.8,-1,1),gy:clamp(gy*1.8,-1,1),
+    roll:clamp(roll,-0.5,0.5),yaw:clamp(yaw,-0.8,0.8),pitch:clamp((ratio-track.base)*4,-0.8,0.8)};
+}
+const tf={lidL:0,lidR:0,open:0,smile:0,brow:0,gx:0,gy:0,roll:0,yaw:0,pitch:0}; // なめらかにした追跡値
+const HEADL=['ears','head','hair','faceShade','eyes','face','faceLight','mouth','faceHair','lines'];
+const FACEL=new Set(['faceShade','eyes','face','faceLight','mouth','faceHair','lines']);
+for(const n of HEADL)L[n].pivot.set(HEAD[0],HEAD[1]);
+if(Q.get('cam'))startTracking();
+// 視線: マウスカーソルの位置(画面座標)。画面外に出たら正面を見る
+let mouse=null;
+addEventListener('pointermove',e=>{mouse=[e.clientX,e.clientY];});
+document.addEventListener('pointerleave',()=>{mouse=null;});
+if(Q.get('mx'))mouse=[+Q.get('mx'),+Q.get('my')]; // 撮影用
 
 // ---- 部位ごとの基準位置 ----
 function basePos(p,poses){
   const c=cur;
   switch(p.part){
-    case 'armL':case 'armR':{const P=poses[p.part[3]];return[lerp(P.sh[0],P.h[0],p.t)+p.dx,lerp(P.sh[1],P.h[1],p.t)+p.dy];}
+    case 'armL':case 'armR':{const P=poses[p.part[3]];
+      const q=p.t<0.5?lerp2(P.sh,P.el,p.t*2):lerp2(P.el,P.h,(p.t-0.5)*2);return[q[0]+p.dx,q[1]+p.dy];}
     case 'handL':case 'handR':{const P=poses[p.part[4]],k=1+c.puff*0.4;return[P.h[0]+p.dx*k,P.h[1]+p.dy*k];}
-    case 'head':{const k=1+c.puff*0.12;return[p.dx*k,-320+p.dy*k];}
-    case 'nose':return[p.dx,p.dy];
-    case 'beard':{const w=lerp(62,14,p.t)*(1+c.puff*0.25);return[p.dx*w+Math.sin(time*1.1+p.t*3)*p.t*6*(1+c.storm*2),lerp(-258,-160,p.t)];}
-    case 'must':{const s=p.dx,t=p.t;return[s*lerp(5,46,t)+p.jx,-297+t*t*(9-c.mouth*20)+t*4+p.jy];}
-    case 'brow':{const s=p.dx,t=p.t;const iy=-346+c.brow*9,oy=-352-c.brow*7;
-      return[s*lerp(9,54,t)+p.jx,lerp(iy,oy,t)-Math.sin(Math.PI*t)*5+p.jy];}
-    default:{const C=BODY[p.part],k=1+c.puff*0.35;return[C[0]+p.dx*k,C[1]+p.dy*k];}
+    case 'head':case 'hair':case 'ear':{const k=1+c.puff*0.1,jaw=p.part==='head'&&p.dy>20?c.open*50*Math.min(1,(p.dy-20)/50):0;return[HEAD[0]+p.dx*k,HEAD[1]+p.dy*k+jaw];}
+    case 'fx':return p.fn(c);
+    default:{const C=BODY[p.part],k=1+c.puff*(p.part==='torso'?0.25:0.35);return[C[0]+p.dx*k,C[1]+p.dy*k];}
   }
 }
 
 // ---- 毎フレーム ----
 let time=0,blink=3;
+const gaze={L:[0,0],R:[0,0]}; // 黒目のずれ(顔の座標)
 app.ticker.add(tk=>{
   const dt=Math.min(tk.deltaMS/1000,0.05);time+=dt;
-  const k=1-Math.exp(-dt*1.6); // 状態の移り変わりはゆっくり
+  const target=mixTarget(dt);
+  const k=1-Math.exp(-dt*4);
   for(const f of NUM)cur[f]=lerp(cur[f],target[f],k);
+  // 顔追跡中は、顔の動き(眉・口・まぶた)を自分の顔から取る。体と天気は表情キーのまま
+  const tracking=track.face&&performance.now()-track.seen<600;
+  {const kt=1-Math.exp(-dt*15),src=tracking?track.face:{lidL:0,lidR:0,open:0,smile:0,brow:0,gx:0,gy:0,roll:0,yaw:0,pitch:0};
+   for(const f in tf)tf[f]=lerp(tf[f],src[f],kt);}
+  if(tracking){cur.brow=tf.brow;cur.smile=tf.smile;cur.open=tf.open;}
   cur.sky=[lerpColor(cur.sky[0],target.sky[0],k),lerpColor(cur.sky[1],target.sky[1],k)];
-  drawSky(cur.sky[0],cur.sky[1]);
-  ground.tint=lerpColor(0xffffff,0x555a66,cur.dark);
+  if(PINK){drawSky(cur.sky[0],cur.sky[1]);ground.tint=lerpColor(0xffffff,0x555a66,cur.dark);}else drawSunset(cur.dark);
 
   const breath=1+Math.sin(time*1.3)*0.02;
-  giant.scale.set(cur.size*breath*0.72);
+  giant.scale.set(cur.size*breath*(PINK?0.72:0.8));
   const churn=1+cur.storm*2.5; // ストーム中は雲がうねる
   const D=cur.dark;
   // 色: 上ほど明るく下ほど影。光は左上から。
-  const topC=lerpColor(0xf2f5fa,0x737985,D),botC=lerpColor(0x8a98ae,0x23272e,D);
-  const hiC=lerpColor(0xffffff,0x9aa0aa,D),hiA=0.75*(1-D*0.55);
-  const shadeC=lerpColor(0x4f5d75,0x0c0e12,D);
-  const hairTop=lerpColor(0xffffff,0xc2c7d0,D),hairBot=lerpColor(0xbfc8d6,0x5c626e,D); // 眉・ひげは顔より白い
-  const poses={L:armPose('L',cur.arm),R:armPose('R',cur.arm)};
+  // ピンク基調(ユーザー指定 2026-11-13)。暗くなるとくすんだ紫がかったピンクへ
+  const P=PINK?{lit:0xffedf4,shd:0xb8698c,hi:0xfff7fa,rim:0xfff7fa,shade:0x9a4a6c,blush:0xff4f86,hair:0xf08cb4,brow:0xe0558c,teeth:0xfff8fb,mouth:0x5a1a36,eye:0xc2185b}
+              // 写真: 右下から夕日。明るい面は暖かい白〜金、影は青みの灰、毛(眉・ひげ)とくぼみは暗い雲
+              :{lit:0xf6eee8,shd:0x46516b,hi:0xfff6ea,rim:0xffcf7a,shade:0x1d2335,blush:0xff9a6a,hair:0x2f3547,brow:0x272c3c,teeth:0xe8e3dc,mouth:0x141822,eye:0x161a24};
+  const topC=lerpColor(P.lit,0x6e7280,D),botC=lerpColor(P.shd,0x262a33,D);
+  const hiC=lerpColor(P.hi,0x9a9ea8,D),rimC=lerpColor(P.rim,0x8a8e98,D),hiA=0.75*(1-D*0.55);
+  const shadeC=lerpColor(P.shade,0x0d0f14,D),blushC=lerpColor(P.blush,0x6e4458,D);
+  const hairC=lerpColor(P.hair,0x1c1f28,D);
+  const browC=lerpColor(P.brow,0x15171e,D),teethC=lerpColor(P.teeth,0x9d9a96,D),mouthC=lerpColor(P.mouth,0x0b0d12,D);
+  const COL={hair:hairC,brow:browC,teeth:teethC};
+  blink-=dt;if(blink<0)blink=2.5+rnd()*3;
+  if(tracking){lidE[-1]=Math.max(tf.lidL,cur.laugh);lidE[1]=Math.max(tf.lidR,cur.laugh);}
+  else lidE[-1]=lidE[1]=Math.max(blink<0.12?1:cur.lid,cur.laugh);
+  // 頭の向き: 傾きは頭ごと回し、首振り・うなずきは顔の部品を頭より大きくずらして立体に見せる
+  for(const n of HEADL){const f=FACEL.has(n)?1:n==='ears'?0.1:0.35;
+    L[n].position.set(HEAD[0]+tf.yaw*22*f,HEAD[1]+tf.pitch*14*f);L[n].rotation=tf.roll*0.8;}
+  const poses={L:armPose('L'),R:armPose('R')};
   const sway=Math.sin(time*0.7)*8*(1+cur.storm);
   const swayAt=y=>sway*(-y/400);
+  const hxNow=swayAt(HEAD[1]);
 
   for(const p of puffs){
     let[bx,by]=basePos(p,poses);
@@ -188,47 +427,75 @@ app.ticker.add(tk=>{
     const w=Math.sin(time*p.sp*churn+p.ph);
     p.x=bx+w*amp;p.y=by+Math.cos(time*p.sp*churn+p.ph)*amp;
     const r=p.r*(1+cur.puff*0.25)*(1+w*0.03);
-    const t=clamp((p.y+420)/480,0,1);
-    p.b.position.set(p.x,p.y);p.b.width=p.b.height=r*2.1;p.b.tint=HAIR[p.part]?lerpColor(hairTop,hairBot,0.1+p.hv*0.5+(p.part==='beard'?p.t*0.4:0)):lerpColor(topC,botC,t);
-    p.h.position.set(p.x-r*0.22,p.y-r*0.26);p.h.width=p.h.height=r*1.8;p.h.tint=hiC;p.h.alpha=hiA*(p.hiK??1)*(1-t*0.6);
+    const t=clamp((p.y+440)/500,0,1);
+    // 光は右上から。顔(頭・毛・顔の粒)は頭の中心からの左右で明暗を強くつけ、立体に見せる
+    const onFace=FACEP.has(p.part);
+    const lx=onFace?clamp(0.55+(p.x-hxNow)/150,0,1):clamp((p.x+260)/560,0,1); // 0 影側 〜 1 光側
+    const lit=onFace?clamp(0.05+0.7*lx+0.35*(1-t),0,1):PINK?1-t:clamp(0.15+0.5*lx+0.45*(1-t),0,1); // ピンク版の体は前と同じ上下の明暗
+    p.b.position.set(p.x,p.y);p.b.width=p.b.height=r*2.1;
+    const own=p.col?COL[p.col]:PINK&&p.part==='hair'?hairC:null;
+    p.b.tint=own!==null?lerpColor(lerpColor(own,shadeC,0.5),own,0.25+0.75*lit):lerpColor(botC,topC,lit);
+    const vis=(p.vis?p.vis(cur):1)*(p.alpha??1);p.b.alpha=vis;
+    p.h.position.set(p.x+r*0.28,p.y-r*0.24);p.h.tint=lerpColor(hiC,rimC,lx*lx);
+    p.h.alpha=PINK&&!onFace?hiA*(p.hiK??1)*(1-t*0.6)*vis:(PINK?0.8:0.55)*hiA*(p.hiK??1)*lx*lx*(1-t*0.5)*vis*(p.col?0.5:1);
+    p.h.width=p.h.height=r*(PINK?1.8:2.2);
   }
   for(const s of shades){
+    if(s.fn){[s.x,s.y,s.rx,s.ry,s.a]=s.fn(cur);}
     s.s.position.set(s.x+swayAt(s.y),s.y);s.s.width=s.rx*2*(1+cur.puff*0.15);s.s.height=s.ry*2;
-    s.s.tint=shadeC;s.s.alpha=s.a*(1-D*0.3);
+    if(s.kind==='hair'){s.s.tint=hairC;s.s.alpha=s.a;}
+    else if(s.kind==='light'){s.s.tint=hiC;s.s.alpha=s.a*(1-D*0.5);}
+    else if(s.kind==='mouth'||s.kind==='hole'){s.s.tint=mouthC;s.s.alpha=s.a;}
+    else if(s.kind==='blush'){s.s.tint=blushC;s.s.alpha=s.a*cur.blush;}
+    else if(s.kind==='cross'){const P=poses.R,m=lerp2(P.el,P.h,0.5);s.s.position.set(m[0]+swayAt(m[1]),m[1]+26);s.s.tint=shadeC;s.s.alpha=s.a*cur.cross;}
+    else{s.s.tint=shadeC;s.s.alpha=s.a*(1-D*0.3);}
   }
   // 地面に落ちる影
   groundShadow.position.set(giant.x,700);groundShadow.width=640*giant.scale.x;groundShadow.height=46;
-  groundShadow.tint=0x1b2a18;groundShadow.alpha=0.35*(1-D*0.7);
+  groundShadow.tint=0x1b2a18;groundShadow.alpha=PINK?0.35*(1-D*0.7):0;
 
-  // 顔の線(目・しわ・口)
-  const G=L.lines;G.clear();
-  const hx=swayAt(-320),ink=lerpColor(0x2a3244,0x0b0d11,D),line=lerpColor(0x5a6680,0x1a1d24,D);
-  blink-=dt;if(blink<0)blink=2.5+rnd()*3;
-  const lid=blink<0.12?1:cur.lid;
-  // 額のしわ(困ると深くなる)
-  for(let i=0;i<3;i++){const y=-372-i*9,a=0.25+0.45*Math.max(0,-cur.brow);
-    G.moveTo(hx-34+i*4,y+3).quadraticCurveTo(hx,y-3-cur.brow*3,hx+34-i*4,y+3).stroke({width:2,color:line,alpha:a,cap:'round'});}
-  // 眉間の縦じわ(怒ると深くなる)
-  for(const s of[-1,1]){const a=0.3+0.6*Math.max(0,cur.brow);
-    G.moveTo(hx+s*5,-356).quadraticCurveTo(hx+s*7,-348,hx+s*5,-338).stroke({width:2.2,color:line,alpha:a,cap:'round'});}
+  // ---- 顔の線(最小限: 黒目・傷・笑い目・耳) ----
+  const c=cur,G=L.lines,E=L.eyes;G.clear();E.clear();
+  const hx=swayAt(HEAD[1]);
+  const line=lerpColor(0xb0617f,0x2a1620,D);
+  const eyeC=lerpColor(P.eye,0x0b0d12,D); // ピンク版は濃いピンク、写真版は暗い雲色
+  for(const s of[-1,1])G.moveTo(hx+s*94,-342).quadraticCurveTo(hx+s*112,-334,hx+s*98,-314).stroke({width:2.5,color:shadeC,alpha:0.35,cap:'round'});
+  // 傷跡(本人から見て左 = 画面右): 雲に刻んだ溝。額から眉へ、目の下から頬へ
+  const scar=(pts)=>{G.moveTo(hx+pts[0][0],pts[0][1]);for(const q of pts.slice(1))G.lineTo(hx+q[0],q[1]);G.stroke({width:3,color:shadeC,alpha:0.55,cap:'round',join:'round'});
+    G.moveTo(hx+pts[0][0]+2.5,pts[0][1]+1);for(const q of pts.slice(1))G.lineTo(hx+q[0]+2.5,q[1]+1);G.stroke({width:1.6,color:hiC,alpha:0.7*(1-D)});};
+  scar([[58,-428],[50,-408],[44,-390]]);
+  scar([[62,-326],[56,-308],[50,-292]]);
+  // 黒目(まぶたの粒の下に描くので、まぶたが下りると隠れる)
+  const openA=1-c.laugh;
   for(const s of[-1,1]){
-    const ex=hx+s*30,ey=-327,ew=14,open=8*(1-lid);
-    // 目(切れ長。まぶたが下りるほど細い)
-    G.moveTo(ex-ew,ey+1).quadraticCurveTo(ex,ey-open-1,ex+ew,ey+1).quadraticCurveTo(ex,ey+3.5,ex-ew,ey+1).fill(ink);
-    if(lid<0.9)G.circle(ex-s*2+2,ey-open*0.35,1.6).fill({color:0xffffff,alpha:0.75*(1-D*0.5)});
-    // 上まぶたの太い線(目尻が下がる)
-    G.moveTo(ex-s*ew-s*2,ey-1).quadraticCurveTo(ex,ey-open-4,ex+s*ew+s*3,ey+3).stroke({width:3,color:ink,cap:'round'});
-    // 目の下のたるみ
-    G.moveTo(ex-10,ey+8).quadraticCurveTo(ex,ey+13,ex+11,ey+8).stroke({width:1.8,color:line,alpha:0.55,cap:'round'});
-    // 目尻のしわ
-    for(const d of[-6,0,6])G.moveTo(ex+s*(ew+4),ey+d*0.6).lineTo(ex+s*(ew+12),ey+d*1.2).stroke({width:1.5,color:line,alpha:0.4,cap:'round'});
-    // 鼻の脇から口ひげへのほうれい線
-    G.moveTo(hx+s*24,-308).quadraticCurveTo(hx+s*36,-292,hx+s*40,-276).stroke({width:2,color:line,alpha:0.4,cap:'round'});
+    const ex=hx+s*40,ey=EY;
+    if(openA>0.02){
+      const gz=gaze[s<0?'L':'R'];let tx=0,ty=0;
+      // 目の位置から見たカーソルの方向へ、黒目を最大 横5.5・縦4 ずらす(遠いほど端へ)
+      if(tracking){tx=tf.gx*5.5;ty=tf.gy*4;}
+      else if(mouse){const sc=giant.scale.x*world.scale.x,wx=world.x+(giant.x+ex*sc/world.scale.x)*world.scale.x,wy=world.y+(giant.y+ey*sc/world.scale.x)*world.scale.x;
+        const dx=(mouse[0]-wx)/sc,dy=(mouse[1]-wy)/sc,d=Math.hypot(dx,dy)||1,f=d/(d+60);tx=dx/d*f*5.5;ty=dy/d*f*4;}
+      gz[0]=lerp(gz[0],tx,1-Math.exp(-dt*12));gz[1]=lerp(gz[1],ty,1-Math.exp(-dt*12));
+      const ix=ex+gz[0],iy=ey+1+gz[1];
+      E.circle(ix,iy,8.5).fill({color:eyeC,alpha:openA});
+      E.circle(ix-2.6,iy-2.8,2.7).fill({color:0xffffff,alpha:openA*(1-D*0.4)});
+      E.circle(ix+3,iy+3,1.1).fill({color:0xffffff,alpha:openA*0.6*(1-D*0.4)});
+    }
+    if(c.laugh>0.02){ // 笑って閉じた目。目尻が下がる
+      G.moveTo(ex-s*15,ey+1).quadraticCurveTo(ex,ey-9,ex+s*16,ey+6).stroke({width:3.5,color:eyeC,alpha:c.laugh,cap:'round'});
+      for(const d of[-1,0,1])G.moveTo(ex+s*21,ey+5+d*6).lineTo(ex+s*29,ey+8+d*9).stroke({width:2,color:shadeC,alpha:c.laugh*0.4,cap:'round'});
+    }
   }
-  // 口(口ひげの下に半分隠れる)
-  const M=mouthG;M.clear();const my=-277,mw=17;
-  if(cur.open>0.05)M.ellipse(hx,my+4*cur.open,mw*0.8,9*cur.open).fill(ink);
-  M.moveTo(hx-mw,my-cur.mouth*5).quadraticCurveTo(hx,my+cur.mouth*6,hx+mw,my-cur.mouth*5).stroke({width:3,color:ink,cap:'round'});
+
+  // 表示(H で消す。?obs=1 で最初から消す)
+  const hud=document.getElementById('hud');
+  if(hudOn){hud.style.display='block';
+    hud.textContent='1〜5 長押し: 表情   Q/W/E/R 長押し: 天気(晴れ/曇り/雨/嵐)   T: 顔追跡   H: 表示を消す\n表情: '+
+      STATES.map((x,j)=>w[j]>0.005?`${x.name} ${Math.round(w[j]*100)}%`:'').filter(Boolean).join('  ')+
+      '\n天気: '+WEATHER.map((x,j)=>ww[j]>0.005?`${x.name} ${Math.round(ww[j]*100)}%`:'').filter(Boolean).join('  ')+
+      (track.status?'\n顔追跡: '+track.status:'');}
+  else hud.style.display='none';
+  document.getElementById('cam').style.display=hudOn&&track.on?'block':'none';
 
   // 雨
   rainAcc+=cur.rain*260*dt;

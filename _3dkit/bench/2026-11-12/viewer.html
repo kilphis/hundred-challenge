@@ -1,0 +1,170 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>作り比べビューア</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="history/history.js"></script>
+<style>
+:root{--bg:#f4f3f0;--panel:#fff;--ink:#222;--sub:#777;--line:#e2e0db;--acc:#c0562f;--edit:#2f7ac0;--shot:#7a5bc0;--err:#c03030}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.5 -apple-system,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--ink);height:100vh;display:flex;flex-direction:column}
+header{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap;align-items:center}
+header h1{font-size:15px;margin:0 12px 0 0}
+.tab{border:1px solid var(--line);background:var(--bg);padding:5px 12px;border-radius:16px;cursor:pointer;font-size:13px}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+main{flex:1;display:flex;min-height:0}
+#stage{flex:1;position:relative;min-width:0}
+#stage canvas{display:block}
+#hud{position:absolute;left:12px;top:10px;font:12px ui-monospace,monospace;color:#333;background:#fff9;padding:4px 8px;border-radius:6px}
+#ctrl{position:absolute;left:12px;right:12px;bottom:12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#ctrl input[type=range]{flex:1;min-width:160px}
+button{font:inherit;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:3px 10px;cursor:pointer}
+button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+#poses{display:flex;gap:4px}
+aside{width:440px;border-left:1px solid var(--line);background:var(--panel);overflow:auto;padding:10px 12px}
+.sum{font-size:13px;color:var(--sub);margin-bottom:8px}
+.ev{display:grid;grid-template-columns:64px 52px 1fr;gap:6px;padding:5px 4px;border-bottom:1px solid var(--line);font-size:12.5px}
+.ev .t{font-family:ui-monospace,monospace;color:var(--sub)}
+.ev .k{font-size:11px;border-radius:4px;padding:0 4px;text-align:center;height:18px;color:#fff;background:#999}
+.k.edit{background:var(--edit)}.k.shot{background:var(--shot)}.k.look{background:#5a9a6a}.k.note{background:#b59a3a}.k.error{background:var(--err)}.k.done{background:var(--ink)}
+.ev.edit{cursor:pointer;background:#eef4fb}.ev.edit.cur{outline:2px solid var(--edit)}
+.ev .x{word-break:break-all}
+.ev img{width:100%;max-width:220px;margin-top:4px;border-radius:4px;border:1px solid var(--line)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;font-size:12px}
+@media (max-width:800px){main{flex-direction:column}aside{width:auto;height:45vh;border-left:0;border-top:1px solid var(--line)}}
+</style></head><body>
+<header><h1>作り比べ 2026-11-12</h1><div id="tabs" style="display:flex;gap:6px;flex-wrap:wrap"></div></header>
+<main>
+ <div id="stage"><div id="hud"></div>
+  <div id="ctrl">
+   <button id="prev">◀</button><span id="vlabel">v01</span><button id="next">▶</button>
+   <input id="slider" type="range" min="1" max="1" value="1">
+   <div id="poses"></div>
+  </div>
+ </div>
+ <aside>
+  <div class="sum" id="sum"></div>
+  <div class="filters" id="filters"></div>
+  <div id="list"></div>
+ </aside>
+</main>
+<script>
+const H = window.HISTORY;
+const ENTRIES = [
+ ['cactus_sonnet','サボテン Sonnet','6.4万トークン・3分52秒'],
+ ['cactus_haiku','サボテン Haiku','6.7万トークン・4分22秒'],
+ ['samurai_sonnet','侍 Sonnet','7.8万トークン・5分06秒(1回目は失敗・再実行分)'],
+ ['samurai_haiku','侍 Haiku','5.2万トークン・2分15秒'],
+ ['day19_samurai','day19 侍(関節+モーション, Sonnet)','18.0万トークン・18分'],
+];
+const KIND = {edit:'書換',shot:'撮影',look:'画像を見る',note:'考え',error:'失敗',done:'完了',bash:'Bash',read:'読む',other:'他'};
+const show = {edit:1,shot:1,look:1,note:1,error:1,done:1,bash:1,read:0,other:0};
+let cur = null, ver = 1, pose = null, poseT0 = 0, obj = null;
+
+// ---- three ----
+const stage = document.getElementById('stage');
+const R = new THREE.WebGLRenderer({antialias:true});
+R.setPixelRatio(Math.min(devicePixelRatio,2)); R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap;
+stage.prepend(R.domElement);
+const S = new THREE.Scene(); S.background = new THREE.Color(0xcfd3d8);
+S.add(new THREE.HemisphereLight(0xfff6e8,0x4a4038,0.5));
+const D = new THREE.DirectionalLight(0xfff1dc,0.8); D.castShadow = true; D.shadow.mapSize.set(2048,2048); D.shadow.bias = -0.0005; S.add(D,D.target);
+const P = new THREE.PointLight(0xffe2b8,0.3); S.add(P);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(2000,2000), new THREE.MeshStandardMaterial({color:0x9a9a9a,roughness:.9}));
+floor.rotation.x = -Math.PI/2; floor.position.y = -0.01; floor.receiveShadow = true; S.add(floor);
+const cam = new THREE.PerspectiveCamera(40,1,0.3,5000);
+const oc = new THREE.OrbitControls(cam, R.domElement);
+function resize(){ const w = stage.clientWidth, h = stage.clientHeight; R.setSize(w,h); cam.aspect = w/h; cam.updateProjectionMatrix(); }
+addEventListener('resize', resize);
+
+function frame(fitCamera){
+ const box = new THREE.Box3().setFromObject(obj), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+ const r = Math.max(size.x,size.y,size.z);
+ D.position.set(c.x+r*1.2,c.y+r*2,c.z+r*0.8); D.target.position.copy(c);
+ const sc = D.shadow.camera; sc.left = sc.bottom = -r*1.5; sc.right = sc.top = r*1.5; sc.near = 1; sc.far = r*6; sc.updateProjectionMatrix();
+ P.position.set(c.x-r,c.y+r*0.6,c.z+r); P.distance = r*8;
+ if (fitCamera){ cam.position.set(c.x+1.1*r,c.y+0.8*r,c.z+1.4*r); oc.target.copy(c); oc.update(); }
+ let n = 0; obj.traverse(x => { if (x.isMesh) n++; });
+ document.getElementById('hud').textContent = `${size.x.toFixed(1)} × ${size.y.toFixed(1)} × ${size.z.toFixed(1)} cm  meshes:${n}`;
+}
+
+function loadVersion(v, fitCamera){
+ const e = H[cur]; ver = Math.max(1, Math.min(e.versions, v));
+ const id = 'v'+String(ver).padStart(2,'0');
+ document.getElementById('vlabel').textContent = `${id} / v${String(e.versions).padStart(2,'0')}`;
+ document.getElementById('slider').value = ver;
+ document.querySelectorAll('.ev.edit').forEach(el => el.classList.toggle('cur', +el.dataset.v === ver));
+ const s = document.createElement('script');
+ s.src = `history/${cur}/${id}.js?${Date.now()}`;
+ s.onload = () => {
+  if (obj) S.remove(obj);
+  try { obj = window.MODELS[e.fn](); } catch (err) { document.getElementById('hud').textContent = 'この版は読み込みエラー: '+err.message; obj = null; return; }
+  S.add(obj); buildPoses(); frame(fitCamera);
+ };
+ s.onerror = () => { document.getElementById('hud').textContent = 'この版は読み込みエラー'; };
+ document.head.appendChild(s);
+}
+
+function buildPoses(){
+ const box = document.getElementById('poses'); box.innerHTML = '';
+ const m = obj && obj.userData.motions;
+ if (!m || !obj.userData.setPose) { pose = null; return; }
+ for (const name of Object.keys(m)) {
+  const b = document.createElement('button'); b.textContent = name;
+  b.onclick = () => { pose = name; poseT0 = performance.now(); [...box.children].forEach(x => x.classList.toggle('on', x === b)); };
+  box.appendChild(b);
+ }
+ if (!pose || !m[pose]) pose = Object.keys(m)[0];
+ [...box.children].forEach(x => x.classList.toggle('on', x.textContent === pose));
+}
+
+function renderList(){
+ const e = H[cur], list = document.getElementById('list'); list.innerHTML = '';
+ for (const ev of e.events) {
+  if (!show[ev.kind]) continue;
+  const row = document.createElement('div'); row.className = 'ev ' + ev.kind;
+  const m = Math.floor(ev.elapsed/60), s = ev.elapsed%60;
+  row.innerHTML = `<div class="t">${ev.time}<br>+${m}:${String(s).padStart(2,'0')}</div><div class="k ${ev.kind}">${KIND[ev.kind]||ev.kind}</div><div class="x"></div>`;
+  row.querySelector('.x').textContent = ev.text;
+  if (ev.kind === 'edit') {
+   row.dataset.v = ev.version;
+   const img = document.createElement('img'); img.src = `history/${cur}/shots/v${String(ev.version).padStart(2,'0')}_persp.png`;
+   img.onerror = () => img.remove(); row.querySelector('.x').appendChild(img);
+   row.onclick = () => loadVersion(ev.version, false);
+  }
+  list.appendChild(row);
+ }
+}
+
+function select(name){
+ cur = name; pose = null;
+ document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.n === name));
+ const e = H[name], meta = ENTRIES.find(x => x[0] === name);
+ const last = e.events.length ? e.events[e.events.length-1].elapsed : 0;
+ document.getElementById('sum').textContent = `${meta[2]} / 版 ${e.versions} 個 / 記録 ${e.events.length} 件(最後の記録まで ${Math.floor(last/60)}分${last%60}秒)`;
+ const sl = document.getElementById('slider'); sl.max = e.versions;
+ renderList(); loadVersion(e.versions, true);
+}
+
+// ---- UI ----
+const tabs = document.getElementById('tabs');
+for (const [n, label] of ENTRIES) { if (!H[n]) continue; const b = document.createElement('button'); b.className = 'tab'; b.dataset.n = n; b.textContent = label; b.onclick = () => select(n); tabs.appendChild(b); }
+const fl = document.getElementById('filters');
+for (const k of Object.keys(show)) {
+ const l = document.createElement('label'); l.innerHTML = `<input type="checkbox" ${show[k]?'checked':''}> ${KIND[k]}`;
+ l.querySelector('input').onchange = ev => { show[k] = ev.target.checked ? 1 : 0; renderList(); loadVersion(ver, false); };
+ fl.appendChild(l);
+}
+document.getElementById('slider').oninput = ev => loadVersion(+ev.target.value, false);
+document.getElementById('prev').onclick = () => loadVersion(ver-1, false);
+document.getElementById('next').onclick = () => loadVersion(ver+1, false);
+
+resize();
+(function loop(){
+ if (obj && pose && obj.userData.setPose) {
+  const m = obj.userData.motions[pose], t = (performance.now()-poseT0)/1000/m.duration;
+  obj.userData.setPose(pose, m.loop ? t % 1 : Math.min(t % 1.6, 1));
+ }
+ R.render(S, cam); requestAnimationFrame(loop);
+})();
+select(ENTRIES[0][0]);
+</script></body></html>

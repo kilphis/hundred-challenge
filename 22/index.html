@@ -1,0 +1,469 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TDA 分析チュートリアル</title>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--line:#30363d;--fg:#e6edf3;--mut:#8b949e;--h0:#58a6ff;--h1:#f0883e;--acc:#7ee787}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:13px/1.55 "Hiragino Sans","Noto Sans JP",sans-serif;overflow:hidden}
+#view{position:fixed;left:0;top:0;right:380px;bottom:0}
+#view canvas{display:block}
+#side{position:fixed;right:0;top:0;bottom:0;width:380px;background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;padding:12px 14px 20px}
+h1{font-size:15px;margin:0 0 6px}
+h2{font-size:12px;color:var(--mut);font-weight:600;margin:14px 0 6px;letter-spacing:.04em}
+select,button{background:#21262d;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:5px 8px;font:inherit;cursor:pointer}
+button:hover,select:hover{border-color:#8b949e}
+button.on{background:#1f6feb33;border-color:#1f6feb}
+#ds{width:100%}
+.note{color:var(--mut);font-size:12px;margin:6px 0 0}
+.note a{color:var(--mut)}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0}
+#eps{width:100%;margin:4px 0;accent-color:var(--acc)}
+#epsval{font:600 20px/1.2 ui-monospace,Menlo,monospace;color:var(--acc)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}
+.stats div{background:#0d1117;border:1px solid var(--line);border-radius:6px;padding:4px 6px}
+.stats b{display:block;font:600 16px ui-monospace,Menlo,monospace}
+.stats span{color:var(--mut);font-size:11px}
+.b0 b{color:var(--h0)}.b1 b{color:var(--h1)}
+canvas.chart{width:100%;background:#0d1117;border:1px solid var(--line);border-radius:6px;display:block;cursor:crosshair}
+#busy{position:fixed;left:0;top:0;right:380px;bottom:0;display:none;align-items:center;justify-content:center;font-size:16px;background:#0d1117aa;z-index:5}
+#tip{position:fixed;pointer-events:none;background:#000c;border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:12px ui-monospace,Menlo,monospace;display:none;z-index:9}
+#drop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#1f6feb44;border:3px dashed #1f6feb;font-size:20px;z-index:10}
+details{margin-top:12px;color:var(--mut);font-size:12px}
+details summary{cursor:pointer;color:var(--fg)}
+.leg{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+/* チュートリアル */
+#tut{background:#0d1117;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:4px 0 10px}
+#tut .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+#tut .no{color:var(--acc);font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.06em}
+#tut h3{font-size:15px;margin:2px 0 6px}
+#tut p{margin:0 0 7px}
+#tut ol,#tut ul{margin:0 0 7px;padding-left:20px}
+#tut .try{border-left:3px solid var(--acc);padding:2px 0 2px 9px;margin:8px 0}
+#tut .try b{color:var(--acc)}
+#tut a{color:var(--h0)}
+#tut .nav{display:flex;gap:6px;align-items:center;margin-top:8px}
+#tut .nav .sp{flex:1}
+#dots{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+#dots button{width:22px;height:22px;padding:0;font-size:11px;border-radius:50%}
+#sig{width:100%;display:none;margin:6px 0;background:#0d1117;border:1px solid var(--line);border-radius:6px}
+.hl{outline:2px solid var(--acc);outline-offset:2px}
+#free{display:none;margin-bottom:6px}
+@media (max-width:760px){#view,#busy{right:0;bottom:45vh}#side{top:55vh;width:100%;border-left:0;border-top:1px solid var(--line)}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="tda.js"></script>
+<script src="data.js"></script>
+</head><body>
+<div id="view"></div>
+<div id="busy">複体を組み立て中…</div>
+<div id="tip"></div>
+<div id="drop">CSV / TXT をドロップ(1行1点、先頭3列の数値を x,y,z に)</div>
+<div id="side">
+  <h1>TDA 分析チュートリアル</h1>
+  <div id="tut">
+    <div class="hd"><span class="no" id="tno"></span><button id="tclose" title="説明を閉じて自由に触る">自由に触る</button></div>
+    <h3 id="ttl"></h3>
+    <div id="tbody"></div>
+    <canvas id="sig" class="chart" height="110"></canvas>
+    <div class="nav"><button id="tprev">◀ 前へ</button><span class="sp"></span><button id="tnext">次へ ▶</button></div>
+    <div id="dots"></div>
+  </div>
+  <button id="free">チュートリアルに戻る</button>
+  <select id="ds"></select>
+  <p class="note" id="dsnote"></p>
+
+  <h2>距離のしきい値 ε</h2>
+  <div class="row"><span id="epsval">0</span><span class="note" id="epsraw" style="margin:0"></span></div>
+  <input type="range" id="eps" min="0" max="1000" value="0">
+  <div class="row">
+    <button id="play">▶ 再生</button>
+    <button id="tBall" class="on">球 (半径 ε/2)</button>
+    <button id="tEdge" class="on">辺</button>
+    <button id="tTri" class="on">三角形</button>
+    <button id="tRot">自動回転</button>
+    <button id="tLab" style="display:none">種で色分け</button>
+    <button id="tCyc" class="on" title="オフにすると境界行列を簡約した列そのもの(Z/2 の和なので複数の輪が重なることがある)">輪を最短で表示</button>
+  </div>
+  <div class="stats">
+    <div><b id="sV">0</b><span>頂点</span></div>
+    <div><b id="sE">0</b><span>辺</span></div>
+    <div><b id="sT">0</b><span>三角形</span></div>
+    <div class="b0"><b id="sB">0 / 0</b><span>β₀ / <span style="color:var(--h1)">β₁</span></span></div>
+  </div>
+
+  <h2>バーコード <span class="leg" style="background:var(--h0)"></span>H₀ 連結成分 <span class="leg" style="background:var(--h1);margin-left:6px"></span>H₁ 輪</h2>
+  <canvas class="chart" id="bar" height="270"></canvas>
+  <h2>パーシステンス図(誕生 × 死)</h2>
+  <canvas class="chart" id="pd" height="230"></canvas>
+  <p class="note">バー・点にカーソル → その輪の代表サイクルを3Dで表示。クリックで固定し、ε をその輪が生きている時刻へ。</p>
+
+  <details>
+    <summary>何を見ているか</summary>
+    <p>点群の各点を中心に半径 ε/2 の球を膨らませる。2点の距離が ε 以下なら辺を張り、3点が互いに ε 以下なら三角形で埋める(四面体以上も同じ規則で入るが表示は三角形まで)。これがヴィートリス・リップス複体 VR(ε)。</p>
+    <p>ε を 0 から大きくすると、ばらばらの点(β₀ = 点の数)がつながって成分が減り、辺が輪を作ると β₁ が増え、輪の内側が三角形で埋まると β₁ が減る。各輪が「生まれた ε」と「埋まった ε」の組がバー。長いバーほどデータの形として確か、短いバーはノイズ。</p>
+    <p>計算は係数 Z/2 の境界行列の列簡約(このページ内の JavaScript)。計算は包含半径(どれか1点から全点が ε 以内になる値。これを超えると複体は錐になり輪はすべて消える)まで行い、スライダーは最後のバーが終わる少し先までを映す。4つのデータで ripser と全バー一致を確認済み(<code>tools/check.js</code>)。</p>
+    <p>オレンジの輪: 「輪を最短で表示」がオンのときは、その輪を生んだ辺と、その直前の複体での最短路をつないだ輪(見やすさ優先の近似。厳密にはこの輪がバーの死と同時に消えるとは限らない)。オフにすると簡約した境界行列の列そのもの(誕生時に存在し、死の時刻に三角形の境界の和として埋まる正確な代表。Z/2 の和なので輪が重なって見えることがある)。</p>
+    <p>座標は各データを [-1,1] に収めて計算し、ε は元の単位にも換算して表示。自前の点群は CSV をこの画面にドロップ(200点を超えたら最遠点サンプリングで200点に)。</p>
+  </details>
+</div>
+<script>
+const Q=new URLSearchParams(location.search);
+const $=id=>document.getElementById(id);
+const SIDE=()=>innerWidth<=760?0:380;
+
+// ---------- three ----------
+const R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+R.setPixelRatio(devicePixelRatio);$('view').appendChild(R.domElement);
+const S=new THREE.Scene();S.background=new THREE.Color(0x0d1117);
+const cam=new THREE.PerspectiveCamera(40,1,0.01,100);cam.position.set(2.2,1.6,3.2);
+const ctl=new THREE.OrbitControls(cam,R.domElement);ctl.enableDamping=true;ctl.autoRotateSpeed=1.2;
+S.add(new THREE.HemisphereLight(0xffffff,0x334455,0.9));
+const dl=new THREE.DirectionalLight(0xffffff,0.6);dl.position.set(2,3,2);S.add(dl);
+function resize(){const w=innerWidth-SIDE(),h=innerWidth<=760?innerHeight*0.55:innerHeight;R.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();drawCharts();}
+addEventListener('resize',resize);
+
+let G=null; // 現在のデータと計算結果
+const grp=new THREE.Group();S.add(grp);
+const sphG=new THREE.SphereGeometry(1,16,12);
+const cylG=new THREE.CylinderGeometry(1,1,1,8,1);cylG.translate(0,0.5,0);cylG.rotateX(Math.PI/2);
+
+function clearGroup(){while(grp.children.length){const o=grp.children.pop();if(o.geometry&&o.geometry!==sphG&&o.geometry!==cylG)o.geometry.dispose();}}
+
+// ---------- データ読み込み ----------
+DATASETS.forEach((d,i)=>{const o=document.createElement('option');o.value=i;o.textContent=d.name;$('ds').appendChild(o);});
+$('ds').onchange=()=>{if(tutOn)setTut(false);load(DATASETS[+$('ds').value]);};
+
+function load(ds,cb){
+  if(G&&G.ds===ds){cb&&cb();return;}
+  $('busy').style.display='flex';
+  setTimeout(()=>{
+    const t0=performance.now();
+    const r=TDA.build(ds.points);
+    const ms=performance.now()-t0;
+    // 表示の上限: 最後のバーが死ぬ少し先まで(そこから包含半径までは β0=1, β1=0 のまま)
+    const fin=[...r.h0,...r.h1].map(b=>b.death).filter(isFinite);
+    $('ds').value=DATASETS.indexOf(ds);
+    G={ds,r,E:Math.min(r.enc,Math.max(...fin)*1.12),eps:0,sel:null,hover:null,labels:ds.labels||null};
+    $('dsnote').innerHTML=`${ds.note}<br>出典: ${ds.src.startsWith('http')||ds.src.includes('.')&&!ds.src.includes(' ')?`<a href="https://${ds.src.replace(/^https?:\/\//,'')}" target="_blank">${ds.src}</a>`:ds.src} ／ ${r.n}点・辺${r.m}・三角形${r.nt}・計算${ms.toFixed(0)}ms`;
+    $('tLab').style.display=G.labels?'':'none';
+    buildScene();
+    const e0=Q.has('e')?+Q.get('e'):0;
+    setEps(e0);
+    if(Q.has('sel')){const k=+Q.get('sel');const b=[...r.h1].filter(b=>b.cycle).sort((a,b)=>(b.death-b.birth)-(a.death-a.birth))[k];if(b){G.sel=b;setEps(Q.has('e')?e0:(b.birth*0.4+b.death*0.6));}}
+    $('busy').style.display='none';
+    cb&&cb();
+  },30);
+}
+
+let ptsM,ballM,edgeL,triM,cycM,mergeM;
+function buildScene(){
+  clearGroup();
+  const {r,ds}=G,n=r.n,P=ds.points;
+  const pos=new THREE.BufferAttribute(new Float32Array(P),3);
+  // 点
+  ptsM=new THREE.InstancedMesh(sphG,new THREE.MeshLambertMaterial(),n);
+  const m=new THREE.Matrix4();
+  for(let i=0;i<n;i++){m.makeScale(.018,.018,.018).setPosition(P[3*i],P[3*i+1],P[3*i+2]);ptsM.setMatrixAt(i,m);ptsM.setColorAt(i,new THREE.Color(0xffffff));}
+  grp.add(ptsM);
+  // 球
+  ballM=new THREE.InstancedMesh(sphG,new THREE.MeshBasicMaterial({color:0x7ee787,transparent:true,opacity:.07,depthWrite:false}),n);
+  grp.add(ballM);
+  // 辺: 長さ順に並べて drawRange で切る
+  const ei=new Uint32Array(2*r.m);for(let k=0;k<r.m;k++){ei[2*k]=r.ea[k];ei[2*k+1]=r.eb[k];}
+  const eg=new THREE.BufferGeometry();eg.setAttribute('position',pos);eg.setIndex(new THREE.BufferAttribute(ei,1));
+  edgeL=new THREE.LineSegments(eg,new THREE.LineBasicMaterial({color:0xc9d1d9,transparent:true,opacity:.55}));
+  grp.add(edgeL);
+  // 三角形: 値(最長辺)順
+  const tg=new THREE.BufferGeometry();tg.setAttribute('position',pos);tg.setIndex(new THREE.BufferAttribute(new Uint32Array(r.tv),1));
+  triM=new THREE.Mesh(tg,new THREE.MeshBasicMaterial({color:0x58a6ff,transparent:true,opacity:.06,side:THREE.DoubleSide,depthWrite:false}));
+  grp.add(triM);
+  // 強調表示用
+  cycM=new THREE.InstancedMesh(cylG,new THREE.MeshLambertMaterial({color:0xf0883e,emissive:0x7a3a10}),Math.max(4,r.m>0?r.n*4:4));cycM.count=0;grp.add(cycM);
+  mergeM=new THREE.InstancedMesh(cylG,new THREE.MeshLambertMaterial({color:0x58a6ff,emissive:0x1f4f99}),1);mergeM.count=0;grp.add(mergeM);
+  applyToggles();
+}
+
+function cylBetween(mesh,idx,a,b,rad){
+  const P=G.ds.points,A=new THREE.Vector3(P[3*a],P[3*a+1],P[3*a+2]),B=new THREE.Vector3(P[3*b],P[3*b+1],P[3*b+2]);
+  // lookAt(B,A) の z 軸は A→B。円柱は +z に伸びる形なので A に置いて長さ L に伸ばす
+  const D=B.clone().sub(A),L=D.length(),up=Math.abs(D.y)>.99*L?new THREE.Vector3(1,0,0):new THREE.Vector3(0,1,0);
+  const q=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(B,A,up));
+  mesh.setMatrixAt(idx,new THREE.Matrix4().compose(A,q,new THREE.Vector3(rad,rad,L)));
+}
+
+const ub=(arr,x)=>{let lo=0,hi=arr.length;while(lo<hi){const mid=(lo+hi)>>1;if(arr[mid]<=x)lo=mid+1;else hi=mid;}return lo;};
+const PAL=[0x58a6ff,0x7ee787,0xf0883e,0xd2a8ff,0xff7b72,0x79c0ff,0xe3b341,0x56d4dd,0xffa198,0xa5d6ff,0xbfdb8a,0xf778ba];
+const SPECIES={setosa:0xff7b72,versicolor:0x7ee787,virginica:0x79c0ff};
+
+function setEps(e){
+  if(!G)return;
+  const r=G.r;e=Math.max(0,Math.min(G.E,e));G.eps=e;
+  $('eps').value=Math.round(e/G.E*1000);
+  $('epsval').textContent='ε = '+e.toFixed(3);
+  $('epsraw').textContent=G.ds.unit?`(元の単位で ${(e*G.ds.scale).toPrecision(3)} ${G.ds.unit})`:'';
+  const ne=ub(r.ev,e),nt=ub(r.tval,e);
+  edgeL.geometry.setDrawRange(0,2*ne);triM.geometry.setDrawRange(0,3*nt);
+  const m=new THREE.Matrix4(),P=G.ds.points,s=Math.max(e/2,1e-4);
+  for(let i=0;i<r.n;i++){m.makeScale(s,s,s).setPosition(P[3*i],P[3*i+1],P[3*i+2]);ballM.setMatrixAt(i,m);}
+  ballM.instanceMatrix.needsUpdate=true;
+  // 連結成分で点を色分け(最古の頂点を代表にするので色が安定)
+  const par=new Int32Array(r.n).map((_,i)=>i),f=x=>{while(par[x]!==x){par[x]=par[par[x]];x=par[x];}return x;};
+  for(let k=0;k<ne;k++){const a=f(r.ea[k]),b=f(r.eb[k]);if(a!==b){par[Math.max(a,b)]=Math.min(a,b);}}
+  const size=new Int32Array(r.n);for(let i=0;i<r.n;i++)size[f(i)]++;
+  const roots=[...new Set([...Array(r.n).keys()].map(f))].filter(x=>size[x]>1).sort((a,b)=>size[b]-size[a]||a-b);
+  const col=new Map(roots.map((x,i)=>[x,PAL[i%PAL.length]]));
+  const c=new THREE.Color();
+  for(let i=0;i<r.n;i++){
+    if(G.labels&&$('tLab').classList.contains('on'))c.setHex(SPECIES[G.labels[i]]||0xffffff);
+    else c.setHex(size[f(i)]>1?col.get(f(i)):0x8b949e);
+    ptsM.setColorAt(i,c);
+  }
+  ptsM.instanceColor.needsUpdate=true;
+  const b0=r.h0.filter(b=>b.death>e).length,b1=r.h1.filter(b=>b.birth<=e&&b.death>e).length;
+  $('sV').textContent=r.n;$('sE').textContent=ne;$('sT').textContent=nt;$('sB').innerHTML=`${b0} / <span style="color:var(--h1)">${b1}</span>`;
+  showFeature();drawCharts();
+}
+
+function showFeature(){
+  const b=G.hover||G.sel,r=G.r;
+  cycM.count=0;mergeM.count=0;
+  if(b&&b.cycle){
+    const cyc=$('tCyc').classList.contains('on')?shortLoop(b):b.cycle;
+    if(cycM.instanceMatrix.count<cyc.length){grp.remove(cycM);cycM=new THREE.InstancedMesh(cylG,cycM.material,cyc.length);grp.add(cycM);}
+    cyc.forEach((k,i)=>cylBetween(cycM,i,r.ea[k],r.eb[k],.009));
+    cycM.count=cyc.length;cycM.instanceMatrix.needsUpdate=true;
+  }else if(b&&b.a!==undefined){cylBetween(mergeM,0,b.a,b.b,.011);mergeM.count=1;mergeM.instanceMatrix.needsUpdate=true;}
+}
+
+// 誕生辺 (a,b) + 誕生直前の1骨格での a→b 最短路(ダイクストラ)。見やすさのための近似の代表
+function shortLoop(bar){
+  if(bar.short)return bar.short;
+  const r=G.r,n=r.n,e0=bar.edge,adj=Array.from({length:n},()=>[]);
+  for(let k=0;k<e0;k++){adj[r.ea[k]].push([r.eb[k],k]);adj[r.eb[k]].push([r.ea[k],k]);}
+  const src=r.ea[e0],dst=r.eb[e0],dist=new Float64Array(n).fill(Infinity),via=new Int32Array(n).fill(-1),done=new Uint8Array(n);dist[src]=0;
+  for(;;){let u=-1;for(let i=0;i<n;i++)if(!done[i]&&(u<0||dist[i]<dist[u]))u=i;if(u<0||!isFinite(dist[u])||u===dst)break;done[u]=1;
+    for(const [v,k] of adj[u]){const d=dist[u]+r.ev[k];if(d<dist[v]){dist[v]=d;via[v]=k;}}}
+  if(via[dst]<0)return bar.short=bar.cycle;
+  const out=[e0];for(let v=dst;v!==src;){const k=via[v];out.push(k);v=r.ea[k]===v?r.eb[k]:r.ea[k];}
+  return bar.short=out;
+}
+
+// ---------- 2D チャート ----------
+const DPR=devicePixelRatio||1;
+function prep(cv){if(!cv.dataset.h)cv.dataset.h=cv.getAttribute('height');const w=cv.clientWidth,h=+cv.dataset.h;cv.width=w*DPR;cv.height=h*DPR;cv.style.height=h+'px';const g=cv.getContext('2d');g.setTransform(DPR,0,0,DPR,0,0);return [g,w,h];}
+let barHits=[],pdHits=[];
+function drawCharts(){
+  if(!G)return;
+  const r=G.r,E=G.E,e=G.eps;
+  // バーコード
+  {
+    const [g,w,h]=prep($('bar'));barHits=[];
+    const L=30,Rr=w-8,X=v=>L+(Math.min(v,E)/E)*(Rr-L);
+    const h0=r.h0.filter(b=>b.death>1e-9).sort((a,b)=>b.death-a.death),h1=r.h1.slice().sort((a,b)=>a.birth-b.birth||a.death-b.death);
+    const top=6,split=Math.round((h-28)*0.42),H0=split-top,H1=h-22-split-8;
+    const draw=(list,y0,hh,col,lab)=>{
+      const bh=Math.max(1,Math.min(6,hh/Math.max(1,list.length)));
+      const gap=hh/Math.max(1,list.length);
+      g.fillStyle='#8b949e';g.font='11px sans-serif';g.fillText(lab,4,y0+10);
+      list.forEach((b,i)=>{
+        const y=y0+i*gap,act=b.birth<=e&&b.death>e,sel=b===G.sel||b===G.hover;
+        g.fillStyle=sel?'#ffffff':col;g.globalAlpha=sel?1:(act?.95:.35);
+        g.fillRect(X(b.birth),y,Math.max(1.5,X(b.death)-X(b.birth)),Math.max(bh-(gap>3?1:0),1));
+        barHits.push({b,x0:X(b.birth),x1:X(b.death),y0:y,y1:y+Math.max(gap,2)});
+      });g.globalAlpha=1;
+    };
+    draw(h0,top,H0,'#58a6ff','H₀');
+    draw(h1,split+8,H1,'#f0883e','H₁');
+    g.strokeStyle='#30363d';g.beginPath();g.moveTo(L,split+3);g.lineTo(Rr,split+3);g.stroke();
+    axis(g,L,Rr,h-18,E);
+    g.strokeStyle='#7ee787';g.lineWidth=1.5;g.beginPath();g.moveTo(X(e),2);g.lineTo(X(e),h-18);g.stroke();g.lineWidth=1;
+  }
+  // パーシステンス図
+  {
+    const [g,w,h]=prep($('pd'));pdHits=[];
+    const L=34,B=h-20,T=8,Rr=w-10,sz=Math.min(Rr-L,B-T),X=v=>L+Math.min(v,E)/E*sz,Y=v=>B-Math.min(v,E)/E*sz;
+    // 生きている領域(誕生 ≤ ε < 死)
+    g.fillStyle='#7ee78718';g.fillRect(L,T,X(e)-L,Y(e)-T);
+    g.strokeStyle='#30363d';g.strokeRect(L,T,sz,sz);
+    g.beginPath();g.moveTo(X(0),Y(0));g.lineTo(X(E),Y(E));g.stroke();
+    g.strokeStyle='#7ee78788';g.setLineDash([4,3]);g.beginPath();g.moveTo(X(e),T);g.lineTo(X(e),Y(e));g.lineTo(L+sz,Y(e));g.stroke();g.setLineDash([]);
+    const dot=(b,col)=>{const y=isFinite(b.death)?Y(b.death):T+2,x=X(b.birth),sel=b===G.sel||b===G.hover;
+      g.fillStyle=sel?'#fff':col;g.beginPath();g.arc(x,y,sel?5:3,0,7);g.fill();pdHits.push({b,x,y});};
+    g.globalAlpha=.8;r.h0.filter(b=>b.death>1e-9).forEach(b=>dot(b,'#58a6ff'));r.h1.forEach(b=>dot(b,'#f0883e'));g.globalAlpha=1;
+    g.fillStyle='#8b949e';g.font='11px sans-serif';
+    g.fillText('誕生 →',L+sz-38,h-4);g.save();g.translate(11,T+40);g.rotate(-Math.PI/2);g.fillText('← 死',-30,0);g.restore();
+    g.fillText('0',L-10,B+12);g.fillText(E.toFixed(2),L+sz-20,B+12);
+  }
+}
+function axis(g,L,Rr,y,E){
+  g.strokeStyle='#30363d';g.beginPath();g.moveTo(L,y);g.lineTo(Rr,y);g.stroke();
+  g.fillStyle='#8b949e';g.font='10px ui-monospace,monospace';
+  const step=E>1?.25:E>.4?.1:.05;for(let v=0;v<=E+1e-9;v+=step){const x=L+v/E*(Rr-L);g.fillRect(x,y,1,4);g.fillText(v.toFixed(2),x-10,y+14);}
+}
+
+// バー・点のホバーとクリック
+function hit(ev,cv){
+  const rc=cv.getBoundingClientRect(),x=ev.clientX-rc.left,y=ev.clientY-rc.top;
+  if(cv.id==='bar'){const h=barHits.find(h=>y>=h.y0&&y<h.y1&&x>=h.x0-3&&x<=h.x1+3);return h&&h.b;}
+  let best=null,bd=64;pdHits.forEach(h=>{const d=(h.x-x)**2+(h.y-y)**2;if(d<bd){bd=d;best=h.b;}});return best;
+}
+for(const cv of [$('bar'),$('pd')]){
+  cv.onmousemove=ev=>{const b=hit(ev,cv);if(b!==G.hover){G.hover=b||null;showFeature();drawCharts();}
+    const t=$('tip');if(b){t.style.display='block';t.style.left=ev.clientX+12+'px';t.style.top=ev.clientY+12+'px';
+      const u=G.ds.scale,un=G.ds.unit,f=v=>isFinite(v)?v.toFixed(3)+(un?` (${(v*u).toPrecision(3)}${un})`:''):'∞';
+      t.innerHTML=`${b.cycle!==undefined?'H₁ 輪':'H₀ 成分'}<br>誕生 ${f(b.birth)}<br>死 ${f(b.death)}<br>寿命 ${f(b.death-b.birth)}${b.cycle?`<br>代表サイクル ${($('tCyc').classList.contains('on')?shortLoop(b):b.cycle).length} 辺`:''}`;}
+    else t.style.display='none';};
+  cv.onmouseleave=()=>{G.hover=null;$('tip').style.display='none';showFeature();drawCharts();};
+  cv.onclick=ev=>{const b=hit(ev,cv);if(!b){G.sel=null;showFeature();drawCharts();return;}
+    G.sel=b===G.sel?null:b;if(G.sel){stop();setEps(b.cycle?b.birth+(b.death-b.birth)*.5:Math.max(0,b.death-1e-6));}else{showFeature();drawCharts();}};
+}
+
+// ---------- 操作 ----------
+$('eps').oninput=()=>{stop();setEps($('eps').value/1000*G.E);};
+let playing=false,last=0;
+function stop(){playing=false;$('play').textContent='▶ 再生';}
+$('play').onclick=()=>{if(playing)return stop();playing=true;$('play').textContent='❚❚ 停止';if(G.eps>=G.E*0.999)setEps(0);last=performance.now();};
+const tog=(id,fn)=>{$(id).onclick=()=>{$(id).classList.toggle('on');fn&&fn();applyToggles();};};
+tog('tBall');tog('tEdge');tog('tTri');tog('tRot');tog('tCyc',()=>{showFeature();});tog('tLab',()=>setEps(G.eps));
+function applyToggles(){if(!G)return;ballM.visible=$('tBall').classList.contains('on');edgeL.visible=$('tEdge').classList.contains('on');triM.visible=$('tTri').classList.contains('on');ctl.autoRotate=$('tRot').classList.contains('on');}
+addEventListener('keydown',e=>{if(e.target.tagName==='SELECT')return;
+  if(e.code==='Space'){e.preventDefault();$('play').click();}
+  if(e.key==='ArrowRight')setEps(G.eps+G.E/200);if(e.key==='ArrowLeft')setEps(G.eps-G.E/200);});
+
+// ---------- 自前データのドロップ ----------
+addEventListener('dragover',e=>{e.preventDefault();$('drop').style.display='flex';});
+addEventListener('dragleave',e=>{if(e.target===$('drop'))$('drop').style.display='none';});
+addEventListener('drop',async e=>{e.preventDefault();$('drop').style.display='none';
+  const f=e.dataTransfer.files[0];if(!f)return;
+  const rows=(await f.text()).split(/\r?\n/).map(l=>l.split(/[,\t; ]+/).map(Number).filter(v=>isFinite(v))).filter(r=>r.length>=2);
+  if(rows.length<4){alert('数値の行が足りません');return;}
+  let X=rows.map(r=>[r[0],r[1],r.length>2?r[2]:0]);const n0=X.length;
+  if(X.length>200){const idx=[0],d=X.map(p=>Math.hypot(p[0]-X[0][0],p[1]-X[0][1],p[2]-X[0][2]));
+    while(idx.length<200){let i=d.indexOf(Math.max(...d));idx.push(i);X.forEach((p,k)=>d[k]=Math.min(d[k],Math.hypot(p[0]-X[i][0],p[1]-X[i][1],p[2]-X[i][2])));}X=idx.map(i=>X[i]);}
+  const c=[0,1,2].map(a=>X.reduce((s,p)=>s+p[a],0)/X.length);let s=0;X.forEach(p=>p.forEach((v,a)=>s=Math.max(s,Math.abs(v-c[a]))));s=s||1;
+  const ds={id:'user',name:f.name,unit:'(入力の単位)',scale:s,src:'ドロップしたファイル',note:`${n0}行を読み込み${n0>200?'、最遠点サンプリングで200点に':''}。`,points:X.flatMap(p=>p.map((v,a)=>+((v-c[a])/s).toFixed(5)))};
+  DATASETS.push(ds);const o=document.createElement('option');o.value=DATASETS.length-1;o.textContent='📄 '+f.name;$('ds').appendChild(o);$('ds').value=o.value;load(ds);});
+
+// ---------- チュートリアル ----------
+const DS=id=>DATASETS.find(d=>d.id===id);
+const byLife=()=>G.r.h1.slice().sort((a,b)=>(b.death-b.birth)-(a.death-a.birth));
+const h0d=()=>G.r.h0.map(b=>b.death).filter(isFinite).sort((a,b)=>b-a);
+const f3=v=>v.toFixed(3);
+const pick=(b,t)=>{G.sel=b;setEps(b.birth+(b.death-b.birth)*t);};
+const PAPER='../../30_Areas/tda_paper_reading/sw1pers_guide.html';
+const STEPS=[
+ {d:'circle',t:'データを点の集まりとして見る',go:()=>setEps(0),
+  h:()=>`<p>位相的データ解析(TDA)は、データを空間に散らばった点(<b>点群</b>)として扱い、その「形」を数えます。形とは、いくつの<b>塊</b>に分かれているか(H₀)、<b>輪</b>がいくつあるか(H₁)のことです。</p>
+  <p>左の16点は円周上に並んでいますが、点はばらばらなので、このままでは塊は16個、輪は0個です。「どれくらい近ければつながっているとみなすか」を決めるしきい値 <b>ε</b> が要ります。</p>
+  <p>ε を1つに決め打ちすると答えが ε しだいになります。そこで ε を0から大きくしながら形の変化を丸ごと記録します。これが<b>持続ホモロジー</b>です。</p>
+  <div class="try"><b>やってみる</b> 3D画面をドラッグして回す。ホイールで拡大・縮小。</div>`},
+ {d:'circle',t:'ε を広げて点をつなぐ',go:()=>setEps(G.r.ev[0]*0.85),
+  h:()=>`<p>各点に半径 ε/2 の球(緑)をかぶせます。2つの球が触れる、つまり2点の距離が ε 以下になったら<b>辺</b>を張ります。3点が互いに ε 以下なら<b>三角形</b>で埋めます。こうしてできる図形を<b>ヴィートリス・リップス複体</b> VR(ε) と呼びます。</p>
+  <p>下の β₀ は塊(連結成分)の数、β₁ は輪の数です(<b>ベッチ数</b>)。</p>
+  <div class="try"><b>やってみる</b> スライダーを少し右へ。隣どうしの距離 ${f3(G.r.ev[0])} を越えた瞬間に16本の辺が同時に張られ、β₀ が 16 → 1 に落ち、同時に β₁ が 1 になる。</div>`},
+ {d:'circle',t:'輪が生まれる',go:()=>pick(byLife()[0],.4),
+  h:()=>{const b=byLife()[0];return `<p>ε = ${f3(b.birth)} で辺が一周つながり、真ん中に穴のあいた輪ができました(オレンジ)。このとき輪が<b>生まれた</b>と言います。</p>
+  <p>辺はあっても、穴を覆う三角形はまだありません。三角形ができるのは、3点が<em>互いに</em> ε 以下になったときだけです。</p>
+  <div class="try"><b>やってみる</b> ε を少しずつ上げ、外周に三角形(青い膜)が増えていくのを見る。それでも中心の穴はしばらく残る。</div>`}},
+ {d:'circle',t:'輪が埋まる',go:()=>{const b=byLife()[0];G.sel=b;setEps(Math.min(G.E,b.death+.01));},
+  h:()=>{const b=byLife()[0];return `<p>ε = ${f3(b.death)} で穴をまたぐ三角形がそろい、輪が埋まりました。β₁ は 0 に戻ります。これを輪が<b>死んだ</b>と言います。</p>
+  <p>輪は ε = ${f3(b.birth)} から ${f3(b.death)} まで生きていました。この長さ(<b>寿命</b> ${f3(b.death-b.birth)})が、その輪が「どれだけ確かな形か」の目安です。</p>
+  <div class="try"><b>やってみる</b> ε を ${f3(b.death)} の前後で行き来し、β₁ が 1 ⇄ 0 と切り替わるのを確かめる。</div>`}},
+ {d:'circle',t:'バーコードで記録する',hl:'bar',go:()=>pick(byLife()[0],.5),
+  h:()=>`<p>ここまでの変化を1本の横棒にしたのが<b>バーコード</b>です。棒の左端が誕生、右端が死。</p>
+  <ul><li><b style="color:var(--h0)">H₀</b>: 最初は全点が別々の塊(ε = 0 で誕生)。2つの塊がつながると片方が死ぬ。最後に残る1つは死なない(右端まで伸びる)。</li>
+  <li><b style="color:var(--h1)">H₁</b>: 輪ごとに1本。</li></ul>
+  <p>緑の縦線が今の ε。縦線と交わる棒の本数が、その ε でのベッチ数です。</p>
+  <div class="try"><b>やってみる</b> 棒にカーソルを当てると誕生・死の値が出て、対応する輪や辺が3Dで光る。▶ 再生で ε を自動で動かす。</div>`},
+ {d:'circle',t:'パーシステンス図で読む',hl:'pd',go:()=>pick(byLife()[0],.5),
+  h:()=>`<p>同じ情報を、各棒を点 (誕生, 死) にして平面に打ったのが<b>パーシステンス図</b>です。点は必ず対角線より上にあり、対角線から離れているほど寿命が長い。</p>
+  <p>H₀ の点はどれも誕生が0なので左端の縦軸に並びます。棒が何百本もあると、バーコードより図のほうが全体を見渡しやすくなります。</p>
+  <div class="try"><b>やってみる</b> 図のオレンジの点をクリックすると選択が固定され、ε がその輪の生きている時刻に移る。</div>`},
+ {d:'noisy',t:'ノイズと本物を見分ける',go:()=>pick(byLife()[0],.5),
+  h:()=>{const L=byLife(),a=L[0],b=L[1];return `<p>実際のデータにはノイズがあります。ノイズ入りの円80点では、H₁ の棒が ${L.length} 本出ました。</p>
+  <p>いちばん長い棒は寿命 ${f3(a.death-a.birth)}、2番目は ${f3(b.death-b.birth)}。長い1本が円という形で、短い棒は点の偶然の並びでできた小さな輪です。<b>長い棒を形、短い棒をノイズ</b>と読むのが基本の読み方です。</p>
+  <p>この読み方には裏付けがあります。各点を δ 以内しか動かさなければ、すべての辺の長さの変化は 2δ 以内なので、図の点も 2δ 以内しか動きません(<b>安定性</b>)。小さなノイズで長い棒は消えません。</p>
+  <div class="try"><b>やってみる</b> 短い H₁ の棒にカーソルを当て、3Dでどんな小さな輪かを見る。</div>`}},
+ {d:'iris',t:'塊を数える(H₀ でクラスタを見る)',tog:{tLab:1,tBall:0},go:()=>{const d=h0d();setEps((d[0]+d[1])/2);},
+  h:()=>{const d=h0d(),u=G.ds.scale;return `<p>アヤメ150株を、がく片の長さ・花弁の長さ・花弁の幅(cm)の3次元の点にしました。色は種です。</p>
+  <p>H₀ の棒のうち最後まで死なない1本を除くと、最も長い棒は ε = ${f3(d[0])}(${(d[0]*u).toPrecision(3)} cm)まで生き、2番目(${f3(d[1])})と大きく離れています。今の ε では塊が2つで、一方は setosa だけ、もう一方は versicolor と virginica が混ざっています。</p>
+  <p>H₀ でわかるのは「離れた塊があるか」まで。接している2種は分けられません。また、距離は軸の単位と縮尺で変わるので、どの量を軸にするかが結果を左右します。</p>
+  <div class="try"><b>やってみる</b> 「種で色分け」を切り替え、成分ごとの色分けと比べる。ε を ${f3(d[0])} の前後で動かす。</div>`}},
+ {d:'ecg',t:'時系列を点群にする(遅れ座標埋め込み)',sig:1,tog:{tBall:0,tTri:0},go:()=>pick(byLife()[0],.5),
+  h:()=>{const L=byLife(),a=L[0],b=L[1],ds=G.ds;return `<p>心電図のような1本の信号は、そのままでは点群ではありません。時刻 t の値と、τ だけ後・2τ 後の値を組にした点 (x(t), x(t+τ), x(t+2τ)) を作ると、信号が1本の曲線になります(<b>遅れ座標埋め込み</b>)。ここでは τ = ${(ds.tau/ds.fs*1000).toFixed(0)} ms。</p>
+  <p>下の波形の3つの印が t, t+τ, t+2τ で、3Dの白い玉がそれを組にした点です。拍動のたびにほぼ同じ道を一周するので、<b>周期的な信号は輪になります</b>。</p>
+  <p>最長の H₁ の棒(寿命 ${f3(a.death-a.birth)})は2番目(${f3(b.death-b.birth)})の約${((a.death-a.birth)/(b.death-b.birth)).toFixed(1)}倍で、拍動の輪がはっきり出ています。τ と次元の決め方、輪の大きさを「周期性の強さ」として使う考え方は <a href="${PAPER}" target="_blank">Perea–Harer 2015 の論文ガイド</a>で。</p>`}},
+ {d:'bunny',t:'3Dの形を読む',tog:{tBall:0},go:()=>pick(byLife()[0],.5),
+  h:()=>{const L=byLife();return `<p>うさぎの3Dスキャンから180点を取りました。H₁ の棒は ${L.length} 本ありますが、最長(${f3(L[0].death-L[0].birth)})と2番目(${f3(L[1].death-L[1].birth)})、3番目(${f3(L[2].death-L[2].birth)})がほぼ同じで、<b>飛び抜けた棒がありません</b>。</p>
+  <p>つまりこの点群には「はっきりした輪」はなく、表面に点がまばらな所が小さな輪として出ているだけ、と読めます。</p>
+  <p>うさぎの表面が囲む<b>空洞</b>は2次元の穴(H₂)で、このアプリは H₁ までしか計算しないので見えません。何次元まで計算するかで、見える形が決まります。</p>
+  <div class="try"><b>やってみる</b> 長い順に棒をいくつかクリックし、輪がうさぎのどこにあるかを見る。</div>`}},
+ {d:'ubq',t:'タンパク質の折り畳みを読む',tog:{tBall:0},go:()=>pick(byLife()[0],.5),
+  h:()=>{const L=byLife(),u=G.ds.scale,d=h0d();return `<p>ユビキチン(76残基)の Cα 原子76個です。ε はÅに換算して読みます。</p>
+  <p>H₀ の棒は ε ≈ ${(d[0]*u).toFixed(2)} Å までにすべて死にます。主鎖で隣り合う Cα どうしの距離が約 3.8 Å なので、この時点で鎖が一本につながります。</p>
+  <p>H₁ の長い棒(上位3本の寿命 ${L.slice(0,3).map(b=>((b.death-b.birth)*u).toFixed(1)).join(' / ')} Å)は、主鎖が離れた場所で再び近づいてできる輪です。βシートの鎖どうしの並びのように、配列上は遠い残基が空間で近づく所に輪が生まれます。</p>
+  <div class="try"><b>やってみる</b> 長い順に棒をクリックし、輪が主鎖のどこを通っているかを見る。棒の上のカーソル表示で寿命を Å で確かめる。</div>`}},
+ {d:'ubq',t:'自分のデータで分析する',go:()=>setEps(0),
+  h:()=>`<p>ここまでの手順をまとめると:</p>
+  <ol><li><b>何を点にするか</b>を決める(1行 = 1点、列 = 座標)。時系列なら遅れ座標で埋め込む。</li>
+  <li><b>軸の単位と縮尺</b>をそろえる。距離がすべての土台になる。</li>
+  <li>ε を動かしてバーコードとパーシステンス図を作る。</li>
+  <li><b>長い棒</b>を探す。短い棒の群れから離れているかを見る。</li>
+  <li>長い棒の<b>代表の輪</b>を3Dで見て、元のデータの何に対応するかを確かめる。</li></ol>
+  <p>CSV / TXT ファイルをこの画面にドロップすると、先頭3列を x, y, z として読み込みます(2列なら z = 0)。200点を超えたら最遠点サンプリングで200点にします。</p>
+  <div class="try"><b>やってみる</b> 「自由に触る」で説明を閉じ、データを選んだりドロップしたりする。</div>`},
+];
+let step=-1,tutOn=true;
+STEPS.forEach((st,i)=>{const b=document.createElement('button');b.textContent=i+1;b.title=st.t;b.onclick=()=>goStep(i);$('dots').appendChild(b);});
+function goStep(i){
+  step=Math.max(0,Math.min(STEPS.length-1,i));const st=STEPS[step];
+  stop();
+  load(DS(st.d),()=>{
+    G.sel=null;G.hover=null;
+    const tg=Object.assign({tBall:1,tEdge:1,tTri:1,tLab:0,tRot:0},st.tog||{});
+    for(const k in tg)$(k).classList.toggle('on',!!tg[k]);applyToggles();
+    st.go();
+    $('tno').textContent=`ステップ ${step+1} / ${STEPS.length}`;$('ttl').textContent=st.t;$('tbody').innerHTML=st.h();
+    $('sig').style.display=st.sig?'block':'none';tracer.visible=trail.visible=!!st.sig;
+    $('bar').classList.toggle('hl',st.hl==='bar');$('pd').classList.toggle('hl',st.hl==='pd');
+    [...$('dots').children].forEach((b,k)=>b.classList.toggle('on',k===step));
+    $('tprev').disabled=step===0;$('tnext').disabled=step===STEPS.length-1;
+    drawCharts();
+  });
+}
+function setTut(on){
+  tutOn=on;$('tut').style.display=on?'':'none';$('free').style.display=on?'none':'block';
+  if(on)goStep(Math.max(0,step));else{tracer.visible=trail.visible=false;$('bar').classList.remove('hl');$('pd').classList.remove('hl');}
+}
+$('tprev').onclick=()=>goStep(step-1);$('tnext').onclick=()=>goStep(step+1);
+$('tclose').onclick=()=>setTut(false);$('free').onclick=()=>setTut(true);
+
+// 遅れ座標埋め込みのなぞり: 波形上の t, t+τ, t+2τ と、それを組にした3Dの点
+const tracer=new THREE.Mesh(sphG,new THREE.MeshBasicMaterial({color:0xffffff}));tracer.scale.setScalar(.035);tracer.visible=false;S.add(tracer);
+const TRAIL=120,trail=new THREE.Line(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(new Float32Array(3*TRAIL),3)),new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.7}));trail.visible=false;S.add(trail);
+function embed(ds,i){const x=ds.signal,t=ds.tau,c=ds.center,s=ds.scale;return [(x[i]-c[0])/s,(x[i+t]-c[1])/s,(x[i+2*t]-c[2])/s];}
+function drawSignal(time){
+  const ds=G&&G.ds;if(!ds||!ds.signal)return;
+  const x=ds.signal,N=x.length,t=ds.tau,M=N-2*t,i=Math.floor(time/1000*ds.fs*0.5)%M; // 0.5倍速
+  const [g,w,h]=prep($('sig'));const lo=Math.min(...x),hi=Math.max(...x),X=k=>4+k/(N-1)*(w-8),Y=v=>h-14-(v-lo)/(hi-lo)*(h-22);
+  g.strokeStyle='#8b949e';g.lineWidth=1;g.beginPath();x.forEach((v,k)=>k?g.lineTo(X(k),Y(v)):g.moveTo(X(k),Y(v)));g.stroke();
+  ['t','t+τ','t+2τ'].forEach((lab,j)=>{const k=i+j*t;g.fillStyle='#7ee787';g.fillRect(X(k)-.5,4,1,h-18);g.beginPath();g.arc(X(k),Y(x[k]),3.5,0,7);g.fill();g.font='10px ui-monospace,monospace';g.fillText(lab,X(k)+3,12+j*11);});
+  g.fillStyle='#8b949e';g.fillText(`${(N/ds.fs).toFixed(1)} 秒`,w-40,12);
+  tracer.position.set(...embed(ds,i));
+  const a=trail.geometry.attributes.position;for(let k=0;k<TRAIL;k++){const p=embed(ds,Math.max(0,i-(TRAIL-1-k)*2));a.setXYZ(k,...p);}a.needsUpdate=true;
+}
+
+// ---------- ループ ----------
+function loop(t){
+  requestAnimationFrame(loop);
+  if(playing&&G){const dt=Math.min(.05,(t-last)/1000);last=t;const ne=G.eps+dt*G.E/14;if(ne>=G.E){setEps(G.E);stop();}else setEps(ne);}
+  if(tracer.visible)drawSignal(t);
+  ctl.update();R.render(S,cam);
+}
+resize();
+if(Q.has('d')&&!Q.has('step')){setTut(false);const di=Math.max(0,DATASETS.findIndex(d=>d.id===Q.get('d')));$('ds').value=di;load(DATASETS[di]);}
+else{step=(+Q.get('step')||1)-1;setTut(true);}
+if(Q.has('rot'))$('tRot').click();
+requestAnimationFrame(loop);
+</script>
+</body></html>
