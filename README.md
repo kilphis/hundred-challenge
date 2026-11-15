@@ -27,6 +27,7 @@
 | 21 | ネズミの壁のぼり(Three.js)| [`21_mouse_climb/index.html`](https://kilphis.github.io/hundred-challenge/21_mouse_climb/index.html) |
 | 22 | TDA 分析チュートリアル(Three.js)| [`22_tda_tutorial/index.html`](https://kilphis.github.io/hundred-challenge/22_tda_tutorial/index.html) |
 | 23 | 画像解析タスク看板 | [`23_task_board/index.html`](https://kilphis.github.io/hundred-challenge/23_task_board/index.html) |
+| 25 | 多将戦(Rust + macroquad)| `25_tashousen/`(`cargo run --release`)|
 
 ブラウザで動く日は表のリンクから遊べる(GitHub Pages)。
 
