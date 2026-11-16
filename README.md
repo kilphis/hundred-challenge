@@ -29,6 +29,10 @@
 | 23 | 画像解析タスク看板 | [`23_task_board/index.html`](https://kilphis.github.io/hundred-challenge/23_task_board/index.html) |
 | 25 | 多将戦(Rust + macroquad)| `25_tashousen/`(`cargo run --release`)|
 | 26 | Boids で並列処理を学ぶ(Rust + macroquad + rayon)| `26_boids/`(`cargo run --release`)|
+| 27 | VTuber アバター(PixiJS)| `27_vtuber/index.html` |
+| 28 | 青い球 | `28_blue_ball/index.html` |
+| 29 | 加工所と4マーケット(Rust + Bevy)| `29_markets/`(`cargo run`)|
+| 30 | 分岐予測器を外から測る(C + clang, Apple M4)| `30_branch_predictor/`(`./run.sh`)|
 
 ブラウザで動く日は表のリンクから遊べる(GitHub Pages)。
 

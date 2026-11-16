@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>青い球</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#000}
+  canvas{display:block;width:100vw;height:100vh}
+  #looks{position:fixed;left:16px;top:12px;display:flex;gap:6px;font:13px "Hiragino Sans",sans-serif}
+  #looks button{font:inherit;padding:6px 12px;border-radius:16px;border:1px solid rgba(80,110,180,.35);
+    background:rgba(255,255,255,.55);color:#2a3f6e;cursor:pointer;backdrop-filter:blur(6px)}
+  #looks button.on{background:#2f6fe0;color:#fff;border-color:#2f6fe0}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="looks"></div>
+<script>
+// ---- パラメータ ----
+const Q = new URLSearchParams(location.search);
+let LOOK = 'ABCD'.indexOf(Q.get('look') || 'B');
+const SHOT = Q.has('shot');
+const LOOK_NAMES = ['A 乳白ガラス', 'B 澄んだガラス', 'C 発光する核', 'D 霧の白'];
+
+// ---- 球の中のチャット(縦長の帯 → テクスチャ。上へスクロールして読む) ----
+// 球の直径 ≒ 吹き出し1.5個分(レンズで約1.8倍に拡大して見える)。帯の 1px = 1/600 ワールド単位(シェーダーの PPU)
+const STEP = 400;                      // 吹き出し間隔(px)
+const MSGS = [
+  [0, '明日のプレゼン\n構成に迷ってる'],
+  [1, '伝えたいことを\n一つに絞ると？'],
+  [0, '記憶が\n未来をつくる\nかな'],
+  [1, 'なら、過去の点を\nつなぐ話から'],
+  [0, '点をつなぐ…\nいいね'],
+];
+const PAD = 900, CW = 1024, CH = PAD * 2 + STEP * (MSGS.length - 1);
+const centers = MSGS.map((_, i) => PAD + STEP * i);   // 各吹き出しの中心(px、帯の上から)
+function chatCanvas() {
+  const cv = document.createElement('canvas');
+  cv.width = CW; cv.height = CH;
+  const g = cv.getContext('2d');
+  g.font = '600 64px "Hiragino Sans", sans-serif';
+  const LH = 84;
+  MSGS.forEach(([who, s], i) => {
+    const lines = s.split('\n');
+    const w = Math.max(...lines.map(l => g.measureText(l).width)) + 80, h = lines.length * LH + 50;
+    const x = CW / 2 - w / 2 + (who ? -50 : 50), y = centers[i] - h / 2;
+    g.fillStyle = who ? 'rgba(255,255,255,0.97)' : 'rgba(18,48,130,0.97)';
+    g.beginPath(); g.roundRect(x, y, w, h, 46); g.fill();
+    g.fillStyle = who ? '#1d3b6e' : '#fff';
+    lines.forEach((l, k) => g.fillText(l, x + 40, y + 25 + LH * (k + 0.78)));
+  });
+  return cv;
+}
+// t 秒のときに球の中心に来る帯の位置(px)。1通ごとに 2.4 秒、0.9 秒かけて上へ流れる
+const PER = 2.4;
+function scrollAt(t) {
+  const k = Math.floor(t / PER), f = Math.min((t - k * PER) / 0.9, 1);
+  const e = f < .5 ? 4 * f * f * f : 1 - Math.pow(-2 * f + 2, 3) / 2;
+  const pos = i => i < 0 ? PAD - STEP * 1.2 : centers[Math.min(i, MSGS.length - 1)] - STEP * 0.25;
+  return pos(k - 1) + (pos(k) - pos(k - 1)) * e;
+}
+
+// ---- グラフの点と辺 ----
+let seed = 7;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const N = 28, nodes = [], radii = [];
+while (nodes.length < N) {
+  const u = rnd() * 2 - 1, a = rnd() * Math.PI * 2, r = 1.45 + rnd() * 0.75;
+  const s = Math.sqrt(1 - u * u), p = [Math.cos(a) * s * r, u * r * 0.8, Math.sin(a) * s * r];
+  if (p[2] > 0.6 && Math.hypot(p[0], p[1]) < 1.1) continue; // チャットの真正面は空ける
+  nodes.push(p); radii.push(0.035 + rnd() * 0.045);
+}
+const edges = [];
+for (let i = 0; i < N; i++) {
+  const d = nodes.map((q, j) => [Math.hypot(q[0]-nodes[i][0], q[1]-nodes[i][1], q[2]-nodes[i][2]), j])
+    .sort((a, b) => a[0] - b[0]);
+  for (const [, j] of d.slice(1, 3)) if (!edges.some(e => (e[0]===i&&e[1]===j)||(e[0]===j&&e[1]===i))) edges.push([i, j]);
+}
+
+// ---- 木(枝の線分。根元から再帰で伸ばす) ----
+const segs = [], tips = [];
+function grow(a, dir, len, r, depth) {
+  const b = a.map((v, i) => v + dir[i] * len);
+  segs.push([a, b, r, r * 0.72]);
+  if (depth === 0) { tips.push(b); return; }
+  const n = depth === 3 ? 3 : 2, off = rnd() * Math.PI * 2;
+  for (let k = 0; k < n; k++) {
+    const ang = off + k * Math.PI * 2 / n, sp = 0.85 + rnd() * 0.3;
+    let d = [dir[0] + Math.cos(ang) * sp, dir[1] + 0.35, dir[2] + Math.sin(ang) * sp];
+    const l = Math.hypot(...d); d = d.map(v => v / l);
+    grow(b, d, len * (0.78 + rnd() * 0.1), r * 0.66, depth - 1);
+  }
+}
+grow([0, -1.7, 0], [0, 1, 0], 0.9, 0.14, 3);
+// 点ごとの行き先: 枝先寄りの位置(後半の枝を優先)
+const treeAt = nodes.map((_, i) => {
+  const [a, b] = segs[segs.length - 1 - (i % (segs.length - 4))], h = 0.55 + rnd() * 0.45;
+  return a.map((v, j) => v + (b[j] - v) * h);
+});
+
+// ---- 全体の流れ(秒) ----
+const T_CHAT = PER * MSGS.length + 1.5;     // チャット
+const T_GATHER = 3.5, T_MORPH = 4, T_HOLD = 5, T_BACK = 2.5, T_SPREAD = 2;
+const CYCLE = T_CHAT + T_GATHER + T_MORPH + T_HOLD + T_BACK + T_SPREAD;
+const ease = f => { f = Math.min(Math.max(f, 0), 1); return f < .5 ? 4 * f * f * f : 1 - Math.pow(-2 * f + 2, 3) / 2; };
+function phase(t) {
+  t %= CYCLE;
+  let g, m;
+  const t1 = T_CHAT, t2 = t1 + T_GATHER, t3 = t2 + T_MORPH, t4 = t3 + T_HOLD, t5 = t4 + T_BACK;
+  if (t < t1) { g = 0; m = 0; }
+  else if (t < t2) { g = ease((t - t1) / T_GATHER); m = 0; }
+  else if (t < t3) { g = 1; m = ease((t - t2) / T_MORPH); }
+  else if (t < t4) { g = 1; m = 1; }
+  else if (t < t5) { g = 1; m = 1 - ease((t - t4) / T_BACK); }
+  else { g = 1 - ease((t - t5) / T_SPREAD); m = 0; }
+  return { t, g, m, scroll: scrollAt(Math.min(t, T_CHAT)) };
+}
+
+// ---- WebGL2 ----
+const cv = document.getElementById('c');
+const gl = cv.getContext('webgl2', { preserveDrawingBuffer: true, antialias: false });
+const VS = `#version 300 es
+in vec2 p; void main(){ gl_Position = vec4(p,0,1); }`;
+const FS = `#version 300 es
+precision highp float;
+uniform vec2 uRes; uniform float uTime; uniform int uLook;
+uniform vec3 uNodes[32]; uniform float uNodeR[32]; uniform int uNodeN;
+uniform vec2 uEdges[48]; uniform int uEdgeN;   // 辺の両端 index(float で渡す)
+uniform sampler2D uChat; uniform vec2 uChatSize; uniform float uScroll;
+uniform float uGather, uMorph, uK;   // 点の集合 0..1 / 球→木 0..1 / なめらか合体の幅
+uniform vec3 uSegA[24], uSegB[24]; uniform vec2 uSegR[24]; uniform int uSegN;
+const float PPU = 600., ZCHAT = -.35;
+out vec4 o;
+
+const vec3 RO = vec3(0., 0., 5.);
+const float FOC = 1.1;
+
+float smin(float a, float b, float k){ float h = max(k-abs(a-b),0.)/k; return min(a,b) - h*h*k*.25; }
+float tree(vec3 p){
+  float d = 1e5;
+  for(int i=0;i<24;i++){ if(i>=uSegN) break;
+    vec3 pa = p-uSegA[i], ba = uSegB[i]-uSegA[i];
+    float h = clamp(dot(pa,ba)/dot(ba,ba),0.,1.);
+    d = smin(d, length(pa-ba*h) - mix(uSegR[i].x, uSegR[i].y, h), .1);
+  }
+  return d;
+}
+float map(vec3 p){
+  float d = length(p) - 1.;
+  if(uMorph > 0.) d = mix(d, tree(p), uMorph);
+  for(int i=0;i<32;i++){ if(i>=uNodeN) break; d = smin(d, length(p-uNodes[i]) - uNodeR[i], uK); }
+  return d;
+}
+vec3 nrm(vec3 p){ vec2 e = vec2(.0015,0.);
+  return normalize(vec3(map(p+e.xyy)-map(p-e.xyy), map(p+e.yxy)-map(p-e.yxy), map(p+e.yyx)-map(p-e.yyx))); }
+vec2 proj(vec3 p){ vec3 v = p - RO; return v.xy / -v.z * FOC; }
+
+// 背景 + グラフの辺(画面上の線)
+vec3 bg(vec2 uv){
+  vec3 c;
+  if(uLook==2) c = mix(vec3(.01,.03,.08), vec3(.03,.09,.2), smoothstep(.9,0.,length(uv)));
+  else if(uLook==3) c = mix(vec3(.97,.98,1.), vec3(.88,.92,.98), smoothstep(0.,.9,length(uv)));
+  else c = mix(vec3(.80,.87,.97), vec3(.95,.97,1.), uv.y+.5) - .08*dot(uv,uv);
+  vec3 lc = uLook==2 ? vec3(.55,.75,1.) : vec3(.3,.5,.9);
+  float la = 0.;
+  for(int i=0;i<48;i++){ if(i>=uEdgeN) break;
+    vec2 a = proj(uNodes[int(uEdges[i].x)]), b = proj(uNodes[int(uEdges[i].y)]);
+    vec2 pa = uv-a, ba = b-a; float h = clamp(dot(pa,ba)/dot(ba,ba),0.,1.);
+    la = max(la, smoothstep(.0028,.0008,length(pa-ba*h)));
+  }
+  return mix(c, lc, la*(uLook==2 ? .55 : .45)*(1.-uGather));
+}
+
+vec4 chatAt(vec3 p, vec3 ri, float s, float lod){
+  float sz = (ZCHAT - p.z) / ri.z;
+  if(sz < 0. || sz > s) return vec4(0.);
+  vec2 w = (p + ri*sz).xy;
+  vec2 px = vec2(uChatSize.x*.5 + w.x*PPU, uScroll - w.y*PPU);   // 帯の上から数えた px
+  vec2 q = vec2(px.x/uChatSize.x, 1. - px.y/uChatSize.y);
+  if(any(lessThan(q,vec2(0.))) || any(greaterThan(q,vec2(1.)))) return vec4(0.);
+  return textureLod(uChat, q, lod);
+}
+
+void main(){
+  vec2 uv = (gl_FragCoord.xy - .5*uRes) / uRes.y;
+  vec3 rd = normalize(vec3(uv, -FOC));
+  // 外接球で早期打ち切り
+  float b = dot(RO,rd), cc = dot(RO,RO) - 2.5*2.5, disc = b*b - cc;
+  vec3 col = bg(uv);
+  if(disc > 0.){
+    float t = -b - sqrt(disc), d = 1.;
+    float stp = 1. - .3*uMorph*(1.-uMorph)*4.;   // 変形中は距離が不正確なので小さく進む
+    for(int i=0;i<120;i++){ d = map(RO+rd*t); if(d<.0008 || t>9.) break; t += d*stp; }
+    if(d < .0008){
+      vec3 p = RO+rd*t, n = nrm(p);
+      float cosi = max(dot(-rd,n),0.), fr = pow(1.-cosi, 3.);
+      // 見た目ごとの係数
+      float ior = 1.12, milk = .55, lod = 1.6, absorb = .35, rim = .9, chatA = .75;
+      vec3 milkC = vec3(.93,.96,1.), tintC = vec3(.9,.45,.12);
+      if(uLook==1){ ior = 1.45; milk = .08; lod = 0.; absorb = .7; rim = .6; chatA = 1.; }
+      if(uLook==2){ ior = 1.15; milk = .25; lod = .6; absorb = .3; rim = .8; chatA = 1.; milkC = vec3(.35,.6,1.); }
+      if(uLook==3){ ior = 1.08; milk = .8; lod = 2.2; absorb = .15; rim = 1.; chatA = .6; milkC = vec3(1.); }
+      // 中を通る光
+      vec3 ri = refract(rd, n, 1./ior);
+      float s = .02;
+      for(int i=0;i<48;i++){ float di = -map(p+ri*s); if(di<.001) break; s += max(di,.01); }
+      vec3 pe = p + ri*s, ne = -nrm(pe), ro2 = refract(ri, ne, ior);
+      if(dot(ro2,ro2) < .1) ro2 = reflect(ri, ne);
+      vec3 trans;
+      if(uLook==1){ // 色収差
+        trans = vec3(bg(proj(pe+refract(ri,ne,ior*.97)*3.)).r, bg(proj(pe+ro2*3.)).g, bg(proj(pe+refract(ri,ne,ior*1.03)*3.)).b);
+      } else trans = bg(proj(pe+ro2*3.));
+      // チャット面(z=0)
+      // 球の中の面(z=ZCHAT)にチャットの帯。前面で屈折した光線で読むので、縁ほど歪む
+      // 球の青い吸収をかけた後に重ねるので、文字は青に沈まない
+      vec3 chC = vec3(0.), chA = vec3(0.);
+      if(uGather < 1.){
+        if(uLook==1){
+          vec4 cr = chatAt(p, refract(rd,n,1./(ior*.985)), s, lod);
+          vec4 cg = chatAt(p, ri, s, lod);
+          vec4 cb = chatAt(p, refract(rd,n,1./(ior*1.015)), s, lod);
+          chC = vec3(cr.r, cg.g, cb.b); chA = vec3(cr.a, cg.a, cb.a);
+        } else { vec4 ch = chatAt(p, ri, s, lod); chC = ch.rgb; chA = vec3(ch.a); }
+        chA *= chatA * (1.-uGather);
+      }
+      vec3 tint = exp(-s*absorb*tintC*1.6);
+      float m = 1. - exp(-s*milk*1.8);
+      vec3 body = mix(trans*tint, milkC, m);
+      body = mix(body, chC*mix(vec3(1.), tint, .15), chA);
+      if(uLook==2){ // 中心ほど光る
+        float core = exp(-3.*length(cross(ri, -p)));
+        body += vec3(.25,.55,1.)*core*.9;
+      }
+      if(uLook==3){ body = mix(body, vec3(.45,.65,1.), fr*1.2); } // 縁だけ青
+      // 映り込みとハイライト
+      vec3 r = reflect(rd,n);
+      vec3 env = uLook==2 ? vec3(.3,.5,.9)*smoothstep(-.2,1.,r.y) : mix(vec3(.85,.9,1.), vec3(1.), smoothstep(-.3,.8,r.y));
+      col = mix(body, env, clamp(fr*rim,0.,1.));
+      vec3 L = normalize(vec3(-.5,.8,.6));
+      col += vec3(1.)*(pow(max(dot(r,L),0.), 300.)*.8 + pow(max(dot(r,L),0.), 30.)*(uLook==3 ? .12 : .25));
+      col += vec3(1.)*pow(max(dot(r,normalize(vec3(.7,-.2,.7))),0.), 20.)*.12;
+    }
+  }
+  o = vec4(pow(clamp(col,0.,1.), vec3(1.)), 1.);
+}`;
+
+function sh(type, src) {
+  const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { document.body.innerText = gl.getShaderInfoLog(s); throw 0; }
+  return s;
+}
+const pg = gl.createProgram();
+gl.attachShader(pg, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pg, sh(gl.FRAGMENT_SHADER, FS));
+gl.linkProgram(pg); gl.useProgram(pg);
+const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, chatCanvas());
+gl.generateMipmap(gl.TEXTURE_2D);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+
+const U = n => gl.getUniformLocation(pg, n);
+const btns = LOOK_NAMES.map((name, i) => {
+  const b = document.createElement('button');
+  b.textContent = name;
+  b.onclick = () => setLook(i);
+  document.getElementById('looks').append(b);
+  return b;
+});
+function setLook(i) {
+  LOOK = i;
+  gl.uniform1i(U('uLook'), i);
+  btns.forEach((b, j) => b.classList.toggle('on', j === i));
+  if (SHOT) requestAnimationFrame(frame);
+}
+setLook(LOOK);
+gl.uniform1i(U('uNodeN'), N);
+gl.uniform2f(U('uChatSize'), CW, CH);
+gl.uniform1i(U('uSegN'), segs.length);
+gl.uniform2fv(U('uEdges'), edges.flat());
+gl.uniform1i(U('uEdgeN'), edges.length);
+
+function frame(ms) {
+  const dpr = Math.min(devicePixelRatio, 1.5);
+  const w = cv.clientWidth * dpr | 0, h = cv.clientHeight * dpr | 0;
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+  gl.viewport(0, 0, w, h);
+  const t = SHOT ? +(Q.get('t') || 0) : ms / 1000;
+  const P = phase(t);
+  gl.uniform1f(U('uScroll'), P.scroll);
+  gl.uniform1f(U('uGather'), P.g);
+  gl.uniform1f(U('uMorph'), P.m);
+  gl.uniform1f(U('uK'), 0.02 + 0.4 * P.g - 0.25 * P.m);
+  const a = 0.6 + t * 0.08, ca = Math.cos(a), sa = Math.sin(a);
+  const R = ([x, y, z]) => [x * ca + z * sa, y, -x * sa + z * ca];
+  // 点: 浮遊 → 球の表面へ吸い込まれる → 木の枝先へ
+  const pos = nodes.map((p, i) => {
+    const l = Math.hypot(...p), surf = p.map(v => v / l * 0.9);
+    const float = [p[0], p[1] + 0.04 * Math.sin(t * 0.7 + i), p[2]];
+    const q = float.map((v, j) => v + (surf[j] - v) * P.g);
+    return R(q.map((v, j) => v + (treeAt[i][j] - v) * P.m));
+  });
+  gl.uniform3fv(U('uNodes'), pos.flat());
+  gl.uniform1fv(U('uNodeR'), radii.map(r => r * (1 + 1.3 * P.m)));
+  gl.uniform3fv(U('uSegA'), segs.flatMap(s => R(s[0])));
+  gl.uniform3fv(U('uSegB'), segs.flatMap(s => R(s[1])));
+  gl.uniform2fv(U('uSegR'), segs.flatMap(s => [s[2], s[3]]));
+  gl.uniform2f(U('uRes'), w, h);
+  gl.uniform1f(U('uTime'), t);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  if (!SHOT) requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+if (SHOT) addEventListener('resize', () => requestAnimationFrame(frame)); // 撮影時のビューポート変更に追従
+</script>
+</body>
+</html>

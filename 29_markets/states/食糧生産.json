@@ -1,0 +1,102 @@
+{
+  "money": 50,
+  "active": 0,
+  "markets": [
+    {
+      "name": "食糧生産",
+      "opened": true,
+      "quest": 0,
+      "sold": 0,
+      "buildings": [
+        {
+          "name": "市場",
+          "cell": [
+            0,
+            6
+          ],
+          "uses_left": 5,
+          "stock": [
+            false,
+            false
+          ]
+        }
+      ],
+      "items": [],
+      "roads": [],
+      "workers": [],
+      "carriers": 0
+    },
+    {
+      "name": "金属加工",
+      "opened": false,
+      "quest": 0,
+      "sold": 0,
+      "buildings": [
+        {
+          "name": "市場",
+          "cell": [
+            0,
+            6
+          ],
+          "uses_left": 5,
+          "stock": [
+            false,
+            false
+          ]
+        }
+      ],
+      "items": [],
+      "roads": [],
+      "workers": [],
+      "carriers": 0
+    },
+    {
+      "name": "半導体・電子機器",
+      "opened": false,
+      "quest": 0,
+      "sold": 0,
+      "buildings": [
+        {
+          "name": "市場",
+          "cell": [
+            0,
+            6
+          ],
+          "uses_left": 5,
+          "stock": [
+            false,
+            false
+          ]
+        }
+      ],
+      "items": [],
+      "roads": [],
+      "workers": [],
+      "carriers": 0
+    },
+    {
+      "name": "自動車",
+      "opened": false,
+      "quest": 0,
+      "sold": 0,
+      "buildings": [
+        {
+          "name": "市場",
+          "cell": [
+            0,
+            6
+          ],
+          "uses_left": 5,
+          "stock": [
+            false,
+            false
+          ]
+        }
+      ],
+      "items": [],
+      "roads": [],
+      "workers": [],
+      "carriers": 0
+    }
+  ]
+}

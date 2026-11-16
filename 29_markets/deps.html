@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>markets 依存図</title>
+<style>
+:root{
+  --bg:#f7f6f2; --panel:#ffffff; --fg:#1d1f23; --muted:#646a73; --line:#8a909a; --hi:#d9480f;
+  --border:#d6d3cc; --chip:#eeece6;
+  --c-mod:#3b6fd8; --c-src:#2f8a45; --c-item:#b7791f; --c-plant:#3a63c4; --c-prod:#8a3fb8; --c-mkt:#c2410c; --c-fn:#5b6470; --c-dup:#9aa1ab;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16181c; --panel:#1f2228; --fg:#e7e9ed; --muted:#9aa1ab; --line:#7c838e; --hi:#ff8a4c;
+    --border:#353a43; --chip:#2a2e36;
+    --c-mod:#7aa2ff; --c-src:#5cc77a; --c-item:#e3a940; --c-plant:#7d9cff; --c-prod:#c48cf0; --c-mkt:#ff8a4c; --c-fn:#a8b0bc; --c-dup:#6b727c;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16181c; --panel:#1f2228; --fg:#e7e9ed; --muted:#9aa1ab; --line:#7c838e; --hi:#ff8a4c;
+  --border:#353a43; --chip:#2a2e36;
+  --c-mod:#7aa2ff; --c-src:#5cc77a; --c-item:#e3a940; --c-plant:#7d9cff; --c-prod:#c48cf0; --c-mkt:#ff8a4c; --c-fn:#a8b0bc; --c-dup:#6b727c;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.6 -apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif}
+header{padding:20px 16px 8px;max-width:1280px;margin:0 auto}
+h1{font-size:22px;margin:0 0 4px}
+.lead{color:var(--muted);margin:0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--border)}
+nav .in{max-width:1280px;margin:0 auto;padding:6px 16px;display:flex;gap:6px;overflow-x:auto;white-space:nowrap}
+nav a{color:var(--fg);text-decoration:none;padding:4px 10px;border-radius:999px;background:var(--chip);font-size:13px}
+nav a:hover{background:var(--border)}
+main{max-width:1280px;margin:0 auto;padding:0 16px 40px}
+section{margin-top:28px}
+h2{font-size:18px;margin:0 0 4px}
+.note{color:var(--muted);margin:0 0 10px;font-size:13px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px;overflow-x:auto}
+.panel svg{display:block}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:var(--chip);padding:0 4px;border-radius:4px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:13px}
+th,td{border-bottom:1px solid var(--border);padding:6px 8px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;background:var(--chip);position:sticky;top:0}
+td code{white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin:6px 0 8px;font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.sw{width:14px;height:10px;border-radius:3px;border:2px solid currentColor;display:inline-block}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.tabs button{font:inherit;font-size:13px;padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--fg);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+/* SVG */
+svg text{fill:var(--fg);font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif}
+svg .sub{fill:var(--muted);font-size:11px}
+svg .tt{font-size:13px;font-weight:600}
+svg .node rect{fill:var(--panel);stroke-width:1.6}
+svg .edge{fill:none;stroke:var(--line);stroke-width:1.4;transition:opacity .15s}
+svg .edge.dash{stroke-dasharray:5 4}
+svg .edge.order{stroke:var(--hi);stroke-width:2}
+svg .node{transition:opacity .15s;cursor:default}
+svg.focus .edge:not(.on){opacity:.08}
+svg.focus .node:not(.on){opacity:.3}
+svg .edge.on{stroke:var(--hi);stroke-width:2.2}
+svg .badge rect{fill:var(--chip);stroke:none}
+svg .badge text{font-size:10.5px;fill:var(--muted)}
+svg .lane{fill:var(--chip);opacity:.55}
+svg .lanet{fill:var(--muted);font-size:12px;font-weight:600}
+.k-mod rect{stroke:var(--c-mod)} .k-src rect{stroke:var(--c-src)} .k-item rect{stroke:var(--c-item)}
+.k-plant rect{stroke:var(--c-plant)} .k-prod rect{stroke:var(--c-prod)} .k-mkt rect{stroke:var(--c-mkt)}
+.k-fn rect{stroke:var(--c-fn)} .k-dup rect{stroke:var(--c-dup);stroke-dasharray:4 3}
+.k-sys rect{stroke:var(--hi);stroke-width:2.2}
+.k-src text.tt{fill:var(--c-src)} .k-plant text.tt{fill:var(--c-plant)} .k-prod text.tt{fill:var(--c-prod)} .k-mkt text.tt{fill:var(--c-mkt)}
+.mx td:first-child{white-space:nowrap;font-weight:600}
+.mx td.e{color:var(--border)}
+footer{max-width:1280px;margin:0 auto;padding:0 16px 30px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>markets(day29)の依存図</h1>
+  <p class="lead">Rust + Bevy 0.17。4つのマーケットは同じロジックで、<code>defs.rs</code> のデータだけ違う。箱にマウスを乗せると、つながる線が光る。</p>
+</header>
+<nav><div class="in">
+  <a href="#mod">1 モジュール</a><a href="#frame">2 1フレーム</a><a href="#data">3 データの流れ</a><a href="#recipe">4 レシピ図</a><a href="#map">5 早見表</a>
+</div></nav>
+<main>
+
+<section id="mod">
+  <h2>1. モジュール依存</h2>
+  <p class="note">矢印 A → B は「B が A を <code>use</code> する」(CLAUDE.md の「defs → state → logic → input / render」と同じ向き)。実際の <code>use crate::…</code> 文から作成。<code>main.rs</code> の定数(<code>CELL</code>, <code>ROWS</code>…)は defs 以外の全員が使うので線は省略。</p>
+  <div class="panel"><svg id="g-mod"></svg></div>
+  <p class="note" style="margin-top:8px">注意: <b>input と render は互いに use している</b>(input → render の <code>cursor_world</code>、render → input の <code>menu_rect</code>/<code>tab_rect</code>/<code>hit</code>)。input・render・logic は defs を直接 use せず、<code>m.def</code> 経由で読む。</p>
+  <div class="panel" style="margin-top:8px"><table>
+    <tr><th>使う側</th><th>使われる側 → 中身</th></tr>
+    <tr><td><code>state.rs</code></td><td>defs → <code>MARKETS</code>, <code>MarketDef</code></td></tr>
+    <tr><td><code>logic.rs</code></td><td>state → <code>*</code>(型・マス判定)</td></tr>
+    <tr><td><code>input.rs</code></td><td>state → <code>*</code> / logic → <code>burst</code>, <code>click_source</code>, <code>drop_item</code>, <code>pop_text</code>, <code>ring</code> / render → <code>hit</code>, <code>menu_rect</code>, <code>tab_rect</code> / save → <code>save</code>, <code>load</code></td></tr>
+    <tr><td><code>render.rs</code></td><td>state → <code>*</code> / input → <code>cursor_world</code></td></tr>
+    <tr><td><code>save.rs</code></td><td>defs → <code>MarketDef</code> / state → <code>*</code></td></tr>
+    <tr><td><code>sim.rs</code></td><td>defs → <code>MarketDef</code> / state → <code>*</code> / logic → <code>click_source</code>, <code>drop_item</code>, <code>step_market</code> / save → <code>save</code></td></tr>
+    <tr><td><code>tests.rs</code></td><td>defs → <code>MARKETS</code>, <code>food</code> / state → <code>*</code> / logic → <code>step_market</code> / render → <code>MENU_PER_ROW</code></td></tr>
+    <tr><td><code>main.rs</code></td><td>state → <code>World</code> / logic → <code>step_market</code> / input → <code>input</code> / render → <code>setup</code>, <code>render</code> / save → <code>load</code> / sim → <code>run</code></td></tr>
+  </table></div>
+</section>
+
+<section id="frame">
+  <h2>2. 1フレームの流れ</h2>
+  <p class="note">オレンジの線 = Bevy の実行順。<code>main.rs</code>: <code>.add_systems(Update, (tick, input::input, render::render).chain())</code> なので <b>tick → input → render</b> の順(tick が先)。灰色の線 = 呼ぶ → 呼ばれる。点線の箱 = 別の所にも出てくる同じ関数。</p>
+  <div class="panel"><svg id="g-frame"></svg></div>
+</section>
+
+<section id="data">
+  <h2>3. データの流れ(MarketDef)</h2>
+  <p class="note"><code>defs.rs</code> の <code>MarketDef</code> は <code>&amp;'static</code> のまま各 <code>Market</code> に1つずつ持たせ、全関数が <code>m.def.〜</code> で読む。書き換える所はない。</p>
+  <div class="panel"><svg id="g-data"></svg></div>
+  <p class="note" style="margin-top:10px">どのフィールドを、どの関数が読むか(<code>menu(def)</code> は state.rs で作り、input / render / sim が使う)。</p>
+  <div class="panel"><table class="mx">
+    <tr><th>MarketDef の項目</th><th>state.rs</th><th>logic.rs</th><th>input.rs / render.rs</th><th>save.rs</th><th>sim.rs</th><th>tests.rs</th></tr>
+    <tr><td>name</td><td class="e">—</td><td class="e">—</td><td>render: タブ・クエスト文</td><td><code>Snapshot::of</code>, <code>restore</code>(名前で照合)</td><td><code>run</code>(表の見出し・保存名)</td><td>メッセージ</td></tr>
+    <tr><td>ground</td><td class="e">—</td><td class="e">—</td><td>render: 背景・マス色</td><td class="e">—</td><td class="e">—</td><td class="e">—</td></tr>
+    <tr><td>items</td><td><code>Tool::desc</code></td><td><code>produce</code>, <code>feed</code>, <code>drop_item</code>(色・名前)</td><td>render: アイテム・在庫・クエスト文</td><td><code>kind_by_name</code>, <code>Snapshot::of</code></td><td><code>run</code></td><td><code>plant_chain_feeds_next_plant</code>, <code>every_market_is_playable</code></td></tr>
+    <tr><td>price()(items の値)</td><td class="e">—</td><td><code>sell</code>, <code>step_carrier</code>(売れる物だけ市場へ)</td><td class="e">—</td><td class="e">—</td><td><code>hand_act</code></td><td><code>every_market_is_playable</code></td></tr>
+    <tr><td>recipe()(plants から)</td><td class="e">—</td><td><code>drop_item</code>(手で重ねて合成)</td><td class="e">—</td><td class="e">—</td><td class="e">—</td><td class="e">—</td></tr>
+    <tr><td>sources</td><td><code>BKind::name/color/produces</code>, <code>menu</code></td><td>(<code>produces</code> 経由: <code>click_source</code>, <code>update_workers</code>)</td><td>input: 作業員を置けるか(<code>produces</code>)</td><td><code>bkind_by_name</code></td><td><code>buy</code></td><td><code>every_market_is_playable</code></td></tr>
+    <tr><td>plants</td><td><code>BKind::name/color</code>, <code>Tool::desc</code>, <code>menu</code>, <code>Building::slot</code></td><td><code>update_plants</code>(out)、<code>slot</code> 経由: <code>feed</code>, <code>step_carrier</code></td><td>render: 加工所の材料枠</td><td><code>bkind_by_name</code></td><td><code>chain</code>, <code>buy</code>, <code>hand_act</code></td><td>同上</td></tr>
+    <tr><td>river</td><td><code>Tool::name</code>, <code>menu</code>, <code>Market::is_river</code></td><td><code>update_workers</code>(川の係が out を出す)</td><td>render: 係の1文字</td><td><code>Snapshot::of</code></td><td><code>buy</code></td><td>同上</td></tr>
+    <tr><td>quests</td><td><code>Market::quest_done</code></td><td><code>sell</code>(数える), <code>quest_check</code></td><td>render: タブの進み・達成条件</td><td><code>restore</code></td><td><code>buy</code>, <code>hand_act</code>, <code>run</code></td><td>同上</td></tr>
+    <tr><td>reward</td><td class="e">—</td><td><code>quest_check</code>(広がった列に置く)</td><td class="e">—</td><td class="e">—</td><td class="e">—</td><td class="e">—</td></tr>
+    <tr><td>cost / unlock(sources・plants)</td><td><code>menu</code></td><td class="e">—</td><td>input: 買えるか / render: ボタン(<code>menu</code> 経由)</td><td class="e">—</td><td><code>buy</code>, <code>chain</code></td><td>同上</td></tr>
+    <tr><td>road_cost / farmer_cost / carrier_cost</td><td><code>menu</code></td><td class="e">—</td><td><code>menu</code> 経由</td><td class="e">—</td><td><code>extend_road</code>, <code>connect_output</code>(road)、<code>buy</code>(<code>menu</code> 経由)</td><td class="e">—</td></tr>
+  </table></div>
+</section>
+
+<section id="recipe">
+  <h2>4. マーケットごとのレシピ図</h2>
+  <p class="note"><code>defs.rs</code> の sources / river / plants / quests から(値段は調整中なので載せない)。「解放 n」= クエスト n 個クリアで建てられる。「Qn」= n 番目のクエストで売る品。原料も市場で安く売れるが線は省略。</p>
+  <div class="tabs" id="mk-tabs"></div>
+  <div class="legend">
+    <span style="color:var(--c-src)"><i class="sw"></i>原料の建物</span>
+    <span style="color:var(--c-item)"><i class="sw"></i>原料</span>
+    <span style="color:var(--c-plant)"><i class="sw"></i>加工所</span>
+    <span style="color:var(--c-prod)"><i class="sw"></i>製品</span>
+    <span style="color:var(--c-mkt)"><i class="sw"></i>市場</span>
+  </div>
+  <div class="panel"><svg id="g-recipe"></svg></div>
+</section>
+
+<section id="map">
+  <h2>5. やりたいこと → 触るところ</h2>
+  <div class="panel"><table>
+    <tr><th>やりたいこと</th><th>触るところ</th></tr>
+    <tr><td>マーケットの中身・値段・費用・クエストを変える</td><td><code>defs.rs</code> だけ</td></tr>
+    <tr><td>運び人の動き(何を拾ってどこへ運ぶか)</td><td><code>logic.rs</code> の <code>step_carrier</code></td></tr>
+    <tr><td>加工所・作業員・生産の動き</td><td><code>logic.rs</code> の <code>update_plants</code> / <code>update_workers</code> / <code>produce</code></td></tr>
+    <tr><td>手で置いた時(売る・合成・移動)</td><td><code>logic.rs</code> の <code>drop_item</code></td></tr>
+    <tr><td>建築メニュー・建てられる場所</td><td><code>state.rs</code> の <code>Tool</code>/<code>menu</code>、置く処理は <code>input.rs</code></td></tr>
+    <tr><td>見た目・配置</td><td><code>render.rs</code>(ボタン位置を変えたらクリック判定も同じ関数で追従)</td></tr>
+    <tr><td>時間・速度などゲーム全体の数値</td><td><code>main.rs</code> の定数</td></tr>
+    <tr><td>バランス確認</td><td><code>cargo run -- --sim</code> → <code>balance.md</code></td></tr>
+    <tr><td>状態を保存して再現</td><td>ゲーム中 F5 → <code>state.json</code>、<code>cargo run -- --load states/xxx.json</code></td></tr>
+  </table></div>
+</section>
+</main>
+<footer>2026-11-16 時点の src/*.rs から手で写した図。行数・レシピが変わったら更新が必要。</footer>
+
+<script>
+const NS = "http://www.w3.org/2000/svg";
+const textW = (s, px) => [...s].reduce((w, ch) => w + (ch.charCodeAt(0) > 0x2e80 ? px : px * 0.58), 0);
+function el(tag, attrs, parent){ const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+
+/* 汎用の左→右レイアウト。nodes: {id,col,row,t,s,k,badge}  edges: [from,to,cls] */
+function drawGraph(svg, nodes, edges, o = {}){
+  svg.innerHTML = "";
+  const rowH = o.rowH || 50, gap = o.gap || 56, pad = 16, H = o.nodeH || 38, top = o.top || 0;
+  const byId = {}; nodes.forEach(n => byId[n.id] = n);
+  nodes.forEach(n => { n.w = Math.ceil(Math.max(textW(n.t, 13), n.s ? textW(n.s, 11) : 0) + 22); n.h = n.s ? H : 28; });
+  const ncol = Math.max(...nodes.map(n => n.col)) + 1;
+  const colW = Array(ncol).fill(0);
+  nodes.forEach(n => colW[n.col] = Math.max(colW[n.col], n.w));
+  const colX = []; let x = pad + (o.left || 0);
+  for (let c = 0; c < ncol; c++){ colX[c] = x; x += colW[c] + gap; }
+  nodes.forEach(n => { n.x = colX[n.col]; n.y = pad + top + n.row * rowH + (H - n.h) / 2; });
+  const W = x - gap + pad + (o.right || 40);
+  const Ht = pad * 2 + top + (Math.max(...nodes.map(n => n.row)) + 1) * rowH;
+  svg.setAttribute("width", W); svg.setAttribute("height", Ht); svg.setAttribute("viewBox", `0 0 ${W} ${Ht}`);
+  const defs = el("defs", {}, svg);
+  [["a","var(--line)"],["ah","var(--hi)"]].forEach(([id,c]) => {
+    const m = el("marker", {id: svg.id+id, viewBox:"0 0 10 10", refX:9, refY:5, markerWidth:7, markerHeight:7, orient:"auto-start-reverse"}, defs);
+    el("path", {d:"M0,0 L10,5 L0,10 z", style:`fill:${c}`}, m);
+  });
+  (o.lanes || []).forEach(l => {
+    const y0 = pad + top + l.from * rowH - 6, y1 = pad + top + (l.to + 1) * rowH - 6;
+    el("rect", {class:"lane", x:4, y:y0, width:W-8, height:y1-y0, rx:8}, svg);
+    if (l.t){ const t = el("text", {class:"lanet", x:12, y:y0+16}, svg); t.textContent = l.t; }
+  });
+  const eg = el("g", {}, svg), ng = el("g", {}, svg);
+  const E = edges.map(([f, t, cls]) => {
+    const a = byId[f], b = byId[t]; if (!a || !b) { console.warn("edge", f, t); return null; }
+    let d;
+    const ay = a.y + a.h/2, by = b.y + b.h/2;
+    if (cls === "order"){ // 左側を回る
+      const lx = Math.min(a.x, b.x) - 14;
+      d = `M${a.x},${ay} C${lx-10},${ay} ${lx-10},${by} ${b.x},${by}`;
+    } else if (b.col > a.col){
+      const x1 = a.x + a.w, x2 = b.x, mx = (x1 + x2) / 2;
+      const c1 = b.col - a.col > 1 ? x1 + gap * 0.7 : mx, c2 = b.col - a.col > 1 ? x2 - gap * 0.7 : mx;
+      d = `M${x1},${ay} C${c1},${ay} ${c2},${by} ${x2},${by}`;
+    } else if (b.col === a.col){
+      const rx = Math.max(a.x + a.w, b.x + b.w) + 34;
+      d = `M${a.x+a.w},${ay} C${rx},${ay} ${rx},${by} ${b.x+b.w},${by}`;
+    } else {
+      d = `M${a.x},${ay} C${a.x-40},${ay} ${b.x+b.w+40},${by} ${b.x+b.w},${by}`;
+    }
+    const p = el("path", {d, class:"edge " + (cls || "")}, eg);
+    p.setAttribute("marker-end", `url(#${svg.id}${cls === "order" ? "ah" : "a"})`);
+    return {p, f, t};
+  }).filter(Boolean);
+  nodes.forEach(n => {
+    const g = el("g", {class:"node k-" + (n.k || "fn"), transform:`translate(${n.x},${n.y})`}, ng);
+    el("rect", {width:n.w, height:n.h, rx:7}, g);
+    const t = el("text", {class:"tt", x:11, y: n.s ? 16 : 18.5}, g); t.textContent = n.t;
+    if (n.s){ const s = el("text", {class:"sub", x:11, y:31}, g); s.textContent = n.s; }
+    if (n.badge){
+      const bw = textW(n.badge, 10.5) + 10, bx = n.w - bw + 4, b = el("g", {class:"badge", transform:`translate(${bx},-9)`}, g);
+      el("rect", {width:bw, height:15, rx:7.5}, b);
+      const bt = el("text", {x:5, y:11}, b); bt.textContent = n.badge;
+    }
+    n.g = g;
+    g.addEventListener("mouseenter", () => {
+      svg.classList.add("focus"); g.classList.add("on");
+      E.forEach(e => { if (e.f === n.id || e.t === n.id){ e.p.classList.add("on"); byId[e.f].g.classList.add("on"); byId[e.t].g.classList.add("on"); } });
+    });
+    g.addEventListener("mouseleave", () => { svg.classList.remove("focus"); svg.querySelectorAll(".on").forEach(x => x.classList.remove("on")); });
+  });
+}
+
+/* ---------- 1. モジュール依存 ---------- */
+drawGraph(document.getElementById("g-mod"), [
+  {id:"defs",  col:0, row:2,   k:"mod", t:"defs.rs · 275行",   s:"マーケットの中身(データだけ)"},
+  {id:"state", col:1, row:2,   k:"mod", t:"state.rs · 414行",  s:"型・マス判定・menu・座標変換"},
+  {id:"logic", col:2, row:0.6, k:"mod", t:"logic.rs · 442行",  s:"Bevy抜きの1ステップ更新"},
+  {id:"save",  col:2, row:3.6, k:"mod", t:"save.rs · 151行",   s:"JSON 保存/読込(名前で)"},
+  {id:"input", col:3, row:0,   k:"mod", t:"input.rs · 157行",  s:"Bevy: クリック・ドラッグ・キー"},
+  {id:"render",col:3, row:1.6, k:"mod", t:"render.rs · 314行", s:"Bevy: 毎フレーム描き直し"},
+  {id:"sim",   col:3, row:3.2, k:"mod", t:"sim.rs · 331行",    s:"バランス確認ボット"},
+  {id:"tests", col:3, row:4.6, k:"mod", t:"tests.rs · 111行",  s:"テスト(cfg(test))"},
+  {id:"main",  col:4, row:2,   k:"sys", t:"main.rs · 72行",    s:"mod・定数・App・tick"},
+], [
+  ["defs","state"],["defs","save","dash"],["defs","sim","dash"],["defs","tests","dash"],
+  ["state","logic"],["state","save"],["state","input"],["state","render"],["state","sim"],["state","tests"],
+  ["logic","input"],["logic","sim"],["logic","tests"],["logic","main"],
+  ["render","input"],["input","render"],["render","tests","dash"],
+  ["save","input"],["save","sim"],["save","main"],
+  ["state","main"],["input","main"],["render","main"],["sim","main"],
+], {rowH:58, gap:80, nodeH:40});
+
+/* ---------- 2. 1フレーム ---------- */
+drawGraph(document.getElementById("g-frame"), [
+  {id:"setup", col:0, row:0, k:"sys", t:"Startup: render::setup", s:"カメラ・フォント"},
+  {id:"tick",  col:0, row:4, k:"sys", t:"① main::tick", s:"開いている全マーケット"},
+  {id:"sm",    col:1, row:4, k:"fn",  t:"logic::step_market", s:"(m, &mut money, dt)"},
+  {id:"tim",   col:2, row:1, t:"タイマーを進める", s:"cooldown・press・item.age・fx"},
+  {id:"uw",    col:2, row:2, t:"update_workers", s:"作業員・川の係"},
+  {id:"up",    col:2, row:3, t:"update_plants", s:"材料2つ→PROCESS_T 後に製品"},
+  {id:"sc",    col:2, row:5, t:"step_carrier", s:"運び人ごと Idle→Pickup→Deliver"},
+  {id:"qc",    col:2, row:8, t:"quest_check", s:"達成→quest+1・2列広がる・reward"},
+  {id:"uw_p",  col:3, row:2, t:"produce", s:"近くの空きマスに出す"},
+  {id:"up_p",  col:3, row:3, k:"dup", t:"produce", s:"prefer_road = true"},
+  {id:"sc_r",  col:3, row:4, t:"route_to / put_down", s:"届け先へ / 足元に置く"},
+  {id:"sc_t",  col:3, row:5, t:"road_tree · trace · nearest_adj", s:"道だけの BFS と経路"},
+  {id:"sc_i",  col:3, row:6, t:"incoming", s:"他の運び人と取り合わない"},
+  {id:"sc_s",  col:3, row:7, t:"sell / feed", s:"市場で売る / 加工所に入れる"},
+
+  {id:"input", col:0, row:12, k:"sys", t:"② input::input", s:"マウス・キー"},
+  {id:"i_sv",  col:1, row:10, t:"save::save / save::load", s:"F5 / F9"},
+  {id:"i_sel", col:1, row:11, t:"World::select", s:"1〜4キー・タブ(tab_rect + hit)"},
+  {id:"i_cur", col:1, row:12, t:"cursor_world → world_to_cell", s:"カーソルのマス"},
+  {id:"i_men", col:1, row:13, t:"menu(def) + menu_rect / hit", s:"建築モードへ(運び人は即雇う)"},
+  {id:"i_bld", col:1, row:14, t:"建てる", s:"Building::new・roads・Worker・Carrier::at"},
+  {id:"i_cs",  col:1, row:15, t:"logic::click_source", s:"原料の建物をクリック"},
+  {id:"i_di",  col:1, row:16, t:"logic::drop_item", s:"ドラッグを離した"},
+  {id:"i_cs_p",col:2, row:15, k:"dup", t:"produce", s:"冷却済み・使い切ると消える"},
+  {id:"i_di_s",col:2, row:16, k:"dup", t:"sell / feed", s:"市場 / 加工所の上"},
+  {id:"i_di_r",col:2, row:17, t:"def.recipe", s:"アイテム同士を重ねて合成"},
+
+  {id:"render",col:0, row:20, k:"sys", t:"③ render::render", s:"毎フレーム全部描き直し"},
+  {id:"r_clr", col:1, row:19, t:"Drawn を全部 despawn", s:"前フレームの絵を消す"},
+  {id:"r_men", col:1, row:20, k:"dup", t:"menu(def) + menu_rect / tab_rect", s:"input と同じ位置関数"},
+  {id:"r_cur", col:1, row:21, k:"dup", t:"cursor_world", s:"ドラッグ中の品を追従"},
+  {id:"r_drw", col:1, row:22, t:"地面・道・建物・品・運び人・Fx・タブ・クエスト", s:"world を読むだけ"},
+
+  {id:"sim",   col:0, row:25, k:"sys", t:"--sim: sim::run", s:"画面なし。ウィンドウは開かない"},
+  {id:"s_bot", col:1, row:24, t:"Bot::step", s:"shop 0.5秒ごと / hand HAND_T ごと"},
+  {id:"s_sm",  col:1, row:25, k:"dup", t:"logic::step_market", s:"ゲームと同じ更新"},
+  {id:"s_sv",  col:1, row:26, k:"dup", t:"save::save", s:"states/*.json、balance.md"},
+  {id:"s_buy", col:2, row:24, t:"buy / extend_road / hire", s:"次に要る物を1つ買う"},
+  {id:"s_ha",  col:2, row:25, t:"hand_act", s:"人の手のまね"},
+  {id:"s_di",  col:3, row:25, k:"dup", t:"drop_item / click_source", s:"input と同じ入口"},
+], [
+  ["tick","input","order"],["input","render","order"],
+  ["tick","sm"],["sm","tim"],["sm","uw"],["sm","up"],["sm","sc"],["sm","qc"],
+  ["uw","uw_p"],["up","up_p"],["sc","sc_r"],["sc","sc_t"],["sc","sc_i"],["sc","sc_s"],
+  ["input","i_sv"],["input","i_sel"],["input","i_cur"],["input","i_men"],["input","i_bld"],["input","i_cs"],["input","i_di"],
+  ["i_cs","i_cs_p"],["i_di","i_di_s"],["i_di","i_di_r"],
+  ["render","r_clr"],["render","r_men"],["render","r_cur"],["render","r_drw"],
+  ["sim","s_bot"],["sim","s_sm"],["sim","s_sv"],["s_bot","s_buy"],["s_bot","s_ha"],["s_ha","s_di"],
+], {rowH:46, gap:60, left:30, top:6, lanes:[
+  {from:-0.2, to:8.2, t:""},{from:9.8, to:17.2, t:""},{from:18.8, to:22.2, t:""},{from:23.8, to:26.2, t:""}
+]});
+
+/* ---------- 3. データの流れ ---------- */
+drawGraph(document.getElementById("g-data"), [
+  {id:"mk",  col:0, row:1.5, k:"mod", t:"defs::MARKETS", s:"4つの DEF"},
+  {id:"wn",  col:1, row:1.5, t:"World::new()", s:"最初の1つだけ opened"},
+  {id:"mn",  col:2, row:1.5, t:"Market::new(def, opened)", s:"市場を (0,3) に置く"},
+  {id:"md",  col:3, row:1.5, k:"sys", t:"m.def: &'static MarketDef", s:"読むだけ。書き換えない"},
+  {id:"st",  col:4, row:0, k:"mod", t:"state", s:"menu・BKind・slot・quest_done"},
+  {id:"lg",  col:4, row:1, k:"mod", t:"logic", s:"sell・recipe・update_*・quest_check"},
+  {id:"ir",  col:4, row:2, k:"mod", t:"input / render", s:"menu(def) と名前・色"},
+  {id:"sv",  col:4, row:3, k:"mod", t:"save", s:"名前 ⇔ 添字(並び替えに強い)"},
+  {id:"sm",  col:4, row:4, k:"mod", t:"sim / tests", s:"MARKETS を直接も読む"},
+], [
+  ["mk","wn"],["wn","mn"],["mn","md"],["md","st"],["md","lg"],["md","ir"],["md","sv"],["md","sm"],["mk","sm","dash"],
+], {rowH:50, gap:56});
+
+/* ---------- 4. レシピ ---------- */
+// defs.rs から名前と関係だけ写す(値段なし)。unlock = その数のクエストをクリアで解放。q = 何番目のクエストで売るか。
+const MK = [
+  {name:"食糧生産",
+   src:[["りんごの木","りんご",0],["小麦畑","小麦",0],["サトウキビ畑","サトウキビ",1],["酪農場","牛乳",2],["養鶏場","卵",3]],
+   river:["釣り人(川)","魚"],
+   plants:[["飴工房","りんご","サトウキビ","りんご飴",1],["パン工房","小麦","牛乳","パン",2],["調理場","魚","卵","料理",3]],
+   quests:["りんご","りんご飴","パン","パン","料理"]},
+  {name:"金属加工",
+   src:[["鉄鉱山","鉄鉱石",0],["炭鉱","石炭",0],["銅山","銅鉱石",2]],
+   plants:[["製鉄所","鉄鉱石","石炭","鉄板",1],["精錬所","銅鉱石","石炭","銅線",2],["製鋼所","鉄板","石炭","鋼材",3]],
+   quests:["鉄鉱石","鉄板","銅線","鋼材","鋼材"]},
+  {name:"半導体・電子機器",
+   src:[["採石場","ケイ石",0],["化学工場","薬品",0],["銅山","銅",1],["樹脂工場","樹脂",2]],
+   plants:[["精製所","ケイ石","薬品","シリコン",1],["基板工場","樹脂","銅","基板",2],["チップ工場","シリコン","銅","チップ",3],["組立工場","チップ","基板","スマホ",4]],
+   quests:["ケイ石","シリコン","基板","チップ","スマホ"]},
+  {name:"自動車",
+   src:[["鋼板倉庫","鋼板",0],["ゴム園","ゴム",0],["ガラス炉","ガラス",2],["電装倉庫","電装品",4]],
+   plants:[["タイヤ工場","ゴム","鋼板","タイヤ",1],["プレス工場","鋼板","ガラス","車体",2],["組立ライン","車体","タイヤ","車台",3],["仕上げ工場","車台","電装品","自動車",4]],
+   quests:["鋼板","タイヤ","車体","車台","自動車"]},
+];
+function qBadge(m, item){
+  const qs = []; m.quests.forEach((q, i) => { if (q === item) qs.push("Q" + (i + 1)); });
+  return qs.length ? qs.join("・") : null;
+}
+function recipe(mi){
+  const m = MK[mi], nodes = [], edges = [], row = {}, depth = {};
+  const raws = m.src.map(s => [s[0], s[1], s[2]]);
+  if (m.river) raws.push([m.river[0], m.river[1], 0, true]);
+  raws.forEach(([b, it, u, river], i) => {
+    nodes.push({id:"b:"+b, col:0, row:i, k:"src", t:b, s: river ? "川の隣に置く係" : (u ? `解放 ${u}` : "最初から")});
+    nodes.push({id:"i:"+it, col:1, row:i, k:"item", t:it, badge:qBadge(m, it)});
+    edges.push(["b:"+b, "i:"+it]);
+    row[it] = i; depth[it] = 0;
+  });
+  // 加工所の深さ = 材料の深さの大きい方 + 1
+  const ps = m.plants.map(p => ({n:p[0], a:p[1], b:p[2], out:p[3], u:p[4]}));
+  let left = ps.slice();
+  while (left.length){
+    const nx = [];
+    left.forEach(p => { if (row[p.a] !== undefined && row[p.b] !== undefined){ p.d = Math.max(depth[p.a], depth[p.b]) + 1; depth[p.out] = p.d; p.want = (row[p.a] + row[p.b]) / 2; } else nx.push(p); });
+    if (nx.length === left.length) break; left = nx;
+    // 同じ深さの中で重ならないよう並べる
+    const byD = {}; ps.filter(p => p.d && row[p.out] === undefined).forEach(p => (byD[p.d] = byD[p.d] || []).push(p));
+    Object.values(byD).forEach(list => {
+      list.sort((x, y) => x.want - y.want); let last = -Infinity;
+      list.forEach(p => { const r = Math.max(p.want, last + 1); p.r = r; last = r; row[p.out] = r; });
+    });
+  }
+  let maxD = 0;
+  ps.forEach(p => {
+    maxD = Math.max(maxD, p.d);
+    nodes.push({id:"p:"+p.n, col:2*p.d, row:p.r, k:"plant", t:p.n, s:`解放 ${p.u}`});
+    nodes.push({id:"i:"+p.out, col:2*p.d+1, row:p.r, k:"prod", t:p.out, badge:qBadge(m, p.out)});
+    edges.push(["i:"+p.a, "p:"+p.n], ["i:"+p.b, "p:"+p.n], ["p:"+p.n, "i:"+p.out]);
+  });
+  const rows = nodes.map(n => n.row), mid = (Math.min(...rows) + Math.max(...rows)) / 2;
+  nodes.push({id:"mkt", col:2*maxD+2, row:mid, k:"mkt", t:"市場", s:"売る・クエスト"});
+  ps.forEach(p => edges.push(["i:"+p.out, "mkt", "dash"]));
+  drawGraph(document.getElementById("g-recipe"), nodes, edges, {rowH:58, gap:54, top:6});
+}
+const tabs = document.getElementById("mk-tabs");
+MK.forEach((m, i) => {
+  const b = document.createElement("button"); b.textContent = `${i+1} ${m.name}`;
+  b.onclick = () => { tabs.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false")); b.setAttribute("aria-pressed", "true"); recipe(i); };
+  tabs.appendChild(b);
+});
+const q = new URLSearchParams(location.search).get("m");
+tabs.children[q ? +q : 0].click();
+</script>
+</body>
+</html>
