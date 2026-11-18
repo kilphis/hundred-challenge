@@ -35,6 +35,8 @@
 | 30 | 分岐予測器を外から測る(C + clang, Apple M4)| `30_branch_predictor/`(`./run.sh`)|
 | 31 | ゾンビ街のコンビニ | `31_zombie_konbini/index.html` |
 | 32 | Boids GPU 版(Rust + wgpu)| `32_boids_gpu/`(`cargo run --release`)|
+| 33 | 円に集まる100体(ピクミン風、2D)| `33_pikmin_circle/index.html` |
+| 34 | ダンジョン探索(Python、端末)| `34_dungeon/`(`uv run 34_dungeon/dungeon.py`)|
 
 ブラウザで動く日は表のリンクから遊べる(GitHub Pages)。
 

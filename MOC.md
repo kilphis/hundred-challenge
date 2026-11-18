@@ -39,3 +39,5 @@ tags: [100日チャレンジ]
 | 30 | 分岐予測器を外から測る(C + clang, Apple M4) | [[70_hundred_challenge/30_branch_predictor/okimochi\|30_branch_predictor]] |
 | 31 | ゾンビ街のコンビニ | [[70_hundred_challenge/31_zombie_konbini/okimochi\|31_zombie_konbini]] |
 | 32 | Boids GPU 版(Rust + wgpu) | [[70_hundred_challenge/32_boids_gpu/okimochi\|32_boids_gpu]] |
+| 33 | 円に集まる100体(ピクミン風、2D) | [[70_hundred_challenge/33_pikmin_circle/okimochi\|33_pikmin_circle]] |
+| 34 | ダンジョン探索(Python、端末) | [[70_hundred_challenge/34_dungeon/okimochi\|34_dungeon]] |

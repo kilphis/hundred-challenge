@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>円に集まる100体</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #20281c; overflow: hidden; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+let W, H;
+function resize() {
+  const d = devicePixelRatio || 1;
+  W = innerWidth; H = innerHeight;
+  cv.width = W * d; cv.height = H * d;
+  ctx.setTransform(d, 0, 0, d, 0, 0);
+}
+addEventListener('resize', resize); resize();
+
+// ---- パラメータ ----
+const N = 100;
+const LEADER_SPEED = 170;
+const PIK_SPEED = 230;      // リーダーより速く、追いつける
+const CIRCLE_R = 65;        // 引き連れる円の半径
+const CIRCLE_BEHIND = 83;   // 円の中心をリーダーの後ろ側に置く距離(円がリーダーの前に出ない)
+const SLOT_GAP = 11;        // 席の間隔(六角グリッド)
+const ITER = 2;             // 重なり解消の反復回数
+const PIK_R = 5;            // 個体の半径(重なり判定)
+const CELL = PIK_R * 4;     // 空間グリッドのセル
+
+// ---- 席: 円の中の六角グリッド。a = オリマー向きの軸、b = 横。オリマー側から埋める ----
+const slots = [];
+{
+  const rowH = SLOT_GAP * Math.sqrt(3) / 2;
+  const lim = CIRCLE_R - PIK_R;
+  for (let r = -12; r <= 12; r++) {
+    for (let c = -12; c <= 12; c++) {
+      const a = r * rowH, b = c * SLOT_GAP + (r & 1 ? SLOT_GAP / 2 : 0);
+      if (Math.hypot(a, b) <= lim) slots.push({ a, b });
+    }
+  }
+  slots.sort((p, q) => (q.a - p.a) || (Math.abs(p.b) - Math.abs(q.b)));
+}
+const slotUsed = new Array(slots.length).fill(false);
+
+// ---- 状態 ----
+const leader = { x: W / 2, y: H / 2, fx: 0, fy: 1 };   // fx,fy = 向き
+const circle = { x: leader.x, y: leader.y - CIRCLE_BEHIND };
+const pik = [];
+function scatter() {
+  pik.length = 0;
+  slotUsed.fill(false);
+  for (let i = 0; i < N; i++) {
+    pik.push({ x: Math.random() * W, y: Math.random() * H, slot: -1 });
+  }
+}
+scatter();
+
+const keys = {};
+let showCircle = true;
+addEventListener('keydown', e => {
+  keys[e.key.toLowerCase()] = true;
+  if (e.key.toLowerCase() === 'c') showCircle = !showCircle;
+  if (e.key.toLowerCase() === 'r') scatter();
+  if (e.key.startsWith('Arrow')) e.preventDefault();
+});
+addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+// ---- 更新 ----
+function update(dt) {
+  // リーダー
+  let dx = (keys['d'] || keys['arrowright'] ? 1 : 0) - (keys['a'] || keys['arrowleft'] ? 1 : 0);
+  let dy = (keys['s'] || keys['arrowdown'] ? 1 : 0) - (keys['w'] || keys['arrowup'] ? 1 : 0);
+  const len = Math.hypot(dx, dy);
+  if (len > 0) {
+    dx /= len; dy /= len;
+    leader.x += dx * LEADER_SPEED * dt;
+    leader.y += dy * LEADER_SPEED * dt;
+    // 向きをなめらかに更新
+    leader.fx += (dx - leader.fx) * Math.min(1, 6 * dt);
+    leader.fy += (dy - leader.fy) * Math.min(1, 6 * dt);
+    const fl = Math.hypot(leader.fx, leader.fy) || 1;
+    leader.fx /= fl; leader.fy /= fl;
+  }
+  leader.x = Math.max(0, Math.min(W, leader.x));
+  leader.y = Math.max(0, Math.min(H, leader.y));
+
+  // 円: リーダーの後ろ側の点へなめらかに追従
+  const tx = leader.x - leader.fx * CIRCLE_BEHIND;
+  const ty = leader.y - leader.fy * CIRCLE_BEHIND;
+  const k = Math.min(1, 8 * dt);
+  circle.x += (tx - circle.x) * k;
+  circle.y += (ty - circle.y) * k;
+
+  // ピクミン: 円に入ったら空いている一番オリマー寄りの席を取り、その席へ動く
+  const ux = -leader.fy, uy = leader.fx;
+  for (const p of pik) {
+    let tx, ty, stop = 0;
+    if (p.slot < 0) {
+      const d = Math.hypot(circle.x - p.x, circle.y - p.y);
+      if (d <= CIRCLE_R) {
+        const i = slotUsed.indexOf(false);
+        if (i >= 0) { p.slot = i; slotUsed[i] = true; }
+      }
+    }
+    if (p.slot >= 0) {
+      const sl = slots[p.slot];
+      tx = circle.x + leader.fx * sl.a + ux * sl.b;
+      ty = circle.y + leader.fy * sl.a + uy * sl.b;
+    } else {
+      tx = circle.x; ty = circle.y; stop = CIRCLE_R;
+    }
+    const ex = tx - p.x, ey = ty - p.y;
+    const d = Math.hypot(ex, ey);
+    if (d > stop + 1e-3) {
+      const step = Math.min(PIK_SPEED * dt, d - stop);
+      p.x += ex / d * step;
+      p.y += ey / d * step;
+    }
+  }
+
+  for (let i = 0; i < ITER; i++) separate();
+}
+
+// 重なりだけ解消（空間グリッドで近い相手だけ見る）
+function separate() {
+  const grid = new Map();
+  const key = (cx, cy) => cx * 100003 + cy;
+  for (let i = 0; i < pik.length; i++) {
+    const p = pik[i];
+    const k = key(Math.floor(p.x / CELL), Math.floor(p.y / CELL));
+    let a = grid.get(k);
+    if (!a) grid.set(k, a = []);
+    a.push(i);
+  }
+  const minD = PIK_R * 2;
+  for (let i = 0; i < pik.length; i++) {
+    const p = pik[i];
+    const cx = Math.floor(p.x / CELL), cy = Math.floor(p.y / CELL);
+    for (let gx = cx - 1; gx <= cx + 1; gx++) {
+      for (let gy = cy - 1; gy <= cy + 1; gy++) {
+        const a = grid.get(key(gx, gy));
+        if (!a) continue;
+        for (const j of a) {
+          if (j <= i) continue;
+          const q = pik[j];
+          let ox = q.x - p.x, oy = q.y - p.y;
+          let d = Math.hypot(ox, oy);
+          if (d >= minD) continue;
+          if (d < 1e-4) { ox = Math.random() - 0.5; oy = Math.random() - 0.5; d = Math.hypot(ox, oy); }
+          const push = (minD - d) / 2;
+          ox /= d; oy /= d;
+          p.x -= ox * push; p.y -= oy * push;
+          q.x += ox * push; q.y += oy * push;
+        }
+      }
+    }
+    // リーダーより前には出ない(進行方向の前側にいたら横の線上に戻す)
+    const front = (p.x - leader.x) * leader.fx + (p.y - leader.y) * leader.fy;
+    if (front > 0) {
+      p.x -= leader.fx * front;
+      p.y -= leader.fy * front;
+    }
+    // リーダーの体の中には入らない
+    const lx = p.x - leader.x, ly = p.y - leader.y;
+    const ld = Math.hypot(lx, ly), lmin = 10 + PIK_R;
+    if (ld < lmin && ld > 1e-4) {
+      p.x = leader.x + lx / ld * lmin;
+      p.y = leader.y + ly / ld * lmin;
+    }
+  }
+}
+
+// ---- 描画 ----
+function draw() {
+  ctx.fillStyle = '#20281c';
+  ctx.fillRect(0, 0, W, H);
+
+  if (showCircle) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.setLineDash([6, 6]);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(circle.x, circle.y, CIRCLE_R, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.fillStyle = '#e8506a';
+  for (const p of pik) {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, PIK_R, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.fillStyle = '#f2f2f2';
+  ctx.beginPath();
+  ctx.arc(leader.x, leader.y, 10, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#f2f2f2';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(leader.x, leader.y);
+  ctx.lineTo(leader.x + leader.fx * 16, leader.y + leader.fy * 16);
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.font = '13px sans-serif';
+  ctx.fillText('WASD / 矢印: 移動   C: 円の表示   R: ばらまき直し', 12, 20);
+}
+
+let last = performance.now();
+function loop(t) {
+  const dt = Math.min(0.05, (t - last) / 1000);
+  last = t;
+  update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
