@@ -1,0 +1,57 @@
+{
+ "openverse_audio": {
+  "sec": 0.9,
+  "results": [
+   {
+    "src": "openverse/freesound",
+    "id": "681fd988-e499-4a28-a01d-f09fd1ad4baf",
+    "title": "Coin GET!",
+    "license": "CC0",
+    "page": "https://freesound.org/people/plasterbrain/sounds/242857",
+    "file": "https://cdn.freesound.org/previews/242/242857_4284968-hq.mp3",
+    "duration_s": 0.3,
+    "creator": "plasterbrain"
+   },
+   {
+    "src": "openverse/freesound",
+    "id": "6b689584-cecf-46b3-b65d-818be8e405aa",
+    "title": "Coins Being Dropped-Assorted",
+    "license": "CC0",
+    "page": "https://freesound.org/people/TheWoodlandNomad/sounds/363090",
+    "file": "https://cdn.freesound.org/previews/363/363090_6612464-hq.mp3",
+    "duration_s": 24.4,
+    "creator": "TheWoodlandNomad"
+   },
+   {
+    "src": "openverse/freesound",
+    "id": "87834623-4b85-4e71-b2f2-af4c8a6d6ed2",
+    "title": "coin-up.aif",
+    "license": "CC0",
+    "page": "https://freesound.org/people/mattwasser/sounds/58919",
+    "file": "https://cdn.freesound.org/previews/58/58919_593503-hq.mp3",
+    "duration_s": 0.9,
+    "creator": "mattwasser"
+   },
+   {
+    "src": "openverse/freesound",
+    "id": "e6462b90-b982-4577-b381-145dbf6633f3",
+    "title": "Retro, Coin 02.wav",
+    "license": "CC0",
+    "page": "https://freesound.org/people/MATRIXXX_/sounds/402288",
+    "file": "https://cdn.freesound.org/previews/402/402288_6142149-hq.mp3",
+    "duration_s": 0.4,
+    "creator": "MATRIXXX_"
+   },
+   {
+    "src": "openverse/freesound",
+    "id": "45e84a4f-014f-4e1f-aaee-ef141468bd0c",
+    "title": "Coin Pickup Sound V 0.2",
+    "license": "CC0",
+    "page": "https://freesound.org/people/Davidsraba/sounds/347174",
+    "file": "https://cdn.freesound.org/previews/347/347174_6324381-hq.mp3",
+    "duration_s": 0.5,
+    "creator": "Davidsraba"
+   }
+  ]
+ }
+}

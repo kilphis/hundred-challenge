@@ -1,0 +1,249 @@
+[11.0s] isError=False
+{
+ "query": "coin pickup sound",
+ "results": [
+  {
+   "id": "itchio:sm-digital/coin-pickup-sound-effects-14-game-collectible-gold-coin-item-pickup-sfx-wav",
+   "title": "Coin Pickup Sound Effects – 14 Game Collectible, Gold Coin & Item Pickup SFX (WAV)",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://sm-digital.itch.io/coin-pickup-sound-effects-14-game-collectible-gold-coin-item-pickup-sfx-wav",
+   "thumbnail": "https://img.itch.zone/aW1nLzMxNzg3MTI4LnBuZw==/315x250%23c/%2FTveSu.png",
+   "free": false,
+   "price": "1.99 GBP",
+   "author": "SM-Digital",
+   "downloadable": false,
+   "score": 0.88
+  },
+  {
+   "id": "threedassets:pickups-and-collectibles-spinning-coin-f4d33e3a",
+   "title": "Spinning gold coin (Pickups and Collectibles)",
+   "type": "model",
+   "source": "threedassets",
+   "url": "https://3dassets.dev/assets/pickups-and-collectibles-spinning-coin-f4d33e3a",
+   "thumbnail": "https://cdn.3dassets.dev/assets/19853/v1/thumb.webp",
+   "free": true,
+   "license": "CC0",
+   "author": "3D Assets",
+   "formats": [
+    "glb"
+   ],
+   "polyCount": 928,
+   "animated": true,
+   "downloadable": true,
+   "tags": [
+    "fantasy",
+    "stylized",
+    "animated",
+    "kit / set",
+    "ai-generated"
+   ],
+   "score": 0.8
+  },
+  {
+   "id": "itchio:moneywithjjcom/loot-crafting",
+   "title": "Loot and Crafting SFX - 25 Coin, Forge and Pickup Sounds",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://moneywithjjcom.itch.io/loot-crafting",
+   "thumbnail": "https://img.itch.zone/aW1nLzMwNDA2OTg4LnBuZw==/315x250%23c/%2BGoxdY.png",
+   "free": false,
+   "price": "1.39 USD",
+   "author": "Outta This World Audio",
+   "downloadable": false,
+   "score": 0.775
+  },
+  {
+   "id": "threedassets:pickups-and-collectibles-spinning-coin-silver-2d579950",
+   "title": "Spinning silver coin (Pickups and Collectibles)",
+   "type": "model",
+   "source": "threedassets",
+   "url": "https://3dassets.dev/assets/pickups-and-collectibles-spinning-coin-silver-2d579950",
+   "thumbnail": "https://cdn.3dassets.dev/assets/19858/v1/thumb.webp",
+   "free": true,
+   "license": "CC0",
+   "author": "3D Assets",
+   "formats": [
+    "glb"
+   ],
+   "polyCount": 928,
+   "animated": true,
+   "downloadable": true,
+   "tags": [
+    "fantasy",
+    "stylized",
+    "animated",
+    "kit / set",
+    "ai-generated"
+   ],
+   "score": 0.72
+  },
+  {
+   "id": "itchio:willosuna/pixel-pickups-sfx",
+   "title": "Pixel Pickups SFX - 336 Coin, Loot & Level Up Sounds",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://willosuna.itch.io/pixel-pickups-sfx",
+   "thumbnail": "https://img.itch.zone/aW1nLzMxMzEwOTA0LmdpZg==/315x250%23c/uughbL.gif",
+   "free": false,
+   "price": "3.49 USD",
+   "author": "Willosuna",
+   "downloadable": false,
+   "score": 0.687
+  },
+  {
+   "id": "threedassets:pickups-and-collectibles-coin-stack-953530c2",
+   "title": "Coin stack (Pickups and Collectibles)",
+   "type": "model",
+   "source": "threedassets",
+   "url": "https://3dassets.dev/assets/pickups-and-collectibles-coin-stack-953530c2",
+   "thumbnail": "https://cdn.3dassets.dev/assets/19855/v1/thumb.webp",
+   "free": true,
+   "license": "CC0",
+   "author": "3D Assets",
+   "formats": [
+    "glb"
+   ],
+   "polyCount": 2184,
+   "animated": true,
+   "downloadable": true,
+   "tags": [
+    "fantasy",
+    "stylized",
+    "animated",
+    "kit / set",
+    "ai-generated"
+   ],
+   "score": 0.652
+  },
+  {
+   "id": "polyfork:silver-coin-64ab27",
+   "title": "Silver Coin",
+   "type": "model",
+   "source": "polyfork",
+   "url": "https://polyfork.dev/asset/silver-coin-64ab27",
+   "thumbnail": "https://polyfork.dev/files/silver-coin-64ab27/renders/hero.png",
+   "free": true,
+   "license": "Royalty Free",
+   "formats": [
+    "glb",
+    "fbx",
+    "usdz",
+    "obj"
+   ],
+   "polyCount": 344,
+   "rigged": false,
+   "downloadable": true,
+   "tags": [
+    "low poly",
+    "prop"
+   ],
+   "score": 0.6
+  },
+  {
+   "id": "itchio:willosuna/pixel-pickups-sfx-lite",
+   "title": "Free Pickup Sound Effects - Pixel Pickups SFX Lite",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://willosuna.itch.io/pixel-pickups-sfx-lite",
+   "thumbnail": "https://img.itch.zone/aW1nLzMxMzEwOTQ3LmdpZg==/315x250%23c/w6njzo.gif",
+   "free": true,
+   "author": "Willosuna",
+   "downloadable": false,
+   "tags": [
+    "free"
+   ],
+   "score": 0.594
+  },
+  {
+   "id": "threedassets:pickups-and-collectibles-coin-purse-c91d0ec6",
+   "title": "Coin purse (Pickups and Collectibles)",
+   "type": "model",
+   "source": "threedassets",
+   "url": "https://3dassets.dev/assets/pickups-and-collectibles-coin-purse-c91d0ec6",
+   "thumbnail": "https://cdn.3dassets.dev/assets/19854/v1/thumb.webp",
+   "free": true,
+   "license": "CC0",
+   "author": "3D Assets",
+   "formats": [
+    "glb"
+   ],
+   "polyCount": 1000,
+   "animated": true,
+   "downloadable": true,
+   "tags": [
+    "fantasy",
+    "stylized",
+    "animated",
+    "kit / set",
+    "ai-generated"
+   ],
+   "score": 0.594
+  },
+  {
+   "id": "kenney:impact-sounds",
+   "title": "Impact Sounds",
+   "type": "audio",
+   "source": "kenney",
+   "url": "https://kenney.nl/assets/impact-sounds",
+   "thumbnail": "https://kenney.nl/media/pages/assets/impact-sounds/37d145475f-1677589720/audio_impact-400x.png",
+   "free": true,
+   "license": "CC0",
+   "author": "Kenney",
+   "downloadable": true,
+   "tags": [
+    "pack",
+    "cc0",
+    "audio"
+   ],
+   "score": 0.58
+  },
+  {
+   "id": "threedtexel:french-road-sign-c64c12000-3d-asset",
+   "title": "French Toll Payment by Coins Road Sign – 3D Model",
+   "type": "model",
+   "source": "threedtexel",
+   "url": "https://3dtexel.com/product/french-road-sign-c64c12000-3d-asset/",
+   "thumbnail": "https://3dtexel.com/wp-content/uploads/2026/06/3d-model-french-road-sign-c64c12000-3d-asset-b2310-768x768.webp",
+   "free": true,
+   "license": "3DTexel License",
+   "downloadable": false,
+   "score": 0.55
+  },
+  {
+   "id": "itchio:friedspin/hit-hurt-coin-sfx-mini",
+   "title": "Hit, Hurt & Coin SFX Mini Pack – 30 Game Sounds (WAV + OGG)",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://friedspin.itch.io/hit-hurt-coin-sfx-mini",
+   "thumbnail": "https://img.itch.zone/aW1nLzMyNDA5Nzk2LnBuZw==/315x250%23c/%2FA24E3.png",
+   "free": false,
+   "price": "1.04 USD",
+   "author": "FriedSpin",
+   "downloadable": false,
+   "score": 0.542
+  }
+ ],
+ "sources": "polyhaven: 0/0, ambientcg: 0/0, cgbookcase: 0/0, sharetextures: 2/2, blenderkit: 0/0, kenney: 4/4, quaternius: 0/0, polyfork: 12/43, threedassets: 12/364, grab3d: 0/0, sketchfab: 0, threedtextures: 0, freestylized: 0, wikimediacommons: 0, threedtexel: 3/3, lazytextures: 0/0, texturecan: 0/0, opengameart: 0, texturescom: 0, hdrmaps: 0, hdrihub: 0, cgtrader: 12/25306, itchio: 12",
+ "also_search_on": [
+  {
+   "provider": "Fab",
+   "url": "https://www.fab.com/search?q=coin+pickup+sound"
+  },
+  {
+   "provider": "Poliigon",
+   "url": "https://www.poliigon.com/search/coin%20pickup%20sound"
+  },
+  {
+   "provider": "TurboSquid",
+   "url": "https://www.turbosquid.com/Search/3D-Models/coin-pickup-sound"
+  }
+ ],
+ "unavailable": [
+  {
+   "provider": "scenario",
+   "reason": "HTTP 502 for https://datasets-server.huggingface.co/rows?dataset=scenario-labs%2F3d-collection&config=default&split=train&offset=0&length=100",
+   "url": "https://huggingface.co/datasets/scenario-labs/3d-collection/viewer/default/train?q=coin+pickup+sound"
+  }
+ ]
+}

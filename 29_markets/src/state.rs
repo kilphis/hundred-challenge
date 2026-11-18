@@ -2,10 +2,13 @@
 //! 建築メニューの中身(menu)とマス⇔座標の変換もここ。依存: defs.rs(tuning.rs 経由)と main.rs の定数だけ(Bevy は Vec2/Color/Resource のみ)。
 
 use bevy::prelude::{Color, Resource, Vec2};
-use std::collections::VecDeque;
+use std::collections::{HashMap, VecDeque};
 
 use crate::defs::MarketDef;
-use crate::{BSIZE, CELL, DIRS, EXPAND_COLS, MAX_USES, PRESS_T, RIVER_ROWS, ROWS, START_COLS, START_MONEY};
+use crate::{
+    BSIZE, CELL, EXPAND_COLS, MAX_USES, OFFROAD_SPEED, PRESS_T, RIVER_ROWS, ROAD_SPEED, ROAD_WEAR, ROWS, START_COLS, START_MONEY,
+    WEAR_STEP,
+};
 
 pub type Cell = (i32, i32);
 /// アイテムの種類。各マーケットの `items` の添字。
@@ -78,7 +81,6 @@ impl BKind {
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Tool {
     Build(BKind),
-    Road,
     Farmer,
     River,
     Carrier,
@@ -88,7 +90,6 @@ impl Tool {
     pub fn name(self, def: &MarketDef) -> &'static str {
         match self {
             Tool::Build(b) => b.name(def),
-            Tool::Road => "道",
             Tool::Farmer => "作業員",
             Tool::River => def.river.map_or("", |r| r.worker),
             Tool::Carrier => "運び人",
@@ -101,7 +102,6 @@ impl Tool {
                 format!("{}+{}→{}", def.items[p.a].name, def.items[p.b].name, def.items[p.out].name)
             }
             Tool::Build(_) => "2×2の空きマスに建築".into(),
-            Tool::Road => "空きマスにドラッグで敷く".into(),
             Tool::Farmer => "原料の建物の上に配置".into(),
             Tool::River => "川の隣のマスに配置".into(),
             Tool::Carrier => "市場から出発".into(),
@@ -110,7 +110,6 @@ impl Tool {
     pub fn color(self, def: &MarketDef) -> Color {
         match self {
             Tool::Build(b) => b.color(def),
-            Tool::Road => ROAD_COLOR,
             Tool::Farmer => Color::srgb(0.90, 0.55, 0.20),
             Tool::River => Color::srgb(0.30, 0.55, 0.85),
             Tool::Carrier => Color::srgb(0.55, 0.40, 0.85),
@@ -118,6 +117,7 @@ impl Tool {
     }
 }
 
+/// 踏み固められた道の色(render.rs が地面の色からここへ補間する)
 pub const ROAD_COLOR: Color = Color::srgb(0.74, 0.64, 0.45);
 /// 市場の左下マス(旧 1×1 マス系の (0,3) にあたる)
 pub const MARKET_CELL: Cell = (0, 6);
@@ -131,7 +131,6 @@ pub fn menu(def: &MarketDef) -> Vec<(Tool, u32, usize)> {
     for (i, p) in def.plants.iter().enumerate() {
         v.push((Tool::Build(BKind::Plant(i)), p.cost, p.unlock));
     }
-    v.push((Tool::Road, def.road_cost, 0));
     v.push((Tool::Farmer, def.farmer_cost, 0));
     if let Some(r) = def.river {
         v.push((Tool::River, r.cost, 0));
@@ -262,7 +261,8 @@ pub struct Market {
     pub sold: u32,
     pub buildings: Vec<Building>,
     pub items: Vec<Item>,
-    pub roads: Vec<Cell>,
+    /// 踏み固め度(0〜1)。運び人が通るたびに増え、建物を置くと消える。無いマスは 0。
+    pub wear: HashMap<Cell, f32>,
     pub workers: Vec<Worker>,
     pub carriers: Vec<Carrier>,
     pub fx: Vec<Fx>,
@@ -283,7 +283,7 @@ impl Market {
             sold: 0,
             buildings: vec![],
             items: vec![],
-            roads: vec![],
+            wear: HashMap::new(),
             workers: vec![],
             carriers: vec![],
             fx: vec![],
@@ -312,14 +312,10 @@ impl Market {
         self.buildings.iter().find(|b| b.kind == BKind::Market).map(|b| b.cell).unwrap_or(MARKET_CELL)
     }
 
-    /// 運び人を雇ったときに立つマス: 市場の右隣(下段)。そこが道でなければ市場の外周の道、それも無ければ右隣。
+    /// 運び人を雇ったときに立つマス: 市場の右隣(下段)。
     pub fn carrier_start(&self) -> Cell {
         let mc = self.market_cell();
-        let right = (mc.0 + BSIZE, mc.1);
-        if self.is_road(right) {
-            return right;
-        }
-        building_adj(mc).find(|&c| self.is_road(c)).unwrap_or(right)
+        (mc.0 + BSIZE, mc.1)
     }
 
     /// 川は一番下の RIVER_ROWS 段(川のあるマーケットだけ)。物は置けない。
@@ -327,17 +323,41 @@ impl Market {
         self.def.river.is_some() && cell.1 < RIVER_ROWS
     }
 
+    /// このマスの踏み固め度(0〜1)
+    pub fn wear_at(&self, cell: Cell) -> f32 {
+        self.wear.get(&cell).copied().unwrap_or(0.0)
+    }
+
+    /// 踏み固め度が ROAD_WEAR 以上なら「道」とみなす(見た目・テストの判定用)。
     pub fn is_road(&self, cell: Cell) -> bool {
-        self.roads.contains(&cell)
+        self.wear_at(cell) >= ROAD_WEAR
     }
 
-    /// 運び人が歩けるマス(道)。市場には入らず、外周の道から売る。
+    /// 運び人がこのマスを進む速さ(マス/秒)。踏み固め度で地面と道の間を補間する。
+    pub fn speed(&self, cell: Cell) -> f32 {
+        OFFROAD_SPEED + (ROAD_SPEED - OFFROAD_SPEED) * self.wear_at(cell)
+    }
+
+    /// 運び人がマスの中心に着いた: 踏み固め度を WEAR_STEP 増やす(1.0 で止まる)。
+    pub fn tread(&mut self, cell: Cell) {
+        let w = self.wear.entry(cell).or_insert(0.0);
+        *w = (*w + WEAR_STEP).min(1.0);
+    }
+
+    /// 運び人が歩けるマス: フィールド内・川でない・建物でない(市場も含む)・川の係が立っていない。アイテムの上は通れる。
     pub fn passable(&self, cell: Cell) -> bool {
-        self.is_road(cell)
+        self.in_field(cell)
+            && !self.is_river(cell)
+            && self.building_at(cell).is_none()
+            && !self.workers.iter().any(|w| w.kind == WKind::River && w.cell == cell)
     }
 
-    pub fn touches_road(&self, cell: Cell) -> bool {
-        DIRS.iter().any(|&(dx, dy)| self.passable((cell.0 + dx, cell.1 + dy)))
+    /// 建物を置く。その 4 マスの踏み跡は消える。置けるかは can_place_building で先に確かめる。
+    pub fn place_building(&mut self, kind: BKind, cell: Cell) {
+        for c in building_cells(cell) {
+            self.wear.remove(&c);
+        }
+        self.buildings.push(Building::new(kind, cell));
     }
 
     /// このマスを含む建物(2×2 のどのマスでも当たる)
@@ -372,15 +392,14 @@ impl Market {
     pub fn is_free(&self, cell: Cell) -> bool {
         self.in_field(cell)
             && !self.is_river(cell)
-            && !self.is_road(cell)
             && self.building_at(cell).is_none()
             && self.worker_at(cell).is_none()
             && self.item_at(cell, None).is_none()
     }
 
-    /// from に最も近い空きマス。同じ近さなら右→上下→左の順。prefer_road なら道に面したマスを優先する。
+    /// from に最も近い空きマス。同じ近さなら右→上下→左の順。
     /// from が建物のマスなら、その建物の 2×2 全体からの距離で測る。
-    pub fn nearest_free(&self, from: Cell, prefer_road: bool) -> Option<Cell> {
+    pub fn nearest_free(&self, from: Cell) -> Option<Cell> {
         // 足場の範囲 [x0, x1] × [y0, y1]
         let (x0, y0, x1, y1) = match self.building_at(from) {
             Some(bi) => {
@@ -401,10 +420,7 @@ impl Market {
                     } else {
                         2
                     };
-                    let mut d = (gap(x, x0, x1) + gap(y, y0, y1)) * 3 + side;
-                    if prefer_road && !self.touches_road((x, y)) {
-                        d += 9;
-                    }
+                    let d = (gap(x, x0, x1) + gap(y, y0, y1)) * 3 + side;
                     if best.map_or(true, |(_, bd)| d < bd) {
                         best = Some(((x, y), d));
                     }

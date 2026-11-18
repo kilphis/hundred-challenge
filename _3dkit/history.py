@@ -19,7 +19,7 @@ def short(s, n=160):
     return s if len(s) <= n else s[: n - 1] + "…"
 
 
-ROOT = "/Users/nakaharawataruakira/03rehome/50_ObVault/70_hundred_challenge"
+ROOT = "/Users/nakaharawataruakira/obVault/70_hundred_challenge"
 
 
 def sandbox_run(box, cwd, cmd):

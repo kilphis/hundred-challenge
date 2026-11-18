@@ -59,6 +59,22 @@ fn rgb_scale(c: Color, k: f32) -> Color {
     Color::srgb(s.red * k, s.green * k, s.blue * k)
 }
 
+fn mix(a: Color, b: Color, t: f32) -> Color {
+    let (a, b) = (a.to_srgba(), b.to_srgba());
+    Color::srgb(a.red + (b.red - a.red) * t, a.green + (b.green - a.green) * t, a.blue + (b.blue - a.blue) * t)
+}
+
+/// 踏み固め度 → 道の色の混ぜ具合。3段階(ほぼ地面 / 薄い踏み跡 / しっかり道 = is_road)に見せる。
+fn trail_mix(m: &Market, cell: Cell) -> f32 {
+    if m.is_road(cell) {
+        1.0
+    } else if m.wear_at(cell) >= 0.15 {
+        0.45
+    } else {
+        0.0
+    }
+}
+
 pub fn render(
     mut commands: Commands,
     old: Query<Entity, With<Drawn>>,
@@ -90,7 +106,7 @@ pub fn render(
         commands.spawn((Drawn, Sprite::from_color(color, size), Transform::from_translation(pos)));
     };
 
-    // マス(川・地面)と道
+    // マス(川・地面)。地面は踏み固め度に応じて道の色へ寄せる
     for x in 0..cols {
         for y in 0..ROWS {
             let c = cell_center(cols, (x, y));
@@ -98,14 +114,11 @@ pub fn render(
                 let w = 0.03 * (m.time * 2.0 + x as f32).sin();
                 Color::srgb(0.20 + w, 0.45 + w, 0.80)
             } else {
-                rgb_scale(def.ground, if (x + y) % 2 == 0 { 1.0 } else { 0.94 })
+                let ground = rgb_scale(def.ground, if (x + y) % 2 == 0 { 1.0 } else { 0.94 });
+                mix(ground, ROAD_COLOR, trail_mix(m, (x, y)))
             };
             rect(&mut commands, color, Vec2::splat(CELL - 2.0), Vec3::new(c.x, c.y, 0.0));
         }
-    }
-    for &r in &m.roads {
-        let c = cell_center(cols, r);
-        rect(&mut commands, ROAD_COLOR, Vec2::splat(CELL - 2.0), Vec3::new(c.x, c.y, 0.5));
     }
 
     // 建物(2×2 マス、左下が b.cell)

@@ -1,0 +1,73 @@
+36 tools
+- library_info: Return ASSETMCP storage locations and active limits.
+    {}
+- search_assets: Search normalized asset providers with license-safety metadata.
+    {"query": {"title": "Query", "type": "string"}, "sources": {"anyOf": [{"items": {"type": "string"}, "type": "array"}, {"type": "null"}], "default": null, "title": "Sources"}, "max_results_per_source": {"default": 8, "title": "Max Results Per Source", "type": "integer"}, "license_policy": {"default": "safe", "title": "License Policy", "type": "string"}}
+- get_asset_details: Return normalized details, license decision, and discoverable downloads for an asset.
+    {"asset": {"anyOf": [{"additionalProperties": true, "type": "object"}, {"type": "null"}], "default": null, "title": "Asset"}, "asset_url": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Asset Url"}}
+- suggest_asset_plan: Suggest practical asset searches and project folders for a game idea.
+    {"game_description": {"title": "Game Description", "type": "string"}, "style": {"default": "cc0", "title": "Style", "type": "string"}, "target_engine": {"default": "html", "title": "Target Engine", "type": "string"}}
+- create_asset_manifest: Create or refresh ASSET_MANIFEST.json for a project or the asset library.
+    {"project_path": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Project Path"}, "include_library_index": {"default": true, "title": "Include Library Index", "type": "boolean"}}
+- generate_credits: Generate CREDITS.md from ASSET_MANIFEST.json.
+    {"project_path": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Project Path"}}
+- audit_project_assets: Audit manifests, credits, suspicious files, and unclear-license entries.
+    {"project_path": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Project Path"}}
+- find_replacement_assets: Find CC0/public-domain replacement candidates for a blocked or unclear asset.
+    {"query": {"title": "Query", "type": "string"}, "blocked_asset": {"anyOf": [{"additionalProperties": true, "type": "object"}, {"type": "null"}], "default": null, "title": "Blocked Asset"}, "max_results": {"default": 8, "title": "Max Results", "type": "integer"}}
+- import_asset_to_project: Copy a local asset into a project and track it in manifest/credits.
+    {"asset_path": {"title": "Asset Path", "type": "string"}, "project_path": {"title": "Project Path", "type": "string"}, "asset": {"anyOf": [{"additionalProperties": true, "type": "object"}, {"type": "null"}], "default": null, "title": "Asset"}, "target_subfolder": {"default": "assets/imported", "title": "Target Subfolder", "type": "string"}, "local_user_provided": {"default": false, "title": "Local
+- create_game_project: Create a playable prototype for HTML Canvas, Phaser, Three.js, or Godot 4.
+    {"project_path": {"title": "Project Path", "type": "string"}, "engine": {"default": "html", "title": "Engine", "type": "string"}, "title": {"default": "ASSETMCP Prototype", "title": "Title", "type": "string"}}
+- generate_game_from_assets: Scaffold a game project and import selected local assets.
+    {"project_path": {"title": "Project Path", "type": "string"}, "engine": {"title": "Engine", "type": "string"}, "title": {"title": "Title", "type": "string"}, "asset_paths": {"anyOf": [{"items": {"type": "string"}, "type": "array"}, {"type": "null"}], "default": null, "title": "Asset Paths"}}
+- convert_assets: Convert image assets to png, webp, jpg, or jpeg. Other assets return warnings.
+    {"paths": {"items": {"type": "string"}, "title": "Paths", "type": "array"}, "output_format": {"default": "png", "title": "Output Format", "type": "string"}, "output_folder": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Output Folder"}}
+- search_opengameart: Search OpenGameArt and return asset pages with thumbnails when available.
+    {"query": {"title": "Query", "type": "string"}, "max_results": {"default": 20, "title": "Max Results", "type": "integer"}, "art_type": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Art Type"}}
+- search_openverse_images: Search Openverse for openly licensed image assets and references.
+    {"query": {"title": "Query", "type": "string"}, "max_results": {"default": 20, "title": "Max Results", "type": "integer"}, "license_filter": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "License Filter"}, "source": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Source"}}
+- search_ambientcg_assets: Search ambientCG for CC0 PBR materials, atlases, HDRIs, images, and 3D models.
+    {"query": {"title": "Query", "type": "string"}, "max_results": {"default": 20, "title": "Max Results", "type": "integer"}, "asset_type": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Asset Type"}, "sort": {"default": "popular", "title": "Sort", "type": "string"}}
+- download_ambientcg_asset: Download one ambientCG asset archive by id, preferring a size/format such as 1K-JPG.
+    {"asset_id": {"title": "Asset Id", "type": "string"}, "attributes_preference": {"default": "1K-JPG", "title": "Attributes Preference", "type": "string"}, "subfolder": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Subfolder"}, "auto_extract": {"default": false, "title": "Auto Extract", "type": "boolean"}}
+- search_kenney_assets: Search Kenney's CC0 asset catalog by crawling catalog pages.
+    {"query": {"default": "", "title": "Query", "type": "string"}, "max_results": {"default": 20, "title": "Max Results", "type": "integer"}, "category": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Category"}, "max_pages": {"default": 5, "title": "Max Pages", "type": "integer"}}
+- download_kenney_asset: Download the primary archive from a Kenney asset page.
+    {"asset_url": {"title": "Asset Url", "type": "string"}, "subfolder": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Subfolder"}, "auto_extract": {"default": false, "title": "Auto Extract", "type": "boolean"}}
+- search_itch_assets: Search itch.io game asset pages. Downloads usually require the asset page flow.
+    {"query": {"title": "Query", "type": "string"}, "max_results": {"default": 20, "title": "Max Results", "type": "integer"}, "free_only": {"default": true, "title": "Free Only", "type": "boolean"}}
+- search_asset_sources: Compatibility wrapper around search_assets.
+    {"query": {"title": "Query", "type": "string"}, "sources": {"anyOf": [{"items": {"type": "string"}, "type": "array"}, {"type": "null"}], "default": null, "title": "Sources"}, "max_results_per_source": {"default": 8, "title": "Max Results Per Source", "type": "integer"}}
+- discover_page_assets: Find downloadable images, models, audio, archives, and asset pages linked from any web page.
+    {"url": {"title": "Url", "type": "string"}, "max_results": {"default": 100, "title": "Max Results", "type": "integer"}}
+- download_asset: Download a URL into the asset library after strict license validation.
+    {"url": {"title": "Url", "type": "string"}, "subfolder": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Subfolder"}, "filename": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Filename"}, "title": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Title"}, "source_name": {"anyOf": [{"type": "string"}, {"type": "n
+- download_page_assets: Discover a page and download matching asset links only when license metadata is supplied.
+    {"page_url": {"title": "Page Url", "type": "string"}, "kinds": {"anyOf": [{"items": {"type": "string"}, "type": "array"}, {"type": "null"}], "default": null, "title": "Kinds"}, "subfolder": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Subfolder"}, "max_files": {"default": 10, "title": "Max Files", "type": "integer"}}
+- extract_archive: Extract archives inside the asset library, blocking executable/script members by default.
+    {"archive_path": {"title": "Archive Path", "type": "string"}, "destination_folder": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Destination Folder"}, "allow_suspicious": {"default": false, "title": "Allow Suspicious", "type": "boolean"}}
+- list_library: List files in the asset library with basic type categorization.
+    {"subfolder": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Subfolder"}, "kinds": {"anyOf": [{"items": {"type": "string"}, "type": "array"}, {"type": "null"}], "default": null, "title": "Kinds"}, "max_results": {"default": 200, "title": "Max Results", "type": "integer"}}
+- inspect_asset: Inspect an asset file, including image silhouette/color awareness and 3D model geometry.
+    {"path": {"title": "Path", "type": "string"}}
+- make_image_contact_sheet: Create a PNG contact sheet for quickly viewing many downloaded images.
+    {"folder": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Folder"}, "paths": {"anyOf": [{"items": {"type": "string"}, "type": "array"}, {"type": "null"}], "default": null, "title": "Paths"}, "output_name": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Output Name"}, "max_images": {"default": 80, "title": "Max Images", "type": "integer"},
+- create_3d_viewer: Create a local HTML viewer for GLB/GLTF models using the browser's WebGL renderer.
+    {"path": {"title": "Path", "type": "string"}, "output_name": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Output Name"}}
+- blender_info: Report whether ASSETMCP can run Blender-backed model jobs.
+    {}
+- blender_inspect_model: Inspect a model with Blender, including scene hierarchy, bones, materials, and animations.
+    {"path": {"title": "Path", "type": "string"}}
+- blender_render_model: Render a real PNG screenshot of a local model using Blender.
+    {"path": {"title": "Path", "type": "string"}, "output_name": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Output Name"}, "view": {"default": "iso", "title": "View", "type": "string"}, "resolution": {"default": 1024, "title": "Resolution", "type": "integer"}}
+- blender_create_idle_animation: Export a GLB with a simple generated idle animation for quick prototyping.
+    {"path": {"title": "Path", "type": "string"}, "output_name": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Output Name"}}
+- index_library: Create a JSON index of the local asset library for later searching and review.
+    {"subfolder": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Subfolder"}, "inspect_files": {"default": false, "title": "Inspect Files", "type": "boolean"}, "include_hashes": {"default": false, "title": "Include Hashes", "type": "boolean"}, "max_files": {"default": 1000, "title": "Max Files", "type": "integer"}, "output_name": {"anyOf": [{"type": "string"}, {"type": "n
+- find_local_assets: Search the local library by filename/path/kind, with optional image dimension filters.
+    {"query": {"default": "", "title": "Query", "type": "string"}, "kinds": {"anyOf": [{"items": {"type": "string"}, "type": "array"}, {"type": "null"}], "default": null, "title": "Kinds"}, "subfolder": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Subfolder"}, "max_results": {"default": 100, "title": "Max Results", "type": "integer"}, "min_width": {"anyOf": [{"type": "i
+- create_asset_gallery: Create a local HTML gallery for images and GLB/GLTF models in the asset library.
+    {"folder": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Folder"}, "output_name": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Output Name"}, "max_files": {"default": 300, "title": "Max Files", "type": "integer"}}
+- slice_sprite_sheet: Slice a sprite sheet or tileset into individual PNG frames.
+    {"path": {"title": "Path", "type": "string"}, "frame_width": {"title": "Frame Width", "type": "integer"}, "frame_height": {"title": "Frame Height", "type": "integer"}, "output_folder": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Output Folder"}, "margin": {"default": 0, "title": "Margin", "type": "integer"}, "spacing": {"default": 0, "title": "Spacing", "type": "in

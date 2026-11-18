@@ -25,7 +25,9 @@ pub struct MarketSnap {
     pub sold: u32,
     pub buildings: Vec<BuildingSnap>,
     pub items: Vec<(String, Cell)>,
-    pub roads: Vec<Cell>,
+    /// (マス, 踏み固め度)。マス順に並べる
+    #[serde(default)]
+    pub wear: Vec<(Cell, f32)>,
     /// (作業員 or 川の係, マス)
     pub workers: Vec<(String, Cell)>,
     pub carriers: usize,
@@ -79,7 +81,11 @@ impl Snapshot {
                         })
                         .collect(),
                     items: m.items.iter().map(|i| (m.def.items[i.kind].name.into(), i.cell)).collect(),
-                    roads: m.roads.clone(),
+                    wear: {
+                        let mut v: Vec<(Cell, f32)> = m.wear.iter().map(|(c, w)| (*c, *w)).collect();
+                        v.sort_by_key(|(c, _)| *c);
+                        v
+                    },
                     workers: m
                         .workers
                         .iter()
@@ -120,7 +126,7 @@ impl Snapshot {
                 })
                 .collect();
             m.items = s.items.iter().filter_map(|(n, c)| Some(Item::new(kind_by_name(def, n)?, *c))).collect();
-            m.roads = s.roads.clone();
+            m.wear = s.wear.iter().copied().collect();
             m.workers = s
                 .workers
                 .iter()

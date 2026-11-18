@@ -1,0 +1,57 @@
+{
+ "openverse_audio": {
+  "sec": 1.0,
+  "results": [
+   {
+    "src": "openverse/freesound",
+    "id": "d541f407-6b6d-4588-b54c-ed30e20b56b6",
+    "title": "Swoosh Explosion",
+    "license": "CC0",
+    "page": "https://freesound.org/people/Electroviolence/sounds/234555",
+    "file": "https://cdn.freesound.org/previews/234/234555_4238641-hq.mp3",
+    "duration_s": 4.6,
+    "creator": "Electroviolence"
+   },
+   {
+    "src": "openverse/freesound",
+    "id": "46639f3f-5d08-4228-86c1-e50bb902b564",
+    "title": "Musket Explosion",
+    "license": "CC0",
+    "page": "https://freesound.org/people/Willlewis/sounds/244345",
+    "file": "https://cdn.freesound.org/previews/244/244345_1868310-hq.mp3",
+    "duration_s": 1.9,
+    "creator": "Willlewis"
+   },
+   {
+    "src": "openverse/freesound",
+    "id": "bd7a9db4-4b81-4a3c-8eaa-819838847cd1",
+    "title": "explosion.2.wav",
+    "license": "CC0",
+    "page": "https://freesound.org/people/alienbomb/sounds/39069",
+    "file": "https://cdn.freesound.org/previews/39/39069_8842-hq.mp3",
+    "duration_s": 3.7,
+    "creator": "alienbomb"
+   },
+   {
+    "src": "openverse/freesound",
+    "id": "023d25d5-a1e6-475d-a148-db56cd73636d",
+    "title": "low mid afar explosion 1.wav",
+    "license": "CC0",
+    "page": "https://freesound.org/people/Logicogonist/sounds/264031",
+    "file": "https://cdn.freesound.org/previews/264/264031_3797507-hq.mp3",
+    "duration_s": 7.2,
+    "creator": "Logicogonist"
+   },
+   {
+    "src": "openverse/freesound",
+    "id": "8c54c9c2-618e-41fb-82b0-0d1a20bf0c23",
+    "title": "Explosion with Debris.wav",
+    "license": "CC0",
+    "page": "https://freesound.org/people/FxKid2/sounds/367622",
+    "file": "https://cdn.freesound.org/previews/367/367622_4377219-hq.mp3",
+    "duration_s": 5.1,
+    "creator": "FxKid2"
+   }
+  ]
+ }
+}

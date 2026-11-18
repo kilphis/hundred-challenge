@@ -1,0 +1,9 @@
+4 tools
+- search_assets: Search all configured asset sources at once for models, materials/textures, HDRIs, sprites, UI, audio and pack
+    {"query": {"type": "string", "description": "What you are looking for, e.g. 'medieval barrel', 'mossy rock', 'night city hdri'."}, "types": {"description": "Asset types to include. texture and material match each other.", "type": "array", "items": {"type": "string", "enum": ["model", "texture", "material", "hdri", "sprite", "ui", "audio", "font", "pack", "other"]}}, "providers": {"description": "O
+- get_asset: Full details for an asset id from search_assets (e.g. 'polyhaven:ArmChair_01'): description, licence, availabl
+    {"id": {"type": "string", "description": "Asset id in the form '<provider>:<id>'."}, "format": {"description": "Preferred format or package: glb, gltf, fbx, blend, obj, usd, hdr, exr, jpg, png, zip.", "type": "string"}, "resolution": {"description": "Preferred resolution: 1k, 2k, 4k, 8k (closest available is used).", "type": "string"}}
+- download_asset: Download an asset's files to a local folder (default: the project's ./assets directory), keeping companion fil
+    {"id": {"type": "string", "description": "Asset id from search_assets, e.g. 'ambientcg:Wood049'."}, "dest_dir": {"description": "Destination directory. A '<provider>-<id>' subfolder is created inside it.", "type": "string"}, "format": {"description": "Preferred format/package (glb, gltf, fbx, blend, hdr, exr, jpg, png, zip).", "type": "string"}, "resolution": {"description": "Preferred resolution:
+- list_providers: List every asset source with what it is best for, asset types, pricing, licence and capabilities.
+    {}

@@ -37,3 +37,5 @@ tags: [100日チャレンジ]
 | 28 | 青い球 | [[70_hundred_challenge/28_blue_ball/okimochi\|28_blue_ball]] |
 | 29 | 加工所と4マーケット(Rust + Bevy) | [[70_hundred_challenge/29_markets/okimochi\|29_markets]] |
 | 30 | 分岐予測器を外から測る(C + clang, Apple M4) | [[70_hundred_challenge/30_branch_predictor/okimochi\|30_branch_predictor]] |
+| 31 | ゾンビ街のコンビニ | [[70_hundred_challenge/31_zombie_konbini/okimochi\|31_zombie_konbini]] |
+| 32 | Boids GPU 版(Rust + wgpu) | [[70_hundred_challenge/32_boids_gpu/okimochi\|32_boids_gpu]] |

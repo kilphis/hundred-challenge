@@ -1,0 +1,92 @@
+{
+ "polyhaven": {
+  "sec": 0.2,
+  "results": [
+   {
+    "src": "polyhaven",
+    "id": "plywood",
+    "title": "Plywood",
+    "license": "CC0",
+    "page": "https://polyhaven.com/a/plywood",
+    "thumb": "https://cdn.polyhaven.com/asset_img/thumbs/plywood.png?width=256"
+   },
+   {
+    "src": "polyhaven",
+    "id": "laminate_floor_02",
+    "title": "Laminate Floor 02",
+    "license": "CC0",
+    "page": "https://polyhaven.com/a/laminate_floor_02",
+    "thumb": "https://cdn.polyhaven.com/asset_img/thumbs/laminate_floor_02.png?width=256"
+   },
+   {
+    "src": "polyhaven",
+    "id": "wood_table_001",
+    "title": "Wood Table 001",
+    "license": "CC0",
+    "page": "https://polyhaven.com/a/wood_table_001",
+    "thumb": "https://cdn.polyhaven.com/asset_img/thumbs/wood_table_001.png?width=256"
+   },
+   {
+    "src": "polyhaven",
+    "id": "oak_veneer_01",
+    "title": "Oak Veneer 01",
+    "license": "CC0",
+    "page": "https://polyhaven.com/a/oak_veneer_01",
+    "thumb": "https://cdn.polyhaven.com/asset_img/thumbs/oak_veneer_01.png?width=256"
+   },
+   {
+    "src": "polyhaven",
+    "id": "wood_table_worn",
+    "title": "Wood Table Worn",
+    "license": "CC0",
+    "page": "https://polyhaven.com/a/wood_table_worn",
+    "thumb": "https://cdn.polyhaven.com/asset_img/thumbs/wood_table_worn.png?width=256"
+   }
+  ]
+ },
+ "ambientcg": {
+  "sec": 1.7,
+  "results": [
+   {
+    "src": "ambientcg",
+    "id": "Wood096",
+    "title": "Wood 096",
+    "license": "CC0",
+    "page": "https://ambientcg.com/a/Wood096",
+    "thumb": "https://acg-media.struffelproductions.com/file/ambientCG-Web/media/thumbnail/256-PNG/Wood096.png"
+   },
+   {
+    "src": "ambientcg",
+    "id": "Wood095",
+    "title": "Wood 095",
+    "license": "CC0",
+    "page": "https://ambientcg.com/a/Wood095",
+    "thumb": "https://acg-media.struffelproductions.com/file/ambientCG-Web/media/thumbnail/256-PNG/Wood095.png"
+   },
+   {
+    "src": "ambientcg",
+    "id": "WoodFloor051",
+    "title": "Wood Floor 051",
+    "license": "CC0",
+    "page": "https://ambientcg.com/a/WoodFloor051",
+    "thumb": "https://acg-media.struffelproductions.com/file/ambientCG-Web/media/thumbnail/256-PNG/WoodFloor051.png"
+   },
+   {
+    "src": "ambientcg",
+    "id": "Wood094",
+    "title": "Wood 094",
+    "license": "CC0",
+    "page": "https://ambientcg.com/a/Wood094",
+    "thumb": "https://acg-media.struffelproductions.com/file/ambientCG-Web/media/thumbnail/256-PNG/Wood094.png"
+   },
+   {
+    "src": "ambientcg",
+    "id": "Wood092",
+    "title": "Wood 092",
+    "license": "CC0",
+    "page": "https://ambientcg.com/a/Wood092",
+    "thumb": "https://acg-media.struffelproductions.com/file/ambientCG-Web/media/thumbnail/256-PNG/Wood092.png"
+   }
+  ]
+ }
+}

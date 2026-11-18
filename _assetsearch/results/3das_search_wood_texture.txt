@@ -1,0 +1,263 @@
+[10.6s] isError=False
+{
+ "query": "wood texture",
+ "results": [
+  {
+   "id": "opengameart:free-texture-resource-pack-metal-nature-wood-and-structures",
+   "title": "Free texture resource pack: metal, nature, wood and structures",
+   "type": "texture",
+   "source": "opengameart",
+   "url": "https://opengameart.org/content/free-texture-resource-pack-metal-nature-wood-and-structures",
+   "thumbnail": "https://opengameart.org/sites/default/files/styles/thumbnail/public/tex-res-prev_2.JPG",
+   "free": true,
+   "downloadable": true,
+   "score": 0.98
+  },
+  {
+   "id": "itchio:owletrius/wood-texture-pack",
+   "title": "Wood Texture Pack",
+   "type": "texture",
+   "source": "itchio",
+   "url": "https://owletrius.itch.io/wood-texture-pack",
+   "thumbnail": "https://img.itch.zone/aW1nLzMwNzY4MDUucG5n/315x250%23c/8lIDIn.png",
+   "free": true,
+   "author": "Owletrius",
+   "downloadable": false,
+   "tags": [
+    "free"
+   ],
+   "score": 0.93
+  },
+  {
+   "id": "cgtrader:cross-pendant-with-wood-texture-38b09869-c947-4f18-bc29-2fa18cdc3160",
+   "title": "cross pendant with wood texture",
+   "type": "model",
+   "source": "cgtrader",
+   "url": "https://www.cgtrader.com/3d-print-models/jewelry/pendant/cross-pendant-with-wood-texture-38b09869-c947-4f18-bc29-2fa18cdc3160",
+   "thumbnail": "https://media.cgtrader.com/variants/LWK26eutvxppJx2BgRST4iut/a26e47dab5f2d22c43d6c5ce4b4b46ecc30c70918878397cba1a10c1e35d7bfc/Screenshot%202023-05-08%20165002.jpg",
+   "free": false,
+   "price": "30 USD",
+   "formats": [
+    "3dm",
+    "fbx",
+    "3ds",
+    "stl",
+    "obj"
+   ],
+   "animated": false,
+   "rigged": false,
+   "downloadable": false,
+   "tags": [
+    "jewelry",
+    "pendant",
+    "3d print"
+   ],
+   "score": 0.88
+  },
+  {
+   "id": "opengameart:free-texture-resource-pack-wood-structure-walls-and-textile",
+   "title": "Free texture resource pack: wood, structure, walls and textile",
+   "type": "texture",
+   "source": "opengameart",
+   "url": "https://opengameart.org/content/free-texture-resource-pack-wood-structure-walls-and-textile",
+   "thumbnail": "https://opengameart.org/sites/default/files/styles/thumbnail/public/tex_prev_3.png",
+   "free": true,
+   "downloadable": true,
+   "score": 0.868
+  },
+  {
+   "id": "sharetextures:wood-fine-6",
+   "title": "Wood Fine 6",
+   "type": "material",
+   "source": "sharetextures",
+   "url": "https://www.sharetextures.com/textures/wood/wood-fine-6",
+   "thumbnail": "https://images.sharetextures.com/u/wood_fine_6_mat-min.webp",
+   "free": true,
+   "license": "CC0 (ShareTextures custom terms)",
+   "downloadable": false,
+   "tags": [
+    "wood texture",
+    "wood fine",
+    "wood material",
+    "wood pattern",
+    "wood maps"
+   ],
+   "score": 0.834
+  },
+  {
+   "id": "polyhaven:sakura_bark",
+   "title": "Sakura Bark",
+   "type": "material",
+   "source": "polyhaven",
+   "url": "https://polyhaven.com/a/sakura_bark",
+   "thumbnail": "https://cdn.polyhaven.com/asset_img/thumbs/sakura_bark.png?width=512&height=512",
+   "free": true,
+   "license": "CC0",
+   "author": "Charlotte Baglioni",
+   "formats": [
+    "jpg",
+    "png",
+    "exr",
+    "blend",
+    "gltf"
+   ],
+   "resolutions": [
+    "1k",
+    "2k",
+    "4k",
+    "8k"
+   ],
+   "downloadable": true,
+   "tags": [
+    "rough",
+    "bark",
+    "tree",
+    "tree bark",
+    "nature",
+    "japanese",
+    "trunk",
+    "wood",
+    "natural",
+    "bark texture"
+   ],
+   "score": 0.82
+  },
+  {
+   "id": "itchio:sm-arts/wood-texture-pack-50-high-quality-stylized-materials",
+   "title": "Wood Texture Pack – 50 High-Quality Stylized Materials",
+   "type": "material",
+   "source": "itchio",
+   "url": "https://sm-arts.itch.io/wood-texture-pack-50-high-quality-stylized-materials",
+   "thumbnail": "https://img.itch.zone/aW1nLzIzMDkwMjQ5LnBuZw==/315x250%23c/AMzZJS.png",
+   "free": false,
+   "price": "7.99 USD",
+   "author": "SM ART'S",
+   "downloadable": false,
+   "score": 0.794
+  },
+  {
+   "id": "cgtrader:wood-texture-gold-cross",
+   "title": "Wood texture gold cross",
+   "type": "model",
+   "source": "cgtrader",
+   "url": "https://www.cgtrader.com/3d-print-models/jewelry/pendant/wood-texture-gold-cross",
+   "thumbnail": "https://media.cgtrader.com/variants/8piKCqvbaFqk1PjC7BHoc3Eq/a26e47dab5f2d22c43d6c5ce4b4b46ecc30c70918878397cba1a10c1e35d7bfc/gdgh.jpg",
+   "free": false,
+   "price": "20 USD",
+   "formats": [
+    "stl",
+    "3dm"
+   ],
+   "animated": false,
+   "rigged": false,
+   "downloadable": false,
+   "tags": [
+    "jewelry",
+    "pendant",
+    "3d print"
+   ],
+   "score": 0.794
+  },
+  {
+   "id": "opengameart:wood-texture-tiles",
+   "title": "Wood Texture Tiles",
+   "type": "texture",
+   "source": "opengameart",
+   "url": "https://opengameart.org/content/wood-texture-tiles",
+   "thumbnail": "https://opengameart.org/sites/default/files/styles/thumbnail/public/wood1.jpg",
+   "free": true,
+   "downloadable": true,
+   "score": 0.794
+  },
+  {
+   "id": "blenderkit:2bb00c16-90a4-4f15-baaf-d96742a70e9a",
+   "title": "Wood plant wall",
+   "type": "material",
+   "source": "blenderkit",
+   "url": "https://www.blendkit.com/asset-gallery-detail/2bb00c16-90a4-4f15-baaf-d96742a70e9a/",
+   "thumbnail": "https://public.blenderkit.com/thumbnails/assets/0814137eef544f19a29497c8ba547120/files/thumbnail_25e60d8c-0965-4a73-82c0-5a74f5cb8f1a.png.512x512_q85_crop-%2C.png",
+   "free": true,
+   "license": "CC0",
+   "author": "Free poly",
+   "formats": [
+    "blend"
+   ],
+   "resolutions": [
+    "0.5k",
+    "1k",
+    "2k"
+   ],
+   "animated": false,
+   "downloadable": true,
+   "tags": [
+    "wood",
+    "plant",
+    "wall",
+    "dirt",
+    "4k",
+    "texture"
+   ],
+   "score": 0.785
+  },
+  {
+   "id": "freestylized:material:tudor_wall_05",
+   "title": "Tudor Wall 05",
+   "type": "material",
+   "source": "freestylized",
+   "url": "https://freestylized.com/material/tudor_wall_05/",
+   "thumbnail": "https://freestylized.com/wp-content/uploads/2026/01/tudor_wall_05_preview_hex151515_thumbnail.webp",
+   "free": true,
+   "license": "FreeStylized Royalty Free (custom CC0)",
+   "downloadable": false,
+   "tags": [
+    "irregular",
+    "plaster",
+    "wall",
+    "rough",
+    "texture",
+    "wood",
+    "bricks"
+   ],
+   "score": 0.77
+  },
+  {
+   "id": "sharetextures:wood-fine-14",
+   "title": "Fine Wood 14",
+   "type": "material",
+   "source": "sharetextures",
+   "url": "https://www.sharetextures.com/textures/wood/wood-fine-14",
+   "thumbnail": "https://images.sharetextures.com/u/wood_fine_14-min.webp",
+   "free": true,
+   "license": "CC0 (ShareTextures custom terms)",
+   "downloadable": false,
+   "tags": [
+    "wood texture",
+    "wood fine texture",
+    "free seamless texture"
+   ],
+   "score": 0.757
+  }
+ ],
+ "sources": "polyhaven: 12/307, ambientcg: 0/0, cgbookcase: 12/70, sharetextures: 12/20, blenderkit: 12/5656, kenney: 11/11, quaternius: 1/1, polyfork: 12/111, threedassets: 12/16, grab3d: 4/4, sketchfab: 4, threedtextures: 12, freestylized: 12, wikimediacommons: 1, threedtexel: 12/120, lazytextures: 12/50, texturecan: 0/0, opengameart: 12/258, texturescom: 1, hdrmaps: 0, hdrihub: 0, cgtrader: 12/213956, itchio: 12",
+ "also_search_on": [
+  {
+   "provider": "Fab",
+   "url": "https://www.fab.com/search?q=wood+texture"
+  },
+  {
+   "provider": "Poliigon",
+   "url": "https://www.poliigon.com/search/wood%20texture"
+  },
+  {
+   "provider": "TurboSquid",
+   "url": "https://www.turbosquid.com/Search/3D-Models/wood-texture"
+  }
+ ],
+ "unavailable": [
+  {
+   "provider": "scenario",
+   "reason": "HTTP 502 for https://datasets-server.huggingface.co/rows?dataset=scenario-labs%2F3d-collection&config=default&split=train&offset=0&length=100",
+   "url": "https://huggingface.co/datasets/scenario-labs/3d-collection/viewer/default/train?q=wood+texture"
+  }
+ ]
+}

@@ -1,0 +1,292 @@
+[11.4s] isError=False
+{
+ "query": "low poly tree",
+ "results": [
+  {
+   "id": "blenderkit:72fac4cb-901c-4a48-8fc8-84a0baa0bd21",
+   "title": "Low poly tree",
+   "type": "model",
+   "source": "blenderkit",
+   "url": "https://www.blendkit.com/asset-gallery-detail/72fac4cb-901c-4a48-8fc8-84a0baa0bd21/",
+   "thumbnail": "https://public.blenderkit.com/thumbnails/assets/4ab2223744f94959b51052c51458d791/files/thumbnail_223bbfab-f232-4a0c-8004-d96e17346fa0.jpg.512x512_q85_crop-%2C.jpg",
+   "free": true,
+   "license": "Royalty Free",
+   "author": "Dr Blender",
+   "formats": [
+    "blend",
+    "glb"
+   ],
+   "polyCount": 82,
+   "rigged": false,
+   "downloadable": true,
+   "tags": [
+    "low poly",
+    "game",
+    "asset",
+    "poly",
+    "ply",
+    "tree",
+    "arbor",
+    "christmas tree",
+    "spruce",
+    "pine"
+   ],
+   "score": 1
+  },
+  {
+   "id": "opengameart:low-poly-tree",
+   "title": "Low Poly Tree",
+   "type": "model",
+   "source": "opengameart",
+   "url": "https://opengameart.org/content/low-poly-tree",
+   "thumbnail": "https://opengameart.org/sites/default/files/styles/thumbnail/public/1_7.jpg",
+   "free": true,
+   "downloadable": true,
+   "score": 0.98
+  },
+  {
+   "id": "sketchfab:0fa93c551d8449808cc1f85c4238bf93",
+   "title": "Apple Tree - Low Poly Medieval, CC0",
+   "type": "model",
+   "source": "sketchfab",
+   "url": "https://sketchfab.com/3d-models/none-0fa93c551d8449808cc1f85c4238bf93",
+   "thumbnail": "https://media.sketchfab.com/models/0fa93c551d8449808cc1f85c4238bf93/thumbnails/81e2bfb83f0d4e28827346982d48c73c/e029abda5f24421bb188ad70a49a9416.jpeg",
+   "free": true,
+   "license": "CC0",
+   "author": "Avramania",
+   "formats": [
+    "glb",
+    "gltf",
+    "usdz"
+   ],
+   "polyCount": 1044,
+   "animated": false,
+   "downloadable": false,
+   "tags": [
+    "medieval",
+    "game-ready",
+    "cc0",
+    "godot",
+    "unity",
+    "low-poly",
+    "lowpoly",
+    "gameasset",
+    "stylized",
+    "fantasy"
+   ],
+   "score": 0.95
+  },
+  {
+   "id": "blenderkit:b5ea49b8-ef91-4131-a665-ffce3351835a",
+   "title": "Low Poly Tree",
+   "type": "model",
+   "source": "blenderkit",
+   "url": "https://www.blendkit.com/asset-gallery-detail/b5ea49b8-ef91-4131-a665-ffce3351835a/",
+   "thumbnail": "https://public.blenderkit.com/thumbnails/assets/87ffee54599f419a85af2dbf50a06777/files/thumbnail_e8bb8a76-6682-446d-9080-fe4a35eeb2f0.png.512x512_q85_crop-%2C.png",
+   "free": true,
+   "license": "Royalty Free",
+   "author": "Jamil Risqullah",
+   "formats": [
+    "blend",
+    "glb"
+   ],
+   "polyCount": 597,
+   "rigged": false,
+   "downloadable": true,
+   "tags": [
+    "low poly",
+    "nature",
+    "tree",
+    "wood",
+    "forest"
+   ],
+   "score": 0.906
+  },
+  {
+   "id": "itchio:brokenvector/low-poly-tree-pack",
+   "title": "Low Poly Tree Pack",
+   "type": "model",
+   "source": "itchio",
+   "url": "https://brokenvector.itch.io/low-poly-tree-pack",
+   "thumbnail": "https://img.itch.zone/aW1hZ2UvOTAxMTIvNDIyOTQxLmpwZw==/315x250%23c/5TGejw.jpg",
+   "free": true,
+   "author": "Broken Vector",
+   "downloadable": false,
+   "tags": [
+    "free"
+   ],
+   "score": 0.904
+  },
+  {
+   "id": "opengameart:palm-tree-v2-low-poly-edition",
+   "title": "Palm tree v2 low poly edition",
+   "type": "model",
+   "source": "opengameart",
+   "url": "https://opengameart.org/content/palm-tree-v2-low-poly-edition",
+   "thumbnail": "https://opengameart.org/sites/default/files/styles/thumbnail/public/preview_low.jpg",
+   "free": true,
+   "downloadable": true,
+   "score": 0.887
+  },
+  {
+   "id": "threedassets:wipe-day-survival-island-pine-tree-dfc88d2b",
+   "title": "Pine Tree (Wipe Day Survival Island)",
+   "type": "model",
+   "source": "threedassets",
+   "url": "https://3dassets.dev/assets/wipe-day-survival-island-pine-tree-dfc88d2b",
+   "thumbnail": "https://cdn.3dassets.dev/assets/27427/v1/thumb.webp",
+   "free": true,
+   "license": "CC0",
+   "author": "3D Assets",
+   "formats": [
+    "glb"
+   ],
+   "polyCount": 132,
+   "animated": false,
+   "downloadable": true,
+   "tags": [
+    "post-apocalyptic",
+    "low poly",
+    "exterior",
+    "kit / set",
+    "ai-generated"
+   ],
+   "score": 0.88
+  },
+  {
+   "id": "polyfork:lineside-tree-97e02a",
+   "title": "Lineside Tree",
+   "type": "model",
+   "source": "polyfork",
+   "url": "https://polyfork.dev/asset/lineside-tree-97e02a",
+   "thumbnail": "https://polyfork.dev/files/lineside-tree-97e02a/renders/hero.png",
+   "free": true,
+   "license": "Royalty Free",
+   "formats": [
+    "glb",
+    "fbx",
+    "usdz",
+    "obj"
+   ],
+   "polyCount": 469,
+   "rigged": true,
+   "downloadable": true,
+   "tags": [
+    "low poly",
+    "prop"
+   ],
+   "score": 0.88
+  },
+  {
+   "id": "grab3d:low-poly-snake",
+   "title": "Low Poly Snake",
+   "type": "model",
+   "source": "grab3d",
+   "url": "https://grab3d.com/models/animals/low-poly-snake/",
+   "thumbnail": "https://grab3d.com/m/low-poly-snake/low-poly-snake-3d-model.webp",
+   "free": true,
+   "license": "CC0",
+   "formats": [
+    "glb",
+    "fbx",
+    "blend",
+    "usdz",
+    "obj"
+   ],
+   "downloadable": true,
+   "tags": [
+    "low",
+    "poly",
+    "snake",
+    "animals"
+   ],
+   "score": 0.85
+  },
+  {
+   "id": "cgtrader:low-poly-tree-collection-00971eea-6a3a-46cc-a7ce-02a53b2dc76a",
+   "title": "Low Poly Tree Collection",
+   "type": "model",
+   "source": "cgtrader",
+   "url": "https://www.cgtrader.com/3d-model-packs/low-poly-tree-collection-00971eea-6a3a-46cc-a7ce-02a53b2dc76a",
+   "thumbnail": "https://media.cgtrader.com/variants/NB6ZuPEphNQyxizDGeU1mAZZ/a26e47dab5f2d22c43d6c5ce4b4b46ecc30c70918878397cba1a10c1e35d7bfc/all%20trees%20art%20cover%20s02.jpg",
+   "free": false,
+   "price": "129 USD",
+   "animated": true,
+   "rigged": true,
+   "downloadable": false,
+   "tags": [
+    "plant",
+    "leaf",
+    "pbr",
+    "low poly"
+   ],
+   "score": 0.834
+  },
+  {
+   "id": "blenderkit:346d99d8-36fb-4f9d-a4a1-2f9ad9233e79",
+   "title": "Low poly tree",
+   "type": "model",
+   "source": "blenderkit",
+   "url": "https://www.blendkit.com/asset-gallery-detail/346d99d8-36fb-4f9d-a4a1-2f9ad9233e79/",
+   "thumbnail": "https://public.blenderkit.com/thumbnails/assets/251d2e428c78490e9d44ea4069c61a89/files/thumbnail_3a3bd138-bc43-42fa-a647-ee3e579fe7fa.png.512x512_q85_crop-%2C.png",
+   "free": true,
+   "license": "Royalty Free",
+   "author": "Amal David",
+   "formats": [
+    "blend",
+    "glb"
+   ],
+   "polyCount": 537,
+   "rigged": false,
+   "downloadable": true,
+   "tags": [
+    "tree",
+    "plant",
+    "stylised",
+    "lowpoly",
+    "stylized",
+    "mobile_optimised",
+    "toon",
+    "cartoon"
+   ],
+   "score": 0.825
+  },
+  {
+   "id": "itchio:mark-auman/low-poly-trees-asset-pack",
+   "title": "Low-Poly Trees Asset Pack",
+   "type": "model",
+   "source": "itchio",
+   "url": "https://mark-auman.itch.io/low-poly-trees-asset-pack",
+   "thumbnail": "https://img.itch.zone/aW1nLzg0Njc5NjQucG5n/315x250%23c/ji061u.png",
+   "free": true,
+   "author": "Aumarka",
+   "downloadable": false,
+   "tags": [
+    "free"
+   ],
+   "score": 0.822
+  }
+ ],
+ "sources": "polyhaven: 12/148, ambientcg: 0/0, cgbookcase: 0/0, sharetextures: 3/3, blenderkit: 12/8399, kenney: 3/3, quaternius: 12/17, polyfork: 12/637, threedassets: 12/137, grab3d: 12/31, sketchfab: 1, threedtextures: 0, freestylized: 0, wikimediacommons: 0, threedtexel: 2/2, lazytextures: 0/0, texturecan: 0/0, opengameart: 12/72, texturescom: 0, hdrmaps: 0, hdrihub: 0, cgtrader: 12/35574, itchio: 12",
+ "also_search_on": [
+  {
+   "provider": "Fab",
+   "url": "https://www.fab.com/search?q=low+poly+tree"
+  },
+  {
+   "provider": "Poliigon",
+   "url": "https://www.poliigon.com/search/low%20poly%20tree"
+  },
+  {
+   "provider": "TurboSquid",
+   "url": "https://www.turbosquid.com/Search/3D-Models/low-poly-tree"
+  }
+ ],
+ "unavailable": [
+  {
+   "provider": "scenario",
+   "reason": "HTTP 502 for https://datasets-server.huggingface.co/rows?dataset=scenario-labs%2F3d-collection&config=default&split=train&offset=0&length=100",
+   "url": "https://huggingface.co/datasets/scenario-labs/3d-collection/viewer/default/train?q=low+poly+tree"
+  }
+ ]
+}

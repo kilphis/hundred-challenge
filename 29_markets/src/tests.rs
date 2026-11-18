@@ -15,35 +15,57 @@ fn run(m: &mut Market, money: &mut u32, secs: f32) {
 }
 
 #[test]
-fn carrier_sells_item_via_road() {
+fn carrier_sells_item_without_road() {
     let mut m = Market::new(MARKETS[0], true);
     let mut money = START_MONEY;
-    // 市場は (0,6) 左下の 2×2。その右隣の段 y=6 に道 (2,6),(3,6),(4,6) を敷き、(4,7) にりんごを置く
-    m.roads = vec![(2, 6), (3, 6), (4, 6)];
+    // 市場は (0,6) 左下の 2×2。道は無くても、(4,7) のりんごを拾って市場で売る
     m.items.push(Item::new(food::APPLE, (4, 7)));
-    m.carriers.push(Carrier::at((2, 6)));
+    m.carriers.push(Carrier::at(m.carrier_start()));
     run(&mut m, &mut money, 10.0);
     assert!(m.items.is_empty());
     assert_eq!(money, START_MONEY + 10);
 }
 
 #[test]
-fn unconnected_item_is_ignored() {
+fn unreachable_item_is_ignored() {
     let mut m = Market::new(MARKETS[0], true);
     let mut money = START_MONEY;
-    m.roads = vec![(2, 6)];
+    // (8,8) のりんごの4近傍を 2×2 の建物で塞ぐ(左・右・下・上)
+    for cell in [(6, 7), (9, 8), (8, 6), (7, 9)] {
+        assert!(m.can_place_building(cell));
+        m.place_building(BKind::Source(0), cell);
+    }
     m.items.push(Item::new(food::APPLE, (8, 8)));
-    m.carriers.push(Carrier::at((2, 6)));
+    m.carriers.push(Carrier::at(m.carrier_start()));
     run(&mut m, &mut money, 5.0);
     assert_eq!(m.items.len(), 1);
+    assert_eq!(money, START_MONEY);
+}
+
+/// 同じ区間を往復するうちに、市場と品の間に踏み跡(is_road)ができる。
+#[test]
+fn trail_forms_after_repeated_trips() {
+    let mut m = Market::new(MARKETS[0], true);
+    let mut money = START_MONEY;
+    // クエスト達成でご褒美アイテムが出ると運び人がそちらへ行くので、クエストは全クリア済みにしておく
+    m.quest = MARKETS[0].quests.len();
+    m.carriers.push(Carrier::at(m.carrier_start()));
+    for _ in 0..6 {
+        m.items.push(Item::new(food::APPLE, (6, 6)));
+        run(&mut m, &mut money, 10.0);
+        assert!(m.items.is_empty());
+    }
+    assert_eq!(money, START_MONEY + 60);
+    let between = (2..6).flat_map(|x| (5..=8).map(move |y| (x, y)));
+    assert!(between.clone().any(|c| m.is_road(c)), "踏み跡が無い: {:?}", m.wear);
+    assert!(m.wear.values().all(|&w| w <= 1.0));
 }
 
 #[test]
 fn plant_turns_apple_and_cane_into_candy_apple() {
     let mut m = Market::new(MARKETS[0], true);
     let mut money = START_MONEY;
-    // 道 (2,6)-(8,6)。りんごとサトウキビは道の上側、飴工房(2×2、左下 (8,4))は道の下側。
-    m.roads = (2..9).map(|x| (x, 6)).collect();
+    // りんごとサトウキビは y=7 の段、飴工房(2×2、左下 (8,4))は下側。
     m.items.push(Item::new(food::APPLE, (2, 7)));
     m.items.push(Item::new(food::CANE, (4, 7)));
     let plant = food::DEF.plants.iter().position(|p| p.out == food::CANDY_APPLE).unwrap();
@@ -64,7 +86,6 @@ fn plant_chain_feeds_next_plant() {
     let kind = |name: &str| def.items.iter().position(|i| i.name == name).unwrap();
     let plant = |out: &str| def.plants.iter().position(|p| p.out == kind(out)).unwrap();
     m.quest = 4;
-    m.roads = (2..16).map(|x| (x, 6)).collect();
     m.items.push(Item::new(kind("鉄鉱石"), (2, 7)));
     m.items.push(Item::new(kind("石炭"), (4, 7)));
     m.items.push(Item::new(kind("石炭"), (6, 7)));

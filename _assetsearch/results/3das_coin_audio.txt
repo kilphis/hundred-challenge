@@ -1,0 +1,175 @@
+[2.5s] isError=False
+{
+ "query": "coin",
+ "results": [
+  {
+   "id": "itchio:jalastram/coins-sounds",
+   "title": "Coins Sounds by Jalastram",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://jalastram.itch.io/coins-sounds",
+   "thumbnail": "https://img.itch.zone/aW1hZ2UvNTY1OTcvMjUzODI5LnBuZw==/315x250%23c/bJHYqY.png",
+   "free": true,
+   "author": "Jesús Lastra",
+   "downloadable": false,
+   "tags": [
+    "free"
+   ],
+   "score": 0.93
+  },
+  {
+   "id": "itchio:taka8/pickup-coin-system",
+   "title": "Pickup Coin System",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://taka8.itch.io/pickup-coin-system",
+   "thumbnail": "https://img.itch.zone/aW1nLzMyMzI5OTc3LmpwZw==/315x250%23c/X3eKHI.jpg",
+   "free": false,
+   "price": "3.99 USD",
+   "author": "Takasuki",
+   "animated": true,
+   "downloadable": false,
+   "score": 0.794
+  },
+  {
+   "id": "itchio:sm-digital/coin-pickup-sound-effects-14-game-collectible-gold-coin-item-pickup-sfx-wav",
+   "title": "Coin Pickup Sound Effects – 14 Game Collectible, Gold Coin & Item Pickup SFX (WAV)",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://sm-digital.itch.io/coin-pickup-sound-effects-14-game-collectible-gold-coin-item-pickup-sfx-wav",
+   "thumbnail": "https://img.itch.zone/aW1nLzMxNzg3MTI4LnBuZw==/315x250%23c/%2FTveSu.png",
+   "free": false,
+   "price": "1.99 GBP",
+   "author": "SM-Digital",
+   "downloadable": false,
+   "score": 0.721
+  },
+  {
+   "id": "itchio:brightknot/coins-gems-rewards-sfx",
+   "title": "Coins, Gems and Rewards SFX: 80 sounds",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://brightknot.itch.io/coins-gems-rewards-sfx",
+   "thumbnail": "https://img.itch.zone/aW1nLzMxNDAxMTk1LnBuZw==/315x250%23c/wPbyW5.png",
+   "free": false,
+   "price": "5.99 USD",
+   "author": "Brightknot",
+   "downloadable": false,
+   "score": 0.658
+  },
+  {
+   "id": "itchio:ambroggiomusic/coin-sfx-pack",
+   "title": "Coin Sfx Pack",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://ambroggiomusic.itch.io/coin-sfx-pack",
+   "thumbnail": "https://img.itch.zone/aW1nLzI0ODc3NzU1LnBuZw==/315x250%23c/MDCzOv.png",
+   "free": true,
+   "author": "AmbroggioMusic",
+   "downloadable": false,
+   "tags": [
+    "free"
+   ],
+   "score": 0.606
+  },
+  {
+   "id": "itchio:aethertide-studio/coin-sound-effects-pack",
+   "title": "Coin Sound Effects Pack",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://aethertide-studio.itch.io/coin-sound-effects-pack",
+   "thumbnail": "https://img.itch.zone/aW1nLzMwNTM2NTYxLnBuZw==/315x250%23c/3ImCpD.png",
+   "free": false,
+   "price": "11.99 USD",
+   "author": "Aethertide Studio",
+   "downloadable": false,
+   "score": 0.56
+  },
+  {
+   "id": "itchio:summerssound/coins-money-sound-effects-51-game-ready-sfx",
+   "title": "Coins & Money Sound Effects – Game-Ready SFX",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://summerssound.itch.io/coins-money-sound-effects-51-game-ready-sfx",
+   "thumbnail": "https://img.itch.zone/aW1nLzMwNzg3OTg0LnBuZw==/315x250%23c/%2BlhQ5g.png",
+   "free": false,
+   "price": "1.99 USD",
+   "author": "SummersSound",
+   "downloadable": false,
+   "score": 0.514
+  },
+  {
+   "id": "itchio:moneywithjjcom/loot-crafting",
+   "title": "Loot and Crafting SFX - 25 Coin, Forge and Pickup Sounds",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://moneywithjjcom.itch.io/loot-crafting",
+   "thumbnail": "https://img.itch.zone/aW1nLzMwNDA2OTg4LnBuZw==/315x250%23c/%2BGoxdY.png",
+   "free": false,
+   "price": "1.39 USD",
+   "author": "Outta This World Audio",
+   "downloadable": false,
+   "score": 0.472
+  },
+  {
+   "id": "itchio:344sfx/coins-tokens",
+   "title": "Coins & Tokens",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://344sfx.itch.io/coins-tokens",
+   "thumbnail": "https://img.itch.zone/aW1nLzI5Mzk2NzAxLnBuZw==/315x250%23c/PRdyPD.png",
+   "free": false,
+   "price": "7.99 USD",
+   "author": "344 SFX",
+   "downloadable": false,
+   "score": 0.435
+  },
+  {
+   "id": "itchio:designerschoicesfx/coins",
+   "title": "The Designer's Choice SFX Collection - Coins",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://designerschoicesfx.itch.io/coins",
+   "thumbnail": "https://img.itch.zone/aW1nLzI5Mjc5MzMxLnBuZw==/315x250%23c/zSv8qk.png",
+   "free": false,
+   "price": "13 USD",
+   "author": "The Designer's Choice SFX Library",
+   "downloadable": false,
+   "score": 0.401
+  },
+  {
+   "id": "itchio:shawnyao/coins-sound-effects",
+   "title": "Coins sound effects",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://shawnyao.itch.io/coins-sound-effects",
+   "thumbnail": "https://img.itch.zone/aW1nLzI2NzI3NjczLnBuZw==/315x250%23c/uYcxIN.png",
+   "free": false,
+   "price": "1 USD",
+   "author": "Shawn.Yao",
+   "downloadable": false,
+   "score": 0.37
+  },
+  {
+   "id": "itchio:bengal-cat/coin-100-sfx-bundle",
+   "title": "Coin 100 SFX Bundle",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://bengal-cat.itch.io/coin-100-sfx-bundle",
+   "thumbnail": "https://img.itch.zone/aW1nLzI0NDM4OTUzLnBuZw==/315x250%23c/TS0BaF.png",
+   "free": false,
+   "price": "17 USD",
+   "author": "BENGAL CAT",
+   "downloadable": false,
+   "score": 0.34
+  }
+ ],
+ "sources": "kenney: 0/0, itchio: 12",
+ "also_search_on": [
+  {
+   "provider": "Fab",
+   "url": "https://www.fab.com/search?q=coin"
+  }
+ ],
+ "unavailable": []
+}

@@ -1,0 +1,246 @@
+[12.0s] isError=False
+{
+ "query": "dungeon music loop",
+ "results": [
+  {
+   "id": "itchio:punitama/rpg-dungeon-ancient-ruins",
+   "title": "8-Bit RPG Dungeon Music | Seamless Exploration Loop - Ancient Ruins",
+   "type": "texture",
+   "source": "itchio",
+   "url": "https://punitama.itch.io/rpg-dungeon-ancient-ruins",
+   "thumbnail": "https://img.itch.zone/aW1nLzMyMjgyMjA5LnBuZw==/315x250%23c/mBh9aa.png",
+   "free": false,
+   "price": "12.99 USD",
+   "author": "punitama",
+   "downloadable": false,
+   "score": 0.88
+  },
+  {
+   "id": "itchio:bobkingg/chiptune-dungeon-music-pack-dark-8-bit-exploration-loops",
+   "title": "Chiptune Dungeon Music Pack — Dark 8-Bit Exploration Loops",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://bobkingg.itch.io/chiptune-dungeon-music-pack-dark-8-bit-exploration-loops",
+   "thumbnail": "https://img.itch.zone/aW1nLzMxMDMzNTU3LnBuZw==/315x250%23c/9z0IcQ.png",
+   "free": true,
+   "author": "bobkingg",
+   "downloadable": false,
+   "tags": [
+    "free"
+   ],
+   "score": 0.785
+  },
+  {
+   "id": "itchio:aquumgifts/cozy-dungeon-music",
+   "title": "Cozy Dungeon Music — 8 Seamless Cave & Dungeon Loops + Calm Versions",
+   "type": "texture",
+   "source": "itchio",
+   "url": "https://aquumgifts.itch.io/cozy-dungeon-music",
+   "thumbnail": "https://img.itch.zone/aW1nLzMwNjIyOTAxLnBuZw==/315x250%23c/oKMfy2.png",
+   "free": false,
+   "price": "2.99 USD",
+   "author": "Spaceyyy",
+   "downloadable": false,
+   "score": 0.696
+  },
+  {
+   "id": "threedassets:enchanted-harp-garden-and-music-sanctuary-harp-string--b0a7e59b",
+   "title": "Harp String Reel (Enchanted Harp Garden and Music Sanctuary)",
+   "type": "model",
+   "source": "threedassets",
+   "url": "https://3dassets.dev/assets/enchanted-harp-garden-and-music-sanctuary-harp-string--b0a7e59b",
+   "thumbnail": "https://cdn.3dassets.dev/assets/30405/v1/thumb.webp",
+   "free": true,
+   "license": "CC0",
+   "author": "3D Assets",
+   "formats": [
+    "glb"
+   ],
+   "polyCount": 9472,
+   "animated": false,
+   "downloadable": true,
+   "tags": [
+    "fantasy",
+    "stylized",
+    "modular",
+    "ai-generated"
+   ],
+   "score": 0.67
+  },
+  {
+   "id": "itchio:pixelloops/fantasy-dungeon-music-pack-dark-rpg-dungeon-loops",
+   "title": "Fantasy Dungeon Music Pack – Dark RPG Dungeon Loops",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://pixelloops.itch.io/fantasy-dungeon-music-pack-dark-rpg-dungeon-loops",
+   "thumbnail": "https://img.itch.zone/aW1nLzI2NTQ0OTY5LnBuZw==/315x250%23c/4A7koA.png",
+   "free": false,
+   "price": "4.44 USD",
+   "author": "PixelLoops Studio",
+   "downloadable": false,
+   "score": 0.632
+  },
+  {
+   "id": "blenderkit:bb93c779-bf60-439b-96d2-99167435443d",
+   "title": "Old Medieval Dungeon Room",
+   "type": "model",
+   "source": "blenderkit",
+   "url": "https://www.blendkit.com/asset-gallery-detail/bb93c779-bf60-439b-96d2-99167435443d/",
+   "thumbnail": "https://public.blenderkit.com/thumbnails/assets/4ed04401c2734a65b15dbc53c621d674/files/thumbnail_e96da6ed-4afe-471f-bdbd-efee301fbc11.jpg.512x512_q85_crop-%2C.jpg",
+   "free": true,
+   "license": "Royalty Free",
+   "author": "Dennis Hafemann",
+   "formats": [
+    "blend"
+   ],
+   "polyCount": 1,
+   "downloadable": true,
+   "tags": [
+    "old",
+    "dungeon",
+    "room",
+    "prison",
+    "fantasy",
+    "escape",
+    "door",
+    "pillar",
+    "freedom",
+    "medieval"
+   ],
+   "score": 0.6
+  },
+  {
+   "id": "polyfork:orchestral-music-stand-5c1eee",
+   "title": "Orchestral Music Stand",
+   "type": "model",
+   "source": "polyfork",
+   "url": "https://polyfork.dev/asset/orchestral-music-stand-5c1eee",
+   "thumbnail": "https://polyfork.dev/files/orchestral-music-stand-5c1eee/renders/hero.png",
+   "free": true,
+   "license": "Royalty Free",
+   "formats": [
+    "glb",
+    "fbx",
+    "usdz",
+    "obj"
+   ],
+   "polyCount": 452,
+   "rigged": true,
+   "downloadable": true,
+   "tags": [
+    "low poly",
+    "prop"
+   ],
+   "score": 0.6
+  },
+  {
+   "id": "threedassets:music-recording-studio-and-instruments-coffee-mug-91bac0a5",
+   "title": "Coffee Mug (Music Recording Studio and Instruments)",
+   "type": "model",
+   "source": "threedassets",
+   "url": "https://3dassets.dev/assets/music-recording-studio-and-instruments-coffee-mug-91bac0a5",
+   "thumbnail": "https://cdn.3dassets.dev/assets/33831/v1/thumb.webp",
+   "free": true,
+   "license": "CC0",
+   "author": "3D Assets",
+   "formats": [
+    "glb"
+   ],
+   "polyCount": 528,
+   "animated": false,
+   "downloadable": true,
+   "tags": [
+    "modern",
+    "realistic",
+    "interior",
+    "ai-generated"
+   ],
+   "score": 0.599
+  },
+  {
+   "id": "itchio:punitama/rpg-bgm-bundle-5-loop-tracks",
+   "title": "8-Bit RPG Music Pack | 5 Seamless Loops for Title, Field, Battle, Dungeon & Victory",
+   "type": "texture",
+   "source": "itchio",
+   "url": "https://punitama.itch.io/rpg-bgm-bundle-5-loop-tracks",
+   "thumbnail": "https://img.itch.zone/aW1nLzI5NTYyOTUwLnBuZw==/315x250%23c/mxZ7Su.png",
+   "free": false,
+   "price": "49.99 USD",
+   "author": "punitama",
+   "downloadable": false,
+   "score": 0.582
+  },
+  {
+   "id": "kenney:isometric-miniature-dungeon",
+   "title": "Isometric Miniature Dungeon",
+   "type": "sprite",
+   "source": "kenney",
+   "url": "https://kenney.nl/assets/isometric-miniature-dungeon",
+   "thumbnail": "https://kenney.nl/media/pages/assets/isometric-miniature-dungeon/025d0440b8-1674932240/sample-400x.png",
+   "free": true,
+   "license": "CC0",
+   "author": "Kenney",
+   "downloadable": true,
+   "tags": [
+    "pack",
+    "cc0",
+    "2d",
+    "isometric miniature"
+   ],
+   "score": 0.58
+  },
+  {
+   "id": "threedtexel:cyberpunk-graffiti-decals-7",
+   "title": "Cyberpunk Graffiti Loop Trap – Decal",
+   "type": "texture",
+   "source": "threedtexel",
+   "url": "https://3dtexel.com/product/cyberpunk-graffiti-decals-7/",
+   "thumbnail": "https://3dtexel.com/wp-content/uploads/2025/05/Untitled_Face-15-768x768.webp",
+   "free": true,
+   "license": "CC0",
+   "resolutions": [
+    "2k",
+    "4k"
+   ],
+   "downloadable": false,
+   "score": 0.55
+  },
+  {
+   "id": "itchio:crossedkiller/dungeon-music",
+   "title": "[FREE] Dungeon Music - Deep Crawler",
+   "type": "audio",
+   "source": "itchio",
+   "url": "https://crossedkiller.itch.io/dungeon-music",
+   "thumbnail": "https://img.itch.zone/aW1nLzc4MDU1MTgucG5n/315x250%23c/Bybqre.png",
+   "free": true,
+   "author": "Crossedkiller",
+   "downloadable": false,
+   "tags": [
+    "free"
+   ],
+   "score": 0.538
+  }
+ ],
+ "sources": "polyhaven: 0/0, ambientcg: 0/0, cgbookcase: 0/0, sharetextures: 0/0, blenderkit: 12/114, kenney: 7/7, quaternius: 0/0, polyfork: 12/148, threedassets: 12/571, grab3d: 0/0, sketchfab: 0, threedtextures: 0, freestylized: 0, wikimediacommons: 0, threedtexel: 1/1, lazytextures: 0/0, texturecan: 0/0, opengameart: 0, texturescom: 0, hdrmaps: 0, hdrihub: 0, cgtrader: 12/25622, itchio: 12",
+ "also_search_on": [
+  {
+   "provider": "Fab",
+   "url": "https://www.fab.com/search?q=dungeon+music+loop"
+  },
+  {
+   "provider": "Poliigon",
+   "url": "https://www.poliigon.com/search/dungeon%20music%20loop"
+  },
+  {
+   "provider": "TurboSquid",
+   "url": "https://www.turbosquid.com/Search/3D-Models/dungeon-music-loop"
+  }
+ ],
+ "unavailable": [
+  {
+   "provider": "scenario",
+   "reason": "timed out after 12000ms",
+   "url": "https://huggingface.co/datasets/scenario-labs/3d-collection/viewer/default/train?q=dungeon+music+loop"
+  }
+ ]
+}

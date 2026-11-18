@@ -1,0 +1,109 @@
+54 tools
+- asset_search: Bounded credential-free item search with truthful per-item price, rights and acquisition capabilities. Provide
+    {"query": {"type": "string", "minLength": 1, "maxLength": 200}, "types": {"default": ["3d-model", "texture", "hdri", "animation"], "minItems": 1, "maxItems": 4, "type": "array", "items": {"type": "string", "enum": ["3d-model", "texture", "hdri", "animation"]}}, "providers": {"minItems": 1, "maxItems": 20, "type": "array", "items": {"type": "string", "maxLength": 100, "pattern": "^[a-z0-9-]+$"}}, "
+- asset_get: Inspect authoritative current item terms and original source variants; create an expiring server-held file pla
+    {"assetId": {"type": "string", "minLength": 3, "maxLength": 800}, "format": {"type": "string", "maxLength": 30, "pattern": "^[a-z0-9_-]+$"}, "resolution": {"type": "string", "maxLength": 10, "pattern": "^\\d+k$"}, "mapRoles": {"minItems": 1, "maxItems": 16, "type": "array", "items": {"type": "string", "maxLength": 40, "pattern": "^[a-z0-9_-]+$"}}}
+- asset_download: Explicitly acknowledge a current server-held plan and acquire complete guarded originals atomically with a pro
+    {"planToken": {"type": "string", "minLength": 1, "maxLength": 100}, "acceptLicense": {"type": "boolean", "const": true}, "maxBytes": {"type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991}}
+- creature_status: Report the pinned anyCreature payload, currently available operations, and optional local tooling without star
+    {}
+- creature_guide: Read a bounded syntax or workflow section from the verified anyCreature 1.3.1 payload. This does not run or ex
+    {"section": {"type": "string", "enum": ["overview", "syntax", "low", "mid", "high", "delivery"]}}
+- asset_inspect_rig: Inspect a local humanoid GLB and optional local UAL ZIP/GLB libraries: meshes, joints, suggested bone mappings
+    {"target": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 4096}, {"type": "object", "properties": {"sourceId": {"type": "string", "enum": ["aether-02", "aether-02-retopo"], "description": "Explicitly acquire a pinned sample into the development cache."}}, "required": ["sourceId"]}], "description": "Absolute path to the humanoid GLB under inspection, or a pinned sample reference to acqu
+- asset_auto_rig: Fit an 18-joint humanoid skeleton to an unrigged local GLB by measured geometry landmarks, bind smooth or rigi
+    {"target": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Absolute path to an unrigged humanoid GLB."}, "output": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Output .glb path under projectRoot."}, "projectRoot": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Project root that must contain the output."}, "weightMode": {"default
+- asset_preview_animation: Render a prepared GLB from several angles with an optional clip sample time or explicit bone pose, and publish
+    {"prepared": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Absolute path to a prepared (rigged or retargeted) GLB."}, "output": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Output contact-sheet .png path under projectRoot."}, "projectRoot": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Project root that must contain the outpu
+- asset_retarget_animations: Fetch the selected pinned release donors, retarget their clips onto a prepared target skeleton with a world-sp
+    {"target": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Absolute path to the prepared target GLB (e.g. the AETHER sample)."}, "output": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Output .glb path under projectRoot."}, "projectRoot": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Project root that must contain the output."},
+- mesh_optimize: Simplify a heavy static GLB with meshoptimizer under a rendered before/after gate: each error-ladder candidate
+    {"path": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Absolute path to a static GLB (no skin or morph targets)."}, "outputPath": {"description": "Output .glb path. Defaults to <name>.optimized.glb next to the input; never the input itself.", "type": "string", "minLength": 1, "maxLength": 4096}, "maxTextureSize": {"default": 2048, "description": "Longest texture side kept; 
+- fab_search_assets: Search public Fab marketplace listings. Free assets are returned by default. Results carry no file formats and
+    {"query": {"type": "string", "maxLength": 200}, "priceMode": {"default": "free", "type": "string", "enum": ["free", "any", "range"]}, "minPrice": {"type": "number", "minimum": 0}, "maxPrice": {"type": "number", "minimum": 0}, "currency": {"type": "string", "pattern": "^[A-Za-z]{3}$"}, "channels": {"maxItems": 20, "type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 100}}, "lis
+- fab_get_asset: Get normalized public details and per-license prices for one Fab listing.
+    {"listingIdOrUrl": {"type": "string", "minLength": 1, "maxLength": 500}, "currency": {"type": "string", "pattern": "^[A-Za-z]{3}$"}}
+- fab_list_filters: List usable public Fab filter labels and slugs. A warning identifies versioned fallback or stale values.
+    {"kinds": {"maxItems": 4, "type": "array", "items": {"type": "string", "enum": ["channels", "listing_types", "categories", "licenses"]}}, "refresh": {"default": false, "type": "boolean"}}
+- fab_list_limited_time_free: List Fab's dedicated curated limited-time-free promotions separately from general free search.
+    {"limit": {"default": 24, "type": "integer", "minimum": 1, "maximum": 24}}
+- fab_download_free_asset: Download one directly available free Fab file into the configured local download directory. This never purchas
+    {"listingIdOrUrl": {"type": "string", "minLength": 1, "maxLength": 500}, "format": {"type": "string", "enum": ["blender", "fbx", "glb", "gltf", "maya", "obj", "unity"]}, "acceptFabEula": {"type": "boolean", "const": true, "description": "Required acknowledgement that the user accepts the Fab EULA linked by the listing."}}
+- fab_list_owned: List every listing already in the signed-in Fab library, optionally filtered to the ones that publish an Unrea
+    {"query": {"description": "Case-insensitive substring of the title or category. Omit to list everything.", "type": "string", "minLength": 1, "maxLength": 200}, "unrealOnly": {"default": false, "description": "Keep only what fab_import_asset can take through the Unreal route: a listing UID plus a published Unreal artifact. Drops the engine installs and code plugins a library also contains, and hide
+- asset_import_unreal: Convert a local directory of Unreal .uasset/.umap files into self-contained model and scene GLBs under a game'
+    {"sourceDir": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "A local directory of Unreal .uasset/.umap files, for example an already downloaded Fab pack."}, "outputDir": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Directory the source GLBs are written to, normally <game>/assets/fab/<listing-id>. It must not already hold a different import; this tool
+- fab_import_asset: Download an Unreal asset the signed-in Fab account already owns and convert it to source GLBs in one step. A U
+    {"listingIdOrUrl": {"type": "string", "minLength": 1, "maxLength": 500}, "outputDir": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Directory the source GLBs are written to, normally <game>/assets/fab/<listing-id>. It must not already hold a different import; this tool never overwrites one."}, "packages": {"description": "Import only these package names, for example [\"SM_R
+- unity_list_packages: List the .unitypackage files the user's own Unity Editor has cached (ASSETSTORE_CACHE_PATH, else the OS defaul
+    {}
+- asset_import_unity: Convert models (FBX, OBJ, .blend), textures and materials of a Unity package the user owns into self-contained
+    {"source": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "A .unitypackage, a UPM package tarball (.tgz) or a Unity project folder on this machine. unity_list_packages lists the Unity Editor's cached downloads."}, "outputDir": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Directory the GLBs, textures and import-report.json are written to. It must be ne
+- blendkit_status: Report whether the user's official Blendkit-Client is running on loopback, its version and GLB recipe, whether
+    {}
+- blendkit_import_asset: Acquire one free Blendkit model (an asset_search id, blendkit:<uuid>) through the user's own Blendkit-Client, 
+    {"assetId": {"type": "string", "pattern": "^blendkit:[0-9a-f-]{36}$", "description": "asset_search/asset_get id, blendkit:<uuid>."}, "outputDir": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Private directory for the GLB and its provenance file. Keep the output out of version control and game builds."}, "purpose": {"type": "string", "enum": ["project-use", "redistribution"
+- polyhaven_search_assets: Search CC0 HDRIs, textures, and models from Poly Haven. Results include explicit Poly Haven attribution.
+    {"query": {"type": "string", "maxLength": 200}, "type": {"default": "all", "type": "string", "enum": ["all", "hdris", "textures", "models"]}, "categories": {"default": [], "maxItems": 20, "type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 200}}, "sort": {"default": "relevance", "type": "string", "enum": ["relevance", "popular", "newest", "name"]}, "limit": {"default": 24, "t
+- polyhaven_get_asset: Get normalized metadata, authorship, dimensions, and CC0 license information for one Poly Haven asset.
+    {"assetId": {"type": "string", "maxLength": 200, "pattern": "^[A-Za-z0-9_-]+$"}}
+- polyhaven_list_categories: List Poly Haven category labels and asset counts for HDRIs, textures, or models.
+    {"type": {"type": "string", "enum": ["hdris", "textures", "models"]}}
+- polyhaven_list_files: List official download URLs, byte sizes, MD5 hashes, and file dependencies for a Poly Haven asset, with format
+    {"assetId": {"type": "string", "maxLength": 200, "pattern": "^[A-Za-z0-9_-]+$"}, "resolution": {"type": "string", "maxLength": 10, "pattern": "^\\d+k$"}, "format": {"type": "string", "maxLength": 30, "pattern": "^[A-Za-z0-9_-]+$"}, "includeDependencies": {"default": true, "type": "boolean"}, "limit": {"default": 100, "type": "integer", "minimum": 1, "maximum": 200}, "cursor": {"type": "string", "m
+- ambientcg_search_assets: Search CC0 materials, HDRIs, models, decals, atlases, brushes, terrains, and other ambientCG assets.
+    {"query": {"type": "string", "maxLength": 200}, "type": {"type": "string", "enum": ["material", "hdri", "substance", "decal", "atlas", "3d-model", "plain-image", "brush", "terrain", "hdri-element"]}, "sort": {"default": "popular", "type": "string", "enum": ["popular", "latest", "downloads", "oldest", "random", "alphabet"]}, "limit": {"default": 24, "type": "integer", "minimum": 1, "maximum": 100},
+- ambientcg_get_asset: Get normalized metadata and CC0 licensing for one ambientCG asset.
+    {"assetId": {"type": "string", "maxLength": 200, "pattern": "^[A-Za-z0-9_-]+$"}}
+- ambientcg_list_categories: List ambientCG category metadata and asset counts.
+    {"type": {"type": "string", "enum": ["material", "hdri", "substance", "decal", "atlas", "3d-model", "plain-image", "brush", "terrain", "hdri-element"]}}
+- ambientcg_list_files: List official CC0 asset archives with variant attributes, extensions, URLs, and byte sizes.
+    {"assetId": {"type": "string", "maxLength": 200, "pattern": "^[A-Za-z0-9_-]+$"}, "attributes": {"type": "string", "maxLength": 100}, "extension": {"type": "string", "maxLength": 20}, "limit": {"default": 100, "type": "integer", "minimum": 1, "maximum": 200}, "cursor": {"type": "string", "maxLength": 10, "pattern": "^\\d+$"}}
+- smithsonian_search_assets: Search Smithsonian Open Access 3D models and file variants by text, type, quality, and owning unit.
+    {"query": {"type": "string", "maxLength": 200}, "fileType": {"type": "string", "enum": ["jpg", "glb", "ply", "zip"]}, "modelType": {"type": "string", "enum": ["glb", "ply", "obj", "gltf", "f3z", "blend", "stl"]}, "quality": {"type": "string", "enum": ["Low", "Medium", "High", "Thumb", "Low_resolution", "Medium_resolution", "Full_resolution", "Water_tight"]}, "owningUnit": {"type": "string", "maxLe
+- smithsonian_get_asset: Get a normalized summary of one Smithsonian Open Access 3D model.
+    {"modelId": {"type": "string", "maxLength": 100, "pattern": "^(?:3d_package:)?[0-9a-f]{8}-[0-9a-f-]{27}$"}}
+- smithsonian_list_files: List direct Smithsonian Open Access files with format, quality, compression, and orientation metadata.
+    {"modelId": {"type": "string", "maxLength": 100, "pattern": "^(?:3d_package:)?[0-9a-f]{8}-[0-9a-f-]{27}$"}, "fileType": {"type": "string", "enum": ["jpg", "glb", "ply", "zip"]}, "modelType": {"type": "string", "enum": ["glb", "ply", "obj", "gltf", "f3z", "blend", "stl"]}, "quality": {"type": "string", "enum": ["Low", "Medium", "High", "Thumb", "Low_resolution", "Medium_resolution", "Full_resolutio
+- sketchfab_search_models: Search public Sketchfab models and return per-model license, author, geometry, and archive metadata.
+    {"query": {"type": "string", "maxLength": 200}, "downloadable": {"default": true, "type": "boolean"}, "animated": {"type": "boolean"}, "staffPicked": {"type": "boolean"}, "category": {"type": "string", "maxLength": 100, "pattern": "^[a-z0-9-]+$"}, "licenses": {"maxItems": 10, "type": "array", "items": {"type": "string", "maxLength": 50, "pattern": "^[a-z0-9-]+$"}}, "sortBy": {"default": "relevance
+- sketchfab_get_model: Get public metadata and explicit Creative Commons requirements for one Sketchfab model.
+    {"modelId": {"type": "string", "pattern": "^[0-9a-f]{32}$"}}
+- sketchfab_list_categories: List public Sketchfab model category names and slugs.
+    {}
+- sketchfab_get_downloads: Get temporary download URLs for a downloadable Sketchfab model using the user's SKETCHFAB_API_TOKEN. This does
+    {"modelId": {"type": "string", "pattern": "^[0-9a-f]{32}$"}}
+- polyfork_search_models: Search Polyfork's free low-poly catalogue: characters, props, animals, vehicles and kits, with triangles, rig/
+    {"query": {"type": "string", "maxLength": 200}, "class": {"default": "all", "anyOf": [{"type": "string", "const": "all"}, {"type": "string", "enum": ["prop", "building", "vehicle", "character", "animal", "ultra", "attachment", "terrain", "hand"]}]}, "kit": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,78}[a-z0-9]$"}, "free": {"default": true, "type": "boolean"}, "minTriangles": {"type": "int
+- polyfork_get_model: Get one Polyfork model's canonical page, per-item CC BY 4.0 or Polyfork licence credit, clips and skeleton it 
+    {"idOrUrl": {"type": "string", "minLength": 1, "maxLength": 2048}}
+- polyfork_list_files: List one Polyfork model's verified full low-poly GLB (anonymous /cdn, preferred), its preview-only GLB, and it
+    {"idOrUrl": {"type": "string", "minLength": 1, "maxLength": 2048}}
+- audio_list_sources: List supported audio libraries, best uses, licensing caveats, browse pages, and whether this MCP has a curated
+    {}
+- audio_search_assets: Search the curated catalog of official audio packs with stable direct URLs and explicit license metadata. Use 
+    {"query": {"type": "string", "maxLength": 200}, "kind": {"default": "all", "type": "string", "enum": ["all", "sfx", "music", "mixed"]}, "source": {"default": "all", "anyOf": [{"type": "string", "const": "all"}, {"type": "string", "enum": ["sonniss", "kenney", "tallbeard", "scott-buckley", "itch-io", "mixkit", "pixabay", "freesound", "opengameart", "abstraction"]}]}, "limit": {"default": 24, "type"
+- audio_download_asset: Download one catalog asset by ID into the dedicated audio directory after explicit license acknowledgement. UR
+    {"assetId": {"type": "string", "maxLength": 200, "pattern": "^[a-z0-9-]+$"}, "acceptLicense": {"type": "boolean", "const": true, "description": "Required acknowledgement that the caller reviewed and accepts the asset license returned by audio_search_assets."}}
+- audio_inspect_asset: Measure one local WAV, Ogg, MP3 or FLAC with the pinned threenative-playtest inspector: decode integrity, sile
+    {"path": {"type": "string", "minLength": 1, "maxLength": 4096}, "loop": {"type": "boolean", "description": "Required: it decides whether the loop seam is checked at all, and a default would silently skip it."}, "expectedDurationSeconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 3600}, "expectedPrompt": {"type": "string", "minLength": 1, "maxLength": 2000}, "alternativePrompts": {"minIt
+- audio_generate_sound: SPENDS PROVIDER CREDITS. Generate one sound effect or ambience from a prompt using the user's own ELEVENLABS_A
+    {"requestId": {"type": "string", "format": "uuid", "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$", "description": "A UUID you choose. Reusing it returns the saved result instead of generating and charging again."}, "prompt": {"type": "string", "minLength": 1, "maxLen
+- itch_list_downloads: Resolve a fresh no-account itch.io download page and list its upload IDs, names, sizes, license, and safe sugg
+    {"packId": {"type": "string", "enum": ["tallbeard-music-loop-bundle", "quaternius-universal-animation-library-1", "quaternius-universal-animation-library-2", "brackeys-vfx-bundle", "kaykit-platformer"]}}
+- itch_download_asset: Resolve a fresh signed itch.io file URL for a listed upload and stream it into guarded local storage after exp
+    {"packId": {"type": "string", "enum": ["tallbeard-music-loop-bundle", "quaternius-universal-animation-library-1", "quaternius-universal-animation-library-2", "brackeys-vfx-bundle", "kaykit-platformer"]}, "uploadId": {"type": "string", "maxLength": 30, "pattern": "^\\d+$"}, "acceptLicense": {"type": "boolean", "const": true, "description": "Required acknowledgement that the caller accepts the CC0 t
+- asset_list_bundle_entries: Inspect a curated itch.io ZIP through HTTP byte ranges without downloading the whole archive. Returns individu
+    {"packId": {"type": "string", "enum": ["tallbeard-music-loop-bundle", "quaternius-universal-animation-library-1", "quaternius-universal-animation-library-2", "brackeys-vfx-bundle", "kaykit-platformer"]}, "uploadId": {"type": "string", "maxLength": 30, "pattern": "^\\d+$"}}
+- asset_download_bundle_entry: Extract one selected ZIP entry through HTTP byte ranges, cache it locally, and avoid downloading unrelated bun
+    {"packId": {"type": "string", "enum": ["tallbeard-music-loop-bundle", "quaternius-universal-animation-library-1", "quaternius-universal-animation-library-2", "brackeys-vfx-bundle", "kaykit-platformer"]}, "uploadId": {"type": "string", "maxLength": 30, "pattern": "^\\d+$"}, "entryPath": {"type": "string", "minLength": 1, "maxLength": 2048}, "acceptLicense": {"type": "boolean", "const": true, "descr
+- asset_list_bundle_animations: Range-extract and cache only the aggregate GLB from a curated bundle, then return its named animation clips. T
+    {"packId": {"type": "string", "enum": ["tallbeard-music-loop-bundle", "quaternius-universal-animation-library-1", "quaternius-universal-animation-library-2", "brackeys-vfx-bundle", "kaykit-platformer"]}, "uploadId": {"type": "string", "maxLength": 30, "pattern": "^\\d+$"}, "entryPath": {"description": "Optional aggregate GLB path. Omit to select the standard non-root-motion GLB automatically.", "t
+- asset_download_bundle_animation: Export one named animation as a small standalone GLB after range-fetching only the aggregate source entry. Unr
+    {"packId": {"type": "string", "enum": ["tallbeard-music-loop-bundle", "quaternius-universal-animation-library-1", "quaternius-universal-animation-library-2", "brackeys-vfx-bundle", "kaykit-platformer"]}, "uploadId": {"type": "string", "maxLength": 30, "pattern": "^\\d+$"}, "entryPath": {"type": "string", "minLength": 1, "maxLength": 2048}, "animationName": {"type": "string", "minLength": 1, "maxLe
+- asset_list_sources: List agent-ready sources by default: every result has an MCP download path requiring no manual browser, login,
+    {"agentReadyOnly": {"default": true, "type": "boolean"}}
+- asset_search_sources: Search agent-ready asset sources by category, license, access mode, or text query. Manual/provider-page source
+    {"query": {"type": "string", "maxLength": 200}, "category": {"default": "all", "anyOf": [{"type": "string", "const": "all"}, {"type": "string", "enum": ["3d-model", "animation", "texture", "hdri", "vfx", "2d", "ui", "icon", "font", "sfx", "music", "shader", "directory"]}]}, "access": {"default": "all", "anyOf": [{"type": "string", "const": "all"}, {"type": "string", "enum": ["mcp-api", "mcp-curate
+- asset_download_file: Download a file URL returned by Poly Haven, ambientCG, or Smithsonian MCP tools, or a curated Game-icons.net/K
+    {"provider": {"type": "string", "enum": ["polyhaven", "ambientcg", "smithsonian", "game-icons", "polyfork", "kenney"]}, "url": {"type": "string", "maxLength": 4096, "format": "uri"}, "fileName": {"type": "string", "minLength": 1, "maxLength": 220}, "acceptLicense": {"type": "boolean", "const": true, "description": "Required acknowledgement that the caller reviewed and accepts the license metadata 

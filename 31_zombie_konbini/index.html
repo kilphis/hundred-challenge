@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ゾンビ街のコンビニ</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #111; color: #eee;
+    font-family: "Hiragino Sans", "Noto Sans JP", sans-serif; overflow: hidden; }
+  #wrap { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+  canvas { display: block; image-rendering: pixelated; }
+  .overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(8,10,8,.86); }
+  .overlay.hidden { display: none; }
+  .panel { width: min(760px, 92vw); max-height: 92vh; overflow: auto; padding: 24px 28px; background: #1c211c;
+    border: 2px solid #3d4a3a; border-radius: 10px; }
+  h1 { margin: 0 0 4px; font-size: 26px; color: #b7e08a; }
+  h2 { margin: 0 0 12px; font-size: 20px; }
+  .sub { color: #9a9; font-size: 13px; margin-bottom: 16px; }
+  .shift { display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 10px 14px; margin: 8px 0; background: #262d25; border: 1px solid #3d4a3a; border-radius: 8px; cursor: pointer; }
+  .shift:hover { background: #303a2e; }
+  .shift.locked { opacity: .4; cursor: not-allowed; }
+  .shift .t { font-weight: bold; }
+  .shift .d { font-size: 12px; color: #aab; margin-top: 2px; }
+  .shift .tag { font-size: 12px; color: #b7e08a; white-space: nowrap; }
+  .keys { font-size: 13px; color: #ccd; line-height: 1.8; margin-top: 14px; border-top: 1px solid #3d4a3a; padding-top: 10px; }
+  kbd { background: #333; border: 1px solid #555; border-radius: 3px; padding: 0 5px; font-size: 12px; }
+  .btn { display: inline-block; margin: 14px 10px 0 0; padding: 8px 18px; background: #3b5a2c; border-radius: 6px; cursor: pointer; }
+  .btn:hover { background: #4b7238; }
+  table { border-collapse: collapse; margin-top: 8px; }
+  td { padding: 3px 14px 3px 0; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="cv"></canvas>
+  <div id="title" class="overlay"><div class="panel">
+    <h1>ゾンビ街のコンビニ</h1>
+    <div class="sub">お客(ゾンビ)に見つからないように、部門のカゴを持って売り場を回り、棚の補充をこなせ。レジには店長ゾンビ。</div>
+    <div id="shiftList"></div>
+    <div class="keys">
+      <kbd>WASD</kbd>/<kbd>矢印</kbd> 移動　<kbd>E</kbd>/<kbd>Space</kbd> 長押しで作業　<kbd>Q</kbd> 持ち物を床に置く(Eで拾える)　<kbd>P</kbd> 一時停止<br>
+      ゾンビの視界(扇形)に入ると「?」が溜まり、満タンで「!」— 追いかけてくる。<br>
+      棚の陰に隠れれば視線は通らない。<b>バックヤードに逃げ込めばセーフ</b>。捕まると3回で早退(シフト失敗)。<br>
+      欠品・ホットスナック切れ・ゴミあふれは「クレーム」。クレームが規定数以内でシフトを終えれば合格。
+    </div>
+  </div></div>
+  <div id="result" class="overlay hidden"><div class="panel" id="resultBody"></div></div>
+</div>
+<script>
+// ==================== 定数 ====================
+const TS = 36, W = 26, H = 18, HUD = 56, BOT = 64;
+const cv = document.getElementById('cv'), cx = cv.getContext('2d');
+cv.width = W * TS; cv.height = H * TS + HUD + BOT;
+function fit() {
+  const s = Math.min(innerWidth / cv.width, innerHeight / cv.height);
+  cv.style.width = (cv.width * s) + 'px'; cv.style.height = (cv.height * s) + 'px';
+}
+addEventListener('resize', fit); fit();
+
+const REAL_SEC_PER_GAME_HOUR = 40;            // ゲーム内1時間 = 実時間40秒
+const GMIN_PER_SEC = 60 / REAL_SEC_PER_GAME_HOUR;
+
+// 部門(バックヤードの在庫棚)ごとにカゴを持ち出し、売り場の細かい棚を回って補充する
+const DEPTS = { p: { name: '食料品', color: '#e8b04b' }, r: { name: '日用品', color: '#6bb0e8' }, s: { name: '飲料', color: '#59c96b' } };
+// 売り場の棚(区画)。tiles は棚タイル、face は客と店員が立つ側(dx)
+const SECTIONS = [];
+function addSec(name, dept, color, col, y0, y1, face) {
+  const tiles = []; for (let y = y0; y <= y1; y++) tiles.push([col, y]);
+  SECTIONS.push({ name, dept, color, tiles, face });
+}
+[ // ゴンドラ1・2は食料品、3は日用品
+  [7, 'おにぎり', '#f4f2e6', 'サンド', '#f0d890', '弁当', '#d8573c', 'パン', '#d9a35b', 'p'],
+  [12, 'ヨーグルト', '#ffffff', 'カップ麺', '#e2cf3a', 'スナック', '#e8743b', 'チョコ', '#7a4a2a', 'p'],
+  [17, '洗剤', '#5fb5e8', 'ティッシュ', '#e8e8f8', '電池', '#c0c0c0', '歯ブラシ', '#e86bb0', 'r'],
+].forEach(([gx, a, ac, b, bc, c, cc, d, dc, dept]) => {
+  addSec(a, dept, ac, gx, 7, 10, -1); addSec(b, dept, bc, gx, 11, 13, -1);
+  addSec(c, dept, cc, gx + 1, 7, 10, 1); addSec(d, dept, dc, gx + 1, 11, 13, 1);
+});
+addSec('お茶', 's', '#6aa84f', 24, 6, 7, -1); addSec('水', 's', '#a8d8f0', 24, 8, 9, -1);
+addSec('コーヒー', 's', '#6b4a32', 24, 10, 11, -1); addSec('ジュース', 's', '#f0a030', 24, 12, 13, -1);
+const SHELF_MAX = 6, HOT_MAX = 8, HOT_ADD = 4, TRASH_MAX = 6, FRY_TIME = 8;
+const MANAGER = { x: 1.5, y: 8.5 };   // レジに立つ店長ゾンビ(タイル(1,8)を占める)
+
+const SHIFTS = [
+  { name: '研修1日目', start: 13, hours: 3, hot: false, trash: false, alley: false, missMax: 5,
+    desc: '13:00〜16:00。品出しだけ。お客は少なめ。',
+    spawn: h => 15, maxZ: h => 3 },
+  { name: '研修2日目', start: 13, hours: 3, hot: true, trash: false, alley: false, missMax: 5,
+    desc: '13:00〜16:00。ホットスナックの補充が加わる。',
+    spawn: h => 13, maxZ: h => 3 },
+  { name: '夕方シフト', start: 15, hours: 5, hot: true, trash: false, alley: false, missMax: 7,
+    desc: '15:00〜20:00。17〜19時は夕方ラッシュ。',
+    spawn: h => (h >= 17 && h < 19) ? 5 : 13, maxZ: h => (h >= 17 && h < 19) ? 7 : 3, rush: true },
+  { name: '夕方シフト＋ゴミ捨て', start: 15, hours: 5, hot: true, trash: true, alley: true, missMax: 7,
+    desc: '15:00〜20:00。ゴミ捨ても任される。裏路地にもゾンビがいる。',
+    spawn: h => (h >= 17 && h < 19) ? 5 : 13, maxZ: h => (h >= 17 && h < 19) ? 7 : 3, rush: true },
+];
+
+// ==================== マップ ====================
+// # 壁  . 床  d スタッフドア  b 裏口  p/r/s 部門の在庫棚(バックヤード)  F 冷凍庫  D ゴミ集積所
+// K カウンター  R フライヤー  H ホットケース  S 売り場の棚  T ゴミ箱  E 入口
+const grid = [];
+for (let y = 0; y < H; y++) { grid.push([]); for (let x = 0; x < W; x++) grid[y].push((x == 0 || y == 0 || x == W - 1 || y == H - 1) ? '#' : '.'); }
+const set = (x, y, c) => grid[y][x] = c;
+for (let x = 0; x < W; x++) set(x, 4, '#');
+set(5, 4, 'd');
+for (let y = 1; y <= 3; y++) set(15, y, '#');
+set(15, 2, 'b');
+[[1, 'p'], [2, 'p'], [4, 'p'], [5, 'p'], [7, 'r'], [8, 'r'], [10, 's'], [11, 's'], [13, 'F'], [14, 'F']].forEach(([x, c]) => set(x, 1, c));
+set(23, 1, 'D'); set(24, 1, 'D');
+for (let y = 6; y <= 11; y++) set(2, y, 'K');
+set(2, 6, 'R'); set(2, 9, 'H');
+const secAt = {};
+SECTIONS.forEach((s, i) => s.tiles.forEach(([x, y]) => { set(x, y, 'S'); secAt[y * W + x] = i; }));
+set(15, 16, 'T');
+set(12, 17, 'E'); set(13, 17, 'E');
+
+const tile = (x, y) => (x < 0 || y < 0 || x >= W || y >= H) ? '#' : grid[y][x];
+const isShelf = c => c == 'S';
+const OPAQUE = new Set(['#', 'p', 'r', 's', 'F', 'S', 'd', 'b']);
+const PLAYER_WALK = new Set(['.', 'd', 'b']);
+const isManagerTile = (x, y) => x == Math.floor(MANAGER.x) && y == Math.floor(MANAGER.y);
+const inBackyard = (x, y) => (y >= 1 && y <= 3 && x >= 1 && x <= 14) || (x == 5 && y == 4);
+const inAlley = (x, y) => y >= 1 && y <= 3 && x >= 16 && x <= 24;
+const inStore = (x, y) => y >= 5 && y <= 17;
+const storeWalk = (x, y) => inStore(x, y) && (tile(x, y) == '.' || tile(x, y) == 'E') && !isManagerTile(x, y);
+const alleyWalk = (x, y) => inAlley(x, y) && tile(x, y) == '.';
+const playerWalk = (x, y) => PLAYER_WALK.has(tile(x, y)) && !isManagerTile(x, y);
+
+// 区画 → 前に立てる床タイル
+SECTIONS.forEach(s => s.spots = s.tiles.map(([x, y]) => ({ x: x + s.face, y, fx: x, fy: y })).filter(p => storeWalk(p.x, p.y)));
+
+// ==================== 経路探索 ====================
+function bfs(sx, sy, isGoal, pass) {
+  const key = (x, y) => y * W + x;
+  const prev = new Map(); prev.set(key(sx, sy), -1);
+  const q = [[sx, sy]];
+  while (q.length) {
+    const [x, y] = q.shift();
+    if (isGoal(x, y)) {
+      const path = []; let k = key(x, y);
+      while (k != -1) { path.push({ x: k % W, y: (k / W) | 0 }); k = prev.get(k); }
+      path.reverse(); path.shift(); return path;
+    }
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nx = x + dx, ny = y + dy, k = key(nx, ny);
+      if (!prev.has(k) && pass(nx, ny)) { prev.set(k, key(x, y)); q.push([nx, ny]); }
+    }
+  }
+  return null;
+}
+
+// 視線: (x0,y0)→(x1,y1) が不透明タイルに遮られないか(タイル単位座標)
+function los(x0, y0, x1, y1) {
+  const dx = x1 - x0, dy = y1 - y0, d = Math.hypot(dx, dy), n = Math.ceil(d / 0.1);
+  for (let i = 1; i < n; i++) {
+    const t = i / n;
+    if (OPAQUE.has(tile(Math.floor(x0 + dx * t), Math.floor(y0 + dy * t)))) return false;
+  }
+  return true;
+}
+function rayLen(x0, y0, a, max) {
+  const c = Math.cos(a), s = Math.sin(a);
+  for (let d = 0.1; d <= max; d += 0.1) if (OPAQUE.has(tile(Math.floor(x0 + c * d), Math.floor(y0 + s * d)))) return d;
+  return max;
+}
+
+// ==================== 状態 ====================
+const VIEW_ANG = 0.62, VIEW_DIST = 5.5;
+let G = null;           // 現在のシフトの状態
+let mode = 'title';     // title / play / pause / result
+const keys = {};
+const rnd = (a, b) => a + Math.random() * (b - a);
+const pick = a => a[(Math.random() * a.length) | 0];
+
+let cleared = 0;
+try { cleared = +(localStorage.getItem('zconv_cleared') || 0); } catch (e) {}
+if (new URLSearchParams(location.search).has('all')) cleared = 4;
+
+function newShift(idx) {
+  const S = SHIFTS[idx];
+  G = {
+    idx, S, gmin: 0, spawnT: 3,
+    stock: SECTIONS.map(() => 2 + ((Math.random() * 4) | 0)),
+    hot: S.hot ? 3 : 0,
+    fryer: { state: 'empty', t: 0 },   // empty / frying / done
+    trash: S.trash ? 3 : 0,
+    p: { x: 7.5, y: 2.5, dir: Math.PI / 2, carry: null, hold: 0 },
+    drops: [],                          // 床に置いた持ち物
+    zs: [], misses: 0, strikes: 0, stocked: 0, hotAdded: 0, trashOut: 0,
+    toasts: [], flash: 0, rushSaid: false, t: 0,
+  };
+  if (S.alley) G.zs.push(makeZombie('alley', 20.5, 2.5));
+}
+
+// 部門のカゴ: その部門で減っている棚の分だけ入れて持ち出す
+function makeCrate(dept) {
+  const items = {};
+  SECTIONS.forEach((s, i) => { if (s.dept == dept && G.stock[i] < SHELF_MAX) items[i] = SHELF_MAX - G.stock[i]; });
+  return { kind: 'crate', dept, items };
+}
+
+function makeZombie(kind, x, y) {
+  const shirts = ['#7a4b8c', '#8c4b4b', '#4b6a8c', '#8c7a4b', '#4b8c6a', '#666'];
+  const z = { kind, x, y, dir: -Math.PI / 2, speed: rnd(1.0, 1.35), state: 'walk', path: [], sus: 0,
+    shirt: pick(shirts), skin: pick(['#7fa36a', '#8fae78', '#6f9460']), plan: [], wait: 0, base: 0, t: Math.random() * 10,
+    lastSeen: null, lostT: 0, repath: 0, buyHot: false, wobble: Math.random() * 6 };
+  if (kind == 'customer') {
+    const n = 1 + ((Math.random() * 3) | 0);
+    const secs = SECTIONS.map((_, i) => i).sort(() => Math.random() - 0.5).slice(0, n);
+    secs.forEach(i => z.plan.push({ type: 'shelf', sec: i }));
+    z.buyHot = G.S.hot && Math.random() < 0.55;
+    z.plan.push({ type: 'counter' });
+    z.plan.push({ type: 'exit' });
+    nextGoal(z);
+  } else {
+    z.state = 'wait'; z.wait = 1;
+  }
+  return z;
+}
+
+function nextGoal(z) {
+  const tx = Math.floor(z.x), ty = Math.floor(z.y);
+  if (z.kind == 'alley') {
+    z.path = bfs(tx, ty, (x, y) => x == z.goal.x && y == z.goal.y, alleyWalk) || [];
+    z.state = 'walk'; return;
+  }
+  const g = z.plan[0];
+  if (!g) { z.dead = true; return; }
+  if (g.type == 'shelf') {
+    if (!g.spot) g.spot = pick(SECTIONS[g.sec].spots);
+    z.path = bfs(tx, ty, (x, y) => x == g.spot.x && y == g.spot.y, storeWalk) || [];
+  } else if (g.type == 'counter') {
+    if (!g.spot) g.spot = { x: 3, y: z.buyHot ? 9 : pick([7, 8, 10, 11]), fx: 2, fy: 0 };
+    g.spot.fy = g.spot.y;
+    z.path = bfs(tx, ty, (x, y) => x == g.spot.x && y == g.spot.y, storeWalk) || [];
+  } else if (g.type == 'exit') {
+    z.path = bfs(tx, ty, (x, y) => tile(x, y) == 'E', storeWalk) || [];
+  }
+  z.state = 'walk';
+}
+
+function toast(msg, color = '#fff') { G.toasts.push({ msg, color, t: 3 }); }
+
+// ==================== 入力 ====================
+addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
+  if (e.code == 'KeyP' && (mode == 'play' || mode == 'pause')) mode = mode == 'play' ? 'pause' : 'play';
+  if (e.code == 'KeyQ' && mode == 'play' && G.p.carry) {
+    toast(carryName(G.p.carry) + 'を床に置いた', '#aaa');
+    G.drops.push({ x: G.p.x, y: G.p.y, carry: G.p.carry }); G.p.carry = null;
+  }
+});
+addEventListener('keyup', e => keys[e.code] = false);
+const kd = (...c) => c.some(k => keys[k]);
+
+// ==================== 作業(アクション) ====================
+function crateList(c) {
+  return Object.entries(c.items).map(([i, n]) => SECTIONS[i].name + '×' + n).join('  ');
+}
+function carryName(c) {
+  if (!c) return '';
+  if (c.kind == 'crate') return DEPTS[c.dept].name + 'のカゴ';
+  return { frozen: '冷凍ホットスナック', fried: '揚げたてホットスナック', bag: 'ゴミ袋' }[c.kind];
+}
+
+const INFO = Infinity;   // dur が INFO の作業は表示だけ(実行できない)
+function actionAt(x, y) {
+  const c = tile(x, y), p = G.p, S = G.S;
+  if (DEPTS[c] && !p.carry) {
+    const crate = makeCrate(c);
+    if (!Object.keys(crate.items).length) return { label: DEPTS[c].name + '：補充が必要な棚はない', dur: INFO, run: () => {} };
+    return { label: DEPTS[c].name + 'のカゴを持つ（' + crateList(crate) + '）', dur: 0.6, run: () => p.carry = makeCrate(c) };
+  }
+  if (c == 'F' && S.hot && !p.carry)
+    return { label: '冷凍ホットスナックを持つ', dur: 0.3, run: () => p.carry = { kind: 'frozen' } };
+  if (isShelf(c)) {
+    const i = secAt[y * W + x], s = SECTIONS[i];
+    if (p.carry && p.carry.kind == 'crate' && p.carry.items[i]) {
+      if (G.stock[i] >= SHELF_MAX) return { label: s.name + 'の棚は満杯', dur: INFO, run: () => {} };
+      return { label: s.name + 'を補充', dur: 1.0, run: () => {
+        const add = Math.min(p.carry.items[i], SHELF_MAX - G.stock[i]);
+        G.stock[i] += add; p.carry.items[i] -= add; G.stocked++;
+        if (p.carry.items[i] <= 0) delete p.carry.items[i];
+        if (!Object.keys(p.carry.items).length) { p.carry = null; toast('カゴが空になった', '#b7e08a'); }
+      } };
+    }
+    return { label: s.name + '　在庫 ' + G.stock[i] + '/' + SHELF_MAX, dur: INFO, run: () => {} };
+  }
+  if (c == 'R' && S.hot) {
+    if (G.fryer.state == 'empty' && p.carry && p.carry.kind == 'frozen')
+      return { label: 'フライヤーに入れる', dur: 0.8, run: () => { G.fryer = { state: 'frying', t: FRY_TIME }; p.carry = null; } };
+    if (G.fryer.state == 'done' && !p.carry)
+      return { label: '揚げあがりを取り出す', dur: 0.5, run: () => { G.fryer = { state: 'empty', t: 0 }; p.carry = { kind: 'fried' }; } };
+  }
+  if (c == 'H' && S.hot && p.carry && p.carry.kind == 'fried')
+    return { label: 'ホットケースに並べる', dur: 0.8, run: () => { G.hot = Math.min(HOT_MAX, G.hot + HOT_ADD); p.carry = null; G.hotAdded++; } };
+  if (c == 'T' && S.trash && !p.carry && G.trash > 0)
+    return { label: 'ゴミ袋をまとめる', dur: 1.0, run: () => { G.trash = 0; p.carry = { kind: 'bag' }; } };
+  if (c == 'D' && p.carry && p.carry.kind == 'bag')
+    return { label: 'ゴミを捨てる', dur: 0.4, run: () => { p.carry = null; G.trashOut++; } };
+  return null;
+}
+
+function currentAction() {
+  const p = G.p, px = Math.floor(p.x), py = Math.floor(p.y);
+  // 床に置いた物を拾う
+  if (!p.carry) for (const d of G.drops) if (Math.hypot(d.x - p.x, d.y - p.y) < 0.8)
+    return { label: carryName(d.carry) + 'を拾う', dur: 0.3, run: () => { p.carry = d.carry; G.drops.splice(G.drops.indexOf(d), 1); } };
+  let best = null, bd = 9;
+  for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+    if (!dx && !dy) continue;
+    const x = px + dx, y = py + dy;
+    // タイルの矩形までの距離
+    const ddx = Math.max(x - p.x, 0, p.x - (x + 1)), ddy = Math.max(y - p.y, 0, p.y - (y + 1));
+    const d = Math.hypot(ddx, ddy);
+    if (d > 0.55) continue;
+    const a = actionAt(x, y);
+    const score = a ? d + (a.dur == INFO ? 1 : 0) : 9;   // 実行できる作業を優先
+    if (a && score < bd) { best = a; bd = score; }
+  }
+  return best;
+}
+
+// ==================== 更新 ====================
+function update(dt) {
+  const S = G.S, p = G.p;
+  G.t += dt;
+  G.gmin += dt * GMIN_PER_SEC;
+  const hour = S.start + G.gmin / 60;
+  if (G.gmin >= S.hours * 60) return endShift(false);
+  if (S.rush && hour >= 17 && !G.rushSaid) { G.rushSaid = true; toast('夕方ラッシュ！ お客が増える', '#ffcc55'); }
+
+  // --- プレイヤー移動 ---
+  let mx = (kd('KeyD', 'ArrowRight') ? 1 : 0) - (kd('KeyA', 'ArrowLeft') ? 1 : 0);
+  let my = (kd('KeyS', 'ArrowDown') ? 1 : 0) - (kd('KeyW', 'ArrowUp') ? 1 : 0);
+  const moving = mx || my;
+  if (moving) {
+    const l = Math.hypot(mx, my); mx /= l; my /= l;
+    p.dir = Math.atan2(my, mx);
+    const sp = !p.carry ? 3.3 : p.carry.kind == 'crate' ? 2.5 : p.carry.kind == 'bag' ? 2.4 : 3.0;
+    moveCircle(p, mx * sp * dt, my * sp * dt, 0.3, playerWalk);
+  }
+
+  // --- 作業 ---
+  const act = currentAction();
+  G.act = act;
+  if (act && kd('KeyE', 'Space') && !moving && act.dur < INFO) {
+    p.hold += dt;
+    if (p.hold >= act.dur) { act.run(); p.hold = 0; keys.KeyE = keys.Space = false; }
+  } else p.hold = 0;
+
+  // --- フライヤー ---
+  if (G.fryer.state == 'frying') { G.fryer.t -= dt; if (G.fryer.t <= 0) { G.fryer.state = 'done'; toast('ホットスナックが揚がった', '#ffcc55'); } }
+
+  // --- 客の来店 ---
+  G.spawnT -= dt * GMIN_PER_SEC;
+  const customers = G.zs.filter(z => z.kind == 'customer').length;
+  if (G.spawnT <= 0) {
+    G.spawnT = S.spawn(hour) * rnd(0.6, 1.4);
+    if (customers < S.maxZ(hour) && G.gmin < S.hours * 60 - 10) G.zs.push(makeZombie('customer', pick([12.5, 13.5]), 17.5));
+  }
+
+  // --- ゾンビ ---
+  const safe = inBackyard(Math.floor(p.x), Math.floor(p.y));
+  for (const z of G.zs) updateZombie(z, dt, safe);
+  G.zs = G.zs.filter(z => !z.dead);
+
+  G.flash = Math.max(0, G.flash - dt);
+  G.toasts.forEach(t => t.t -= dt);
+  G.toasts = G.toasts.filter(t => t.t > 0);
+}
+
+function moveCircle(o, dx, dy, r, pass) {
+  const blocked = (x, y) => {
+    for (const [ox, oy] of [[-r, -r], [r, -r], [-r, r], [r, r]]) if (!pass(Math.floor(x + ox), Math.floor(y + oy))) return true;
+    return false;
+  };
+  if (!blocked(o.x + dx, o.y)) o.x += dx;
+  if (!blocked(o.x, o.y + dy)) o.y += dy;
+}
+
+function canSee(z) {
+  const p = G.p, dx = p.x - z.x, dy = p.y - z.y, d = Math.hypot(dx, dy);
+  if (d > VIEW_DIST) return 0;
+  let da = Math.atan2(dy, dx) - z.dir;
+  da = Math.atan2(Math.sin(da), Math.cos(da));
+  const close = d < 1.1;                   // すぐ横にいたら気配でバレる
+  if (!close && Math.abs(da) > VIEW_ANG) return 0;
+  if (!los(z.x, z.y, p.x, p.y)) return 0;
+  return close ? 2.5 : 0.9 + (VIEW_DIST - d) * 0.45;
+}
+
+function turnTo(z, a, rate, dt) {
+  let da = a - z.dir; da = Math.atan2(Math.sin(da), Math.cos(da));
+  z.dir += Math.max(-rate * dt, Math.min(rate * dt, da));
+}
+
+function followPath(z, sp, dt) {
+  if (!z.path.length) return true;
+  const n = z.path[0], tx = n.x + 0.5, ty = n.y + 0.5;
+  const dx = tx - z.x, dy = ty - z.y, d = Math.hypot(dx, dy);
+  turnTo(z, Math.atan2(dy, dx), 6, dt);
+  if (d <= sp * dt) { z.x = tx; z.y = ty; z.path.shift(); }
+  else { z.x += dx / d * sp * dt; z.y += dy / d * sp * dt; }
+  return !z.path.length;
+}
+
+function updateZombie(z, dt, safe) {
+  const p = G.p;
+  z.t += dt;
+  const pass = z.kind == 'alley' ? alleyWalk : storeWalk;
+  const playerReachable = pass(Math.floor(p.x), Math.floor(p.y));
+
+  // 視認
+  const seen = (!safe && z.state != 'giveup') ? canSee(z) : 0;
+  if (z.state != 'chase') {
+    if (seen) z.sus = Math.min(1, z.sus + seen * 0.55 * dt);
+    else z.sus = Math.max(0, z.sus - 0.35 * dt);
+    if (z.sus >= 1 && playerReachable) {
+      z.state = 'chase'; z.lastSeen = { x: p.x, y: p.y }; z.lostT = 0; z.repath = 0;
+      toast('見つかった！ バックヤードへ逃げろ', '#ff6655');
+    }
+  }
+
+  if (z.state == 'chase') {
+    if (safe || !playerReachable) {             // バックヤードに逃げ込まれた → 諦める
+      z.state = 'giveup'; z.wait = 1.5; z.sus = 0; z.path = []; return;
+    }
+    if (seen) { z.lastSeen = { x: p.x, y: p.y }; z.lostT = 0; } else z.lostT += dt;
+    if (z.lostT > 3) { z.state = 'giveup'; z.wait = 1.2; z.sus = 0.4; z.path = []; return; }
+    z.repath -= dt;
+    if (z.repath <= 0) {
+      z.repath = 0.25;
+      const gx = Math.floor(z.lastSeen.x), gy = Math.floor(z.lastSeen.y);
+      z.path = bfs(Math.floor(z.x), Math.floor(z.y), (x, y) => x == gx && y == gy, pass) || [];
+    }
+    if (!z.path.length) {
+      const dx = z.lastSeen.x - z.x, dy = z.lastSeen.y - z.y, d = Math.hypot(dx, dy);
+      if (d > 0.05) { z.x += dx / d * 2.6 * dt; z.y += dy / d * 2.6 * dt; turnTo(z, Math.atan2(dy, dx), 8, dt); }
+    } else followPath(z, 2.6, dt);
+    if (Math.hypot(p.x - z.x, p.y - z.y) < 0.6) caught(z);
+    return;
+  }
+
+  if (z.state == 'giveup') {
+    z.wait -= dt; z.dir += Math.sin(z.t * 3) * dt * 2;
+    if (z.wait <= 0) { if (z.kind == 'alley') { z.state = 'wait'; z.wait = 0.5; } else nextGoal(z); }
+    return;
+  }
+
+  // 怪しんでいる間は立ち止まってこちらを向く
+  if (z.sus > 0.3 && seen) { turnTo(z, Math.atan2(p.y - z.y, p.x - z.x), 3, dt); return; }
+
+  if (z.kind == 'alley') {
+    if (z.state == 'wait') {
+      z.wait -= dt; z.dir = z.base + Math.sin(z.t * 0.9) * 1.2;
+      if (z.wait <= 0) {
+        let gx, gy; do { gx = (16 + Math.random() * 9) | 0; gy = (1 + Math.random() * 3) | 0; } while (!alleyWalk(gx, gy));
+        z.goal = { x: gx, y: gy }; nextGoal(z);
+      }
+    } else if (followPath(z, z.speed * 0.8, dt)) { z.state = 'wait'; z.wait = rnd(2, 5); z.base = z.dir; }
+    return;
+  }
+
+  // 客
+  if (z.state == 'walk') {
+    if (followPath(z, z.speed, dt)) {
+      const g = z.plan[0];
+      if (g.type == 'exit') { z.dead = true; if (G.S.trash && Math.random() < 0.5) addTrash(); return; }
+      z.state = 'browse'; z.wait = g.type == 'shelf' ? rnd(2.0, 3.5) : rnd(1.5, 2.5);
+      z.base = Math.atan2(g.spot.fy + 0.5 - z.y, g.spot.fx + 0.5 - z.x);
+    }
+  } else if (z.state == 'browse') {
+    z.wait -= dt;
+    z.dir = z.base + Math.sin(z.t * 1.3 + z.wobble) * 1.1;   // 棚の前でキョロキョロ
+    if (z.wait <= 0) {
+      const g = z.plan.shift();
+      if (g.type == 'shelf') {
+        if (G.stock[g.sec] > 0) G.stock[g.sec]--;
+        else miss(SECTIONS[g.sec].name + 'が欠品');
+      } else if (g.type == 'counter' && z.buyHot) {
+        if (G.hot > 0) G.hot--;
+        else miss('ホットスナックが切れている');
+      }
+      nextGoal(z);
+    }
+  }
+}
+
+function addTrash() {
+  if (G.trash >= TRASH_MAX) miss('ゴミ箱があふれている');
+  else G.trash++;
+}
+function miss(msg) { G.misses++; toast('クレーム：' + msg, '#ff9966'); }
+
+function caught(z) {
+  G.strikes++; G.flash = 0.8;
+  toast(G.strikes >= 3 ? '噛まれた…' : '捕まった！ なんとか振りほどいてバックヤードへ', '#ff4444');
+  G.p.x = 7.5; G.p.y = 2.5; G.p.carry = null; G.p.hold = 0;
+  z.state = 'giveup'; z.wait = 2; z.sus = 0; z.path = [];
+  if (G.strikes >= 3) endShift(true);
+}
+
+function endShift(fail) {
+  mode = 'result';
+  const S = G.S, pass = !fail && G.misses <= S.missMax;
+  if (pass && G.idx + 1 > cleared) { cleared = G.idx + 1; try { localStorage.setItem('zconv_cleared', cleared); } catch (e) {} }
+  const rows = [
+    ['棚の補充', G.stocked + ' 回'],
+    S.hot ? ['ホットスナック補充', G.hotAdded + ' 回'] : null,
+    S.trash ? ['ゴミ捨て', G.trashOut + ' 回'] : null,
+    ['クレーム', G.misses + ' / ' + S.missMax + ' まで'],
+    ['見つかって捕まった', G.strikes + ' / 3'],
+  ].filter(Boolean).map(r => `<tr><td>${r[0]}</td><td><b>${r[1]}</b></td></tr>`).join('');
+  const head = fail ? '早退… (3回捕まった)' : pass ? 'シフト合格！' : 'シフト終了… クレームが多すぎた';
+  const next = pass && G.idx + 1 < SHIFTS.length ? `<div style="margin-top:10px;color:#b7e08a">次のシフト「${SHIFTS[G.idx + 1].name}」を任されるようになった。</div>` : '';
+  document.getElementById('resultBody').innerHTML =
+    `<h2>${S.name}：${head}</h2><table>${rows}</table>${next}
+     <span class="btn" onclick="startShift(${G.idx})">もう一度</span>
+     ${pass && G.idx + 1 < SHIFTS.length ? `<span class="btn" onclick="startShift(${G.idx + 1})">次のシフトへ</span>` : ''}
+     <span class="btn" onclick="showTitle()">シフト選択へ</span>`;
+  document.getElementById('result').classList.remove('hidden');
+}
+
+// ==================== 描画 ====================
+const COL = {
+  wall: '#3a3d42', floor1: '#d9d6cc', floor2: '#cfccc1', back: '#8d8a83', back2: '#86837c', alley: '#4a4c50', alley2: '#45474b',
+};
+
+function drawCrate(X, Y, color, w = 12) {
+  cx.fillStyle = '#3a3a3a'; cx.fillRect(X - w / 2, Y - w / 2, w, w);
+  cx.fillStyle = color; cx.fillRect(X - w / 2 + 2, Y - w / 2 + 2, w - 4, w - 4);
+  cx.strokeStyle = '#222'; cx.beginPath(); cx.moveTo(X - w / 2, Y); cx.lineTo(X + w / 2, Y); cx.stroke();
+}
+
+function drawMap() {
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const c = tile(x, y), X = x * TS, Y = y * TS + HUD;
+    // 床
+    let f;
+    if (inBackyard(x, y)) f = (x + y) % 2 ? COL.back : COL.back2;
+    else if (inAlley(x, y)) f = (x + y) % 2 ? COL.alley : COL.alley2;
+    else f = (x + y) % 2 ? COL.floor1 : COL.floor2;
+    cx.fillStyle = f; cx.fillRect(X, Y, TS, TS);
+    if (c == '#') { cx.fillStyle = COL.wall; cx.fillRect(X, Y, TS, TS); }
+    else if (DEPTS[c]) {
+      cx.fillStyle = '#5b4a36'; cx.fillRect(X + 2, Y + 2, TS - 4, TS - 4);
+      for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) drawCrate(X + 11 + i * 14, Y + 11 + j * 14, DEPTS[c].color);
+    } else if (c == 'F') {
+      cx.fillStyle = '#b8d4e8'; cx.fillRect(X + 2, Y + 2, TS - 4, TS - 4);
+      cx.strokeStyle = '#7a9ab0'; cx.strokeRect(X + 5, Y + 5, TS - 10, TS - 10);
+    } else if (c == 'D') {
+      cx.fillStyle = '#2f5a3a'; cx.fillRect(X + 1, Y + 3, TS - 2, TS - 6);
+      if (G && G.trashOut) { cx.fillStyle = '#222'; for (let i = 0; i < Math.min(G.trashOut, 4); i++) cx.fillRect(X + 4 + i * 7, Y + 8, 6, 8); }
+    } else if (c == 'd' || c == 'b') {
+      cx.fillStyle = '#7c6a52'; cx.fillRect(X + (c == 'b' ? 12 : 0), Y + (c == 'd' ? 12 : 0), c == 'b' ? 12 : TS, c == 'd' ? 12 : TS);
+    } else if (c == 'K') {
+      cx.fillStyle = '#a8a39a'; cx.fillRect(X, Y, TS, TS); cx.strokeStyle = '#888'; cx.strokeRect(X + .5, Y + .5, TS - 1, TS - 1);
+    } else if (c == 'R') {
+      cx.fillStyle = '#777'; cx.fillRect(X, Y, TS, TS);
+      cx.fillStyle = G && G.fryer.state == 'frying' ? '#e0a030' : G && G.fryer.state == 'done' ? '#d0782a' : '#444';
+      cx.fillRect(X + 6, Y + 6, TS - 12, TS - 12);
+    } else if (c == 'H') {
+      cx.fillStyle = '#e8d8a8'; cx.fillRect(X, Y, TS, TS);
+      cx.fillStyle = '#ffbb44';
+      if (G) for (let i = 0; i < G.hot; i++) cx.fillRect(X + 4 + (i % 4) * 7, Y + 8 + ((i / 4) | 0) * 12, 5, 8);
+    } else if (isShelf(c)) {
+      cx.fillStyle = '#6d5a44'; cx.fillRect(X + 1, Y + 1, TS - 2, TS - 2);
+    } else if (c == 'T') {
+      cx.fillStyle = '#555'; cx.fillRect(X + 6, Y + 6, TS - 12, TS - 12);
+      if (G && G.S.trash) { cx.fillStyle = G.trash >= TRASH_MAX ? '#e55' : '#aaa'; cx.fillRect(X + 8, Y + TS - 8 - G.trash * 3, TS - 16, G.trash * 3); }
+    } else if (c == 'E') {
+      cx.fillStyle = '#9cc8d8'; cx.fillRect(X, Y + TS - 8, TS, 8);
+    }
+  }
+  // レジ
+  cx.fillStyle = '#333'; cx.fillRect(2 * TS + 8, 8 * TS + HUD + 8, TS - 16, TS - 16);
+  // 区画ごとの在庫・名札
+  if (G) SECTIONS.forEach((s, i) => {
+    const slots = s.tiles.length * 2, shown = Math.round(G.stock[i] / SHELF_MAX * slots);
+    s.tiles.forEach(([x, y], ti) => {
+      for (let k = 0; k < 2; k++) {
+        const n = ti * 2 + k;
+        cx.fillStyle = n < shown ? s.color : '#4a3d2e';
+        cx.fillRect(x * TS + 7, y * TS + HUD + 3 + k * 17, TS - 14, 13);
+      }
+    });
+    const [x0, y0] = s.tiles[0], len = s.tiles.length;
+    const want = G.p.carry && G.p.carry.kind == 'crate' && G.p.carry.items[i];
+    if (want || G.stock[i] == 0) {
+      cx.strokeStyle = want ? '#4cff6a' : '#ff4433'; cx.lineWidth = 3;
+      cx.strokeRect(x0 * TS + 1.5, y0 * TS + HUD + 1.5, TS - 3, len * TS - 3); cx.lineWidth = 1;
+    }
+    // 名札: 通路側に書く(左向きの棚は上端、右向きの棚は下端に寄せて隣と重ならないように)
+    const ly = (s.face < 0 ? y0 + 0.35 : y0 + len - 0.25) * TS + HUD;
+    cx.font = 'bold 10px sans-serif';
+    cx.textAlign = s.face < 0 ? 'right' : 'left';
+    const lx = s.face < 0 ? x0 * TS - 3 : (x0 + 1) * TS + 3;
+    cx.fillStyle = G.stock[i] == 0 ? '#d03020' : G.stock[i] <= 2 ? '#b07800' : 'rgba(40,40,40,.75)';
+    cx.fillText(s.name + ' ' + G.stock[i], lx, ly);
+  });
+  // ラベル
+  cx.fillStyle = 'rgba(255,255,255,.75)'; cx.font = 'bold 11px sans-serif'; cx.textAlign = 'center';
+  cx.fillText('食料品', 3.5 * TS, 2 * TS + HUD + 14);
+  cx.fillText('日用品', 8 * TS, 2 * TS + HUD + 14);
+  cx.fillText('飲料', 11 * TS, 2 * TS + HUD + 14);
+  cx.fillText('冷凍', 14 * TS, 2 * TS + HUD + 14);
+  cx.fillStyle = 'rgba(255,255,255,.55)'; cx.font = '12px sans-serif'; cx.textAlign = 'left';
+  cx.fillText('バックヤード(安全)', 1 * TS + 4, 3 * TS + HUD + 30);
+  cx.fillText('裏路地', 16 * TS + 4, 3 * TS + HUD + 30);
+  cx.fillStyle = 'rgba(0,0,0,.45)';
+  cx.fillText('入口', 12 * TS + 22, 17 * TS + HUD + 22);
+}
+
+function drawCone(z) {
+  const chasing = z.state == 'chase';
+  const n = 16, r = VIEW_DIST;
+  cx.beginPath(); cx.moveTo(z.x * TS, z.y * TS + HUD);
+  for (let i = 0; i <= n; i++) {
+    const a = z.dir - VIEW_ANG + (2 * VIEW_ANG) * i / n, l = rayLen(z.x, z.y, a, r);
+    cx.lineTo((z.x + Math.cos(a) * l) * TS, (z.y + Math.sin(a) * l) * TS + HUD);
+  }
+  cx.closePath();
+  cx.fillStyle = chasing ? 'rgba(255,60,40,.22)' : z.sus > 0.05 ? `rgba(255,${200 - z.sus * 120},60,${0.14 + z.sus * 0.12})` : 'rgba(255,240,150,.13)';
+  cx.fill();
+}
+
+function drawZombieBody(X, Y, a, skin, shirt, t, wobble, scale = 1) {
+  cx.save(); cx.translate(X, Y); cx.rotate(a); cx.scale(scale, scale);
+  // 前に突き出した腕
+  cx.fillStyle = skin;
+  const sway = Math.sin(t * 4 + wobble) * 2;
+  cx.fillRect(4, -10 + sway, 14, 5); cx.fillRect(4, 5 - sway, 14, 5);
+  cx.fillStyle = shirt; cx.beginPath(); cx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); cx.fill();
+  cx.fillStyle = skin; cx.beginPath(); cx.arc(2, 0, 7, 0, Math.PI * 2); cx.fill();
+  cx.fillStyle = '#300'; cx.fillRect(6, -3, 2, 2); cx.fillRect(6, 2, 2, 2);
+  cx.restore();
+}
+
+function drawZombie(z) {
+  const X = z.x * TS, Y = z.y * TS + HUD;
+  drawZombieBody(X, Y, z.dir, z.skin, z.shirt, z.t, z.wobble);
+  // 「?」「!」
+  if (z.state == 'chase') { cx.fillStyle = '#ff3333'; cx.font = 'bold 22px sans-serif'; cx.textAlign = 'center'; cx.fillText('!', X, Y - 16); }
+  else if (z.sus > 0.05) {
+    cx.fillStyle = 'rgba(0,0,0,.5)'; cx.fillRect(X - 12, Y - 26, 24, 5);
+    cx.fillStyle = '#ffcc33'; cx.fillRect(X - 12, Y - 26, 24 * z.sus, 5);
+    cx.font = 'bold 16px sans-serif'; cx.textAlign = 'center'; cx.fillText('?', X, Y - 30);
+  }
+}
+
+// レジの店長ゾンビ(大きい。店員と同じ制服)
+function drawManager() {
+  const X = MANAGER.x * TS, Y = MANAGER.y * TS + HUD, t = G ? G.t : 0;
+  drawZombieBody(X, Y, Math.sin(t * 0.7) * 0.25, '#7a9a62', '#2b5fa8', t * 0.5, 0, 1.7);
+  cx.fillStyle = '#fff'; cx.fillRect(X - 13, Y + 8, 14, 7);
+  cx.fillStyle = '#222'; cx.font = 'bold 6px sans-serif'; cx.textAlign = 'center'; cx.fillText('店長', X - 6, Y + 14);
+}
+
+function carryColor(c) {
+  return c.kind == 'crate' ? DEPTS[c.dept].color : c.kind == 'bag' ? '#333' : c.kind == 'frozen' ? '#cfe6f5' : '#ffbb44';
+}
+
+function drawPlayer() {
+  const p = G.p, X = p.x * TS, Y = p.y * TS + HUD;
+  cx.save(); cx.translate(X, Y); cx.rotate(p.dir);
+  cx.fillStyle = '#2b5fa8'; cx.beginPath(); cx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); cx.fill();
+  cx.fillStyle = '#f2d2b0'; cx.beginPath(); cx.arc(1, 0, 6.5, 0, Math.PI * 2); cx.fill();
+  cx.fillStyle = '#1f3f70'; cx.beginPath(); cx.arc(-1, 0, 6.5, Math.PI / 2, Math.PI * 1.5); cx.fill();
+  if (p.carry) {
+    if (p.carry.kind == 'crate') drawCrate(14, 0, carryColor(p.carry), 16);
+    else { cx.fillStyle = carryColor(p.carry); cx.fillRect(7, -8, 12, 16); }
+  }
+  cx.restore();
+  // 長押しの進み
+  if (p.hold > 0 && G.act) {
+    cx.strokeStyle = '#7fe07f'; cx.lineWidth = 4;
+    cx.beginPath(); cx.arc(X, Y, 16, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, p.hold / G.act.dur)); cx.stroke();
+    cx.lineWidth = 1;
+  }
+}
+
+function drawHUD() {
+  const S = G.S;
+  cx.fillStyle = '#1a1d1a'; cx.fillRect(0, 0, cv.width, HUD);
+  const tot = S.start * 60 + Math.min(G.gmin, S.hours * 60);
+  const hh = (tot / 60) | 0, mm = (tot % 60) | 0;
+  cx.fillStyle = '#fff'; cx.font = 'bold 26px monospace'; cx.textAlign = 'left';
+  cx.fillText(`${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`, 14, 37);
+  cx.font = '13px sans-serif'; cx.fillStyle = '#9a9';
+  cx.fillText(`${S.name}  〜${S.start + S.hours}:00`, 110, 22);
+  // 時間バー
+  const bw = 260, prog = G.gmin / (S.hours * 60);
+  cx.fillStyle = '#333'; cx.fillRect(110, 30, bw, 8);
+  if (S.rush) { const a = (17 - S.start) / S.hours, b = (19 - S.start) / S.hours; cx.fillStyle = '#6a4a20'; cx.fillRect(110 + bw * a, 30, bw * (b - a), 8); }
+  cx.fillStyle = '#b7e08a'; cx.fillRect(110, 30, bw * prog, 8);
+  // クレーム・捕まり
+  cx.font = '14px sans-serif'; cx.fillStyle = G.misses > S.missMax ? '#ff6655' : '#fff';
+  cx.fillText(`クレーム ${G.misses} / ${S.missMax}`, 400, 26);
+  cx.fillStyle = '#fff'; cx.fillText('捕まり', 400, 46);
+  for (let i = 0; i < 3; i++) { cx.fillStyle = i < G.strikes ? '#e33' : '#444'; cx.beginPath(); cx.arc(460 + i * 18, 41, 6, 0, Math.PI * 2); cx.fill(); }
+  // 状況
+  cx.font = '13px sans-serif';
+  let sx = 540;
+  const empty = G.stock.filter(v => v == 0).length, low = G.stock.filter(v => v > 0 && v <= 2).length;
+  cx.fillStyle = empty ? '#ff6655' : '#ccc'; cx.fillText(`欠品 ${empty}棚`, sx, 22);
+  cx.fillStyle = low ? '#ffcc55' : '#ccc'; cx.fillText(`残りわずか ${low}棚`, sx, 44);
+  sx += 110;
+  if (S.hot) {
+    const fr = { empty: '空', frying: `揚げ中 ${Math.ceil(G.fryer.t)}s`, done: '揚がった！' }[G.fryer.state];
+    cx.fillStyle = G.hot == 0 ? '#ff6655' : '#ccc'; cx.fillText(`ホットケース ${G.hot}/${HOT_MAX}`, sx, 22);
+    cx.fillStyle = G.fryer.state == 'done' ? '#ffcc55' : '#ccc'; cx.fillText(`フライヤー ${fr}`, sx, 44);
+    sx += 140;
+  }
+  if (S.trash) { cx.fillStyle = G.trash >= TRASH_MAX ? '#ff6655' : '#ccc'; cx.fillText(`ゴミ箱 ${G.trash}/${TRASH_MAX}`, sx, 22); }
+  cx.fillStyle = '#ccc';
+  cx.fillText(`お客 ${G.zs.filter(z => z.kind == 'customer').length}`, sx, 44);
+
+  // 下段: 持ち物と作業ヒント
+  const by = HUD + H * TS;
+  cx.fillStyle = '#1a1d1a'; cx.fillRect(0, by, cv.width, BOT);
+  cx.fillStyle = '#fff'; cx.font = '14px sans-serif'; cx.textAlign = 'left';
+  const c = G.p.carry;
+  cx.fillText('持ち物: ' + (c ? carryName(c) : 'なし'), 14, by + 24);
+  if (c && c.kind == 'crate') { cx.fillStyle = '#9fe08a'; cx.font = '13px sans-serif'; cx.fillText(crateList(c), 14 + cx.measureText('持ち物: ' + carryName(c) + '　').width + 30, by + 24); }
+  if (G.act) { cx.font = '14px sans-serif'; cx.fillStyle = G.act.dur == INFO ? '#999' : '#b7e08a'; cx.fillText((G.act.dur == INFO ? '' : '[E 長押し] ') + G.act.label, 14, by + 50); }
+  // トースト
+  cx.textAlign = 'right';
+  G.toasts.slice(-2).forEach((t, i, arr) => {
+    cx.globalAlpha = Math.min(1, t.t); cx.fillStyle = t.color; cx.font = 'bold 15px sans-serif';
+    cx.fillText(t.msg, cv.width - 14, by + 50 - (arr.length - 1 - i) * 20);
+  });
+  cx.globalAlpha = 1;
+}
+
+function draw() {
+  cx.fillStyle = '#111'; cx.fillRect(0, 0, cv.width, cv.height);
+  drawMap();
+  if (!G) { drawManager(); return; }
+  for (const d of G.drops) drawCrateOrItem(d);
+  for (const z of G.zs) drawCone(z);
+  drawManager();
+  for (const z of G.zs) drawZombie(z);
+  drawPlayer();
+  // 追われているときの赤い縁
+  const chased = G.zs.some(z => z.state == 'chase');
+  if (chased || G.flash > 0) {
+    const a = G.flash > 0 ? G.flash * 0.6 : 0.25 + 0.15 * Math.sin(G.t * 10);
+    const gr = cx.createRadialGradient(cv.width / 2, HUD + H * TS / 2, H * TS * 0.35, cv.width / 2, HUD + H * TS / 2, W * TS * 0.62);
+    gr.addColorStop(0, 'rgba(200,0,0,0)'); gr.addColorStop(1, `rgba(200,0,0,${a})`);
+    cx.fillStyle = gr; cx.fillRect(0, HUD, cv.width, H * TS);
+  }
+  drawHUD();
+  if (mode == 'pause') {
+    cx.fillStyle = 'rgba(0,0,0,.5)'; cx.fillRect(0, 0, cv.width, cv.height);
+    cx.fillStyle = '#fff'; cx.font = 'bold 32px sans-serif'; cx.textAlign = 'center'; cx.fillText('一時停止 (P)', cv.width / 2, cv.height / 2);
+  }
+}
+function drawCrateOrItem(d) {
+  const X = d.x * TS, Y = d.y * TS + HUD;
+  if (d.carry.kind == 'crate') drawCrate(X, Y, carryColor(d.carry), 16);
+  else { cx.fillStyle = carryColor(d.carry); cx.fillRect(X - 6, Y - 8, 12, 16); }
+}
+
+// ==================== 画面遷移 ====================
+function showTitle() {
+  mode = 'title';
+  document.getElementById('result').classList.add('hidden');
+  const list = document.getElementById('shiftList');
+  list.innerHTML = SHIFTS.map((s, i) => {
+    const locked = i > cleared;
+    return `<div class="shift ${locked ? 'locked' : ''}" onclick="${locked ? '' : `startShift(${i})`}">
+      <div><div class="t">${i + 1}. ${s.name}（${s.hours}時間）</div><div class="d">${s.desc}</div></div>
+      <div class="tag">${locked ? '🔒 前のシフトに合格で解放' : i < cleared ? '合格済み' : '挑戦できる'}</div></div>`;
+  }).join('');
+  document.getElementById('title').classList.remove('hidden');
+}
+function startShift(i) {
+  newShift(i); mode = 'play';
+  for (const k in keys) keys[k] = false;
+  document.getElementById('title').classList.add('hidden');
+  document.getElementById('result').classList.add('hidden');
+  toast(SHIFTS[i].name + ' スタート', '#b7e08a');
+}
+
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (mode == 'play') update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// 撮影・確認用: ?shift=N&ff=秒&px=x&py=y&carry=p|r|s
+const Q = new URLSearchParams(location.search);
+if (Q.has('shift')) {
+  startShift(+Q.get('shift'));
+  const ff = +(Q.get('ff') || 0);
+  for (let i = 0; i < ff * 60 && mode == 'play'; i++) update(1 / 60);
+  if (Q.has('px')) { G.p.x = +Q.get('px'); G.p.y = +Q.get('py'); }
+  if (Q.has('carry')) G.p.carry = makeCrate(Q.get('carry'));
+} else showTitle();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

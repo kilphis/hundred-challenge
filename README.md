@@ -33,6 +33,8 @@
 | 28 | 青い球 | `28_blue_ball/index.html` |
 | 29 | 加工所と4マーケット(Rust + Bevy)| `29_markets/`(`cargo run`)|
 | 30 | 分岐予測器を外から測る(C + clang, Apple M4)| `30_branch_predictor/`(`./run.sh`)|
+| 31 | ゾンビ街のコンビニ | `31_zombie_konbini/index.html` |
+| 32 | Boids GPU 版(Rust + wgpu)| `32_boids_gpu/`(`cargo run --release`)|
 
 ブラウザで動く日は表のリンクから遊べる(GitHub Pages)。
 

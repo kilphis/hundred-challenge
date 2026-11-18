@@ -1,0 +1,329 @@
+[4.1s] isError=False
+{
+  "query": "coin pickup sound",
+  "sources": [
+    "kenney",
+    "opengameart",
+    "ambientcg",
+    "openverse",
+    "polyhaven",
+    "quaternius",
+    "itch",
+    "godot",
+    "github",
+    "local"
+  ],
+  "by_source": {
+    "kenney": {
+      "results": []
+    },
+    "opengameart": {
+      "results": [
+        {
+          "id": "opengameart:10-8bit-coin-sounds",
+          "title": "10 8bit coin sounds",
+          "source_name": "OpenGameArt",
+          "source_url": "https://opengameart.org/content/10-8bit-coin-sounds",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset",
+          "tags": [
+            "coin pickup sound"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.55,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "OpenGameArt license varies per asset page; details tool should verify before download."
+          ],
+          "extra": {
+            "summary_text": "10 8bit coin sounds",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "opengameart:plingy-coin",
+          "title": "Plingy Coin",
+          "source_name": "OpenGameArt",
+          "source_url": "https://opengameart.org/content/plingy-coin",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset",
+          "tags": [
+            "coin pickup sound"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.55,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "OpenGameArt license varies per asset page; details tool should verify before download."
+          ],
+          "extra": {
+            "summary_text": "Plingy Coin",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "opengameart:coin-sound-effect-harmonica",
+          "title": "Coin sound effect - Harmonica",
+          "source_name": "OpenGameArt",
+          "source_url": "https://opengameart.org/content/coin-sound-effect-harmonica",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset",
+          "tags": [
+            "coin pickup sound"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.55,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "OpenGameArt license varies per asset page; details tool should verify before download."
+          ],
+          "extra": {
+            "summary_text": "Coin sound effect - Harmonica",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        }
+      ]
+    },
+    "ambientcg": {
+      "results": []
+    },
+    "openverse": {
+      "results": [
+        {
+          "id": "openverse:73c75141-f56e-4100-b6ea-1e82c3dc811c",
+          "title": "TV Cello (1971)",
+          "source_name": "Openverse",
+          "source_url": "https://www.flickr.com/photos/11561957@N06/50026976036",
+          "author": "failing_angel",
+          "license": "by-nc-sa",
+          "license_url": "https://creativecommons.org/licenses/by-nc-sa/2.0/",
+          "attribution_required": true,
+          "asset_type": "image",
+          "tags": [
+            "030120",
+            "cathoderaytubes",
+            "london",
+            "londonboroughofsouthwark",
+            "namjunepaik",
+            "tate",
+            "tatemodern",
+            "televisioncasings",
+            "tvcello"
+          ],
+          "preview_image_url": "https://api.openverse.org/v1/images/73c75141-f56e-4100-b6ea-1e82c3dc811c/thumb/",
+          "download_url": "https://live.staticflickr.com/65535/50026976036_41bbfe9e40_b.jpg",
+          "file_formats": [
+            "jpg"
+          ],
+          "confidence_score": 0.72,
+          "warnings": [
+            "License is not clearly public domain, attribution-compatible, or open-source.",
+            "Unrecognized license: by-nc-sa"
+          ],
+          "extra": {
+            "provider": "flickr",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "openverse:b572be45-c90b-4660-8543-e90a2d41263e",
+          "title": "TV Cello (1971)",
+          "source_name": "Openverse",
+          "source_url": "https://www.flickr.com/photos/11561957@N06/50027238612",
+          "author": "failing_angel",
+          "license": "by-nc-sa",
+          "license_url": "https://creativecommons.org/licenses/by-nc-sa/2.0/",
+          "attribution_required": true,
+          "asset_type": "image",
+          "tags": [
+            "030120",
+            "cathoderaytubes",
+            "london",
+            "londonboroughofsouthwark",
+            "namjunepaik",
+            "tate",
+            "tatemodern",
+            "televisioncasings",
+            "tvcello"
+          ],
+          "preview_image_url": "https://api.openverse.org/v1/images/b572be45-c90b-4660-8543-e90a2d41263e/thumb/",
+          "download_url": "https://live.staticflickr.com/65535/50027238612_9da26565dd_b.jpg",
+          "file_formats": [
+            "jpg"
+          ],
+          "confidence_score": 0.72,
+          "warnings": [
+            "License is not clearly public domain, attribution-compatible, or open-source.",
+            "Unrecognized license: by-nc-sa"
+          ],
+          "extra": {
+            "provider": "flickr",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "openverse:b70f9df0-f30e-4a89-92f5-62867a028e68",
+          "title": "TV Cello (1971)",
+          "source_name": "Openverse",
+          "source_url": "https://www.flickr.com/photos/11561957@N06/50026976476",
+          "author": "failing_angel",
+          "license": "by-nc-sa",
+          "license_url": "https://creativecommons.org/licenses/by-nc-sa/2.0/",
+          "attribution_required": true,
+          "asset_type": "image",
+          "tags": [
+            "030120",
+            "cathoderaytubes",
+            "london",
+            "londonboroughofsouthwark",
+            "namjunepaik",
+            "tate",
+            "tatemodern",
+            "televisioncasings",
+            "tvcello"
+          ],
+          "preview_image_url": "https://api.openverse.org/v1/images/b70f9df0-f30e-4a89-92f5-62867a028e68/thumb/",
+          "download_url": "https://live.staticflickr.com/65535/50026976476_9315082842_b.jpg",
+          "file_formats": [
+            "jpg"
+          ],
+          "confidence_score": 0.72,
+          "warnings": [
+            "License is not clearly public domain, attribution-compatible, or open-source.",
+            "Unrecognized license: by-nc-sa"
+          ],
+          "extra": {
+            "provider": "flickr",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        }
+      ]
+    },
+    "polyhaven": {
+      "results": []
+    },
+    "quaternius": {
+      "results": []
+    },
+    "itch": {
+      "results": [
+        {
+          "id": "itch:spikeone.itch.io:",
+          "title": "Spikeone",
+          "source_name": "itch.io",
+          "source_url": "https://spikeone.itch.io",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset-page",
+          "tags": [
+            "coin pickup sound"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.5,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "itch.io licenses and paid/free status vary per page; do not bypass download flows."
+          ],
+          "extra": {
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "itch:endlesskng.itch.io:",
+          "title": "EndlessKng",
+          "source_name": "itch.io",
+          "source_url": "https://endlesskng.itch.io",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset-page",
+          "tags": [
+            "coin pickup sound"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.5,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "itch.io licenses and paid/free status vary per page; do not bypass download flows."
+          ],
+          "extra": {
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "itch:mavhod.itch.io:",
+          "title": "mavhod",
+          "source_name": "itch.io",
+          "source_url": "https://mavhod.itch.io",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset-page",
+          "tags": [
+            "coin pickup sound"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.5,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "itch.io licenses and paid/free status vary per page; do not bypass download flows."
+          ],
+          "extra": {
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        }
+      ]
+    },
+    "godot": {
+      "results": []
+    },
+    "github": {
+      "results": []
+    },
+    "local": {
+      "results": []
+    }
+  },
+  "results": [],
+  "license_policy": "safe"
+}

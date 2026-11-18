@@ -1,0 +1,692 @@
+[4.9s] isError=False
+{
+  "query": "wood texture",
+  "sources": [
+    "kenney",
+    "opengameart",
+    "ambientcg",
+    "openverse",
+    "polyhaven",
+    "quaternius",
+    "itch",
+    "godot",
+    "github",
+    "local"
+  ],
+  "by_source": {
+    "kenney": {
+      "results": []
+    },
+    "opengameart": {
+      "results": [
+        {
+          "id": "opengameart:free-texture-resource-pack-metal-nature-wood-and-structures",
+          "title": "Free texture resource pack: metal, nature, wood and structures",
+          "source_name": "OpenGameArt",
+          "source_url": "https://opengameart.org/content/free-texture-resource-pack-metal-nature-wood-and-structures",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset",
+          "tags": [
+            "wood texture"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.55,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "OpenGameArt license varies per asset page; details tool should verify before download."
+          ],
+          "extra": {
+            "summary_text": "Free texture resource pack: metal, nature, wood and structures",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "opengameart:wall-grass-rock-stone-wood-and-dirt-480",
+          "title": "Wall, grass, rock, stone, wood and dirt (480)",
+          "source_name": "OpenGameArt",
+          "source_url": "https://opengameart.org/content/wall-grass-rock-stone-wood-and-dirt-480",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset",
+          "tags": [
+            "wood texture"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.55,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "OpenGameArt license varies per asset page; details tool should verify before download."
+          ],
+          "extra": {
+            "summary_text": "Wall, grass, rock, stone, wood and dirt (480)",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "opengameart:free-texture-resource-pack-wood-structure-walls-and-textile",
+          "title": "Free texture resource pack: wood, structure, walls and textile",
+          "source_name": "OpenGameArt",
+          "source_url": "https://opengameart.org/content/free-texture-resource-pack-wood-structure-walls-and-textile",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset",
+          "tags": [
+            "wood texture"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.55,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "OpenGameArt license varies per asset page; details tool should verify before download."
+          ],
+          "extra": {
+            "summary_text": "Free texture resource pack: wood, structure, walls and textile",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        }
+      ]
+    },
+    "ambientcg": {
+      "results": []
+    },
+    "openverse": {
+      "results": [
+        {
+          "id": "openverse:49874551-dd57-4fe1-a9f8-a0746edc239d",
+          "title": "Wood Texture 02",
+          "source_name": "Openverse",
+          "source_url": "https://www.flickr.com/photos/31288116@N02/3301341497",
+          "author": "SixRevisions",
+          "license": "by-sa",
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+          "attribution_required": true,
+          "asset_type": "image",
+          "tags": [
+            "texture",
+            "textures",
+            "wood"
+          ],
+          "preview_image_url": "https://api.openverse.org/v1/images/49874551-dd57-4fe1-a9f8-a0746edc239d/thumb/",
+          "download_url": "https://live.staticflickr.com/3448/3301341497_6e85c8c746_b.jpg",
+          "file_formats": [
+            "jpg"
+          ],
+          "confidence_score": 0.72,
+          "warnings": [],
+          "extra": {
+            "provider": "flickr",
+            "license_status": "allowed_with_attribution",
+            "license_allowed": true
+          }
+        },
+        {
+          "id": "openverse:5c013f38-8bec-4124-bcd0-a49d3d95b009",
+          "title": "Wood Texture 05",
+          "source_name": "Openverse",
+          "source_url": "https://www.flickr.com/photos/31288116@N02/3302170760",
+          "author": "SixRevisions",
+          "license": "by-sa",
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+          "attribution_required": true,
+          "asset_type": "image",
+          "tags": [
+            "texture",
+            "textures",
+            "wood"
+          ],
+          "preview_image_url": "https://api.openverse.org/v1/images/5c013f38-8bec-4124-bcd0-a49d3d95b009/thumb/",
+          "download_url": "https://live.staticflickr.com/3434/3302170760_4d991e72f4_b.jpg",
+          "file_formats": [
+            "jpg"
+          ],
+          "confidence_score": 0.72,
+          "warnings": [],
+          "extra": {
+            "provider": "flickr",
+            "license_status": "allowed_with_attribution",
+            "license_allowed": true
+          }
+        },
+        {
+          "id": "openverse:cdf3cc5e-8cf4-4788-845a-b5cc81b1ef75",
+          "title": "Wood Texture 06",
+          "source_name": "Openverse",
+          "source_url": "https://www.flickr.com/photos/31288116@N02/3301340043",
+          "author": "SixRevisions",
+          "license": "by-sa",
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+          "attribution_required": true,
+          "asset_type": "image",
+          "tags": [
+            "texture",
+            "textures",
+            "wood"
+          ],
+          "preview_image_url": "https://api.openverse.org/v1/images/cdf3cc5e-8cf4-4788-845a-b5cc81b1ef75/thumb/",
+          "download_url": "https://live.staticflickr.com/3470/3301340043_8c8bc3e0b2_b.jpg",
+          "file_formats": [
+            "jpg"
+          ],
+          "confidence_score": 0.72,
+          "warnings": [],
+          "extra": {
+            "provider": "flickr",
+            "license_status": "allowed_with_attribution",
+            "license_allowed": true
+          }
+        }
+      ]
+    },
+    "polyhaven": {
+      "results": [
+        {
+          "id": "polyhaven:folding_wooden_stool",
+          "title": "Folding Wooden Stool",
+          "source_name": "Poly Haven",
+          "source_url": "https://polyhaven.com/a/folding_wooden_stool",
+          "author": "Ulan Cabanilla",
+          "license": "CC0",
+          "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "attribution_required": false,
+          "asset_type": "model",
+          "tags": [
+            "workshop",
+            "garage",
+            "woodwork",
+            "camping",
+            "folding stool",
+            "portable",
+            "compact",
+            "outdoor",
+            "garden",
+            "seating",
+            "furniture"
+          ],
+          "preview_image_url": "https://cdn.polyhaven.com/asset_img/primary/folding_wooden_stool.png?height=256",
+          "download_url": null,
+          "file_formats": [
+            "zip",
+            "hdr",
+            "exr",
+            "blend",
+            "gltf"
+          ],
+          "confidence_score": 0.88,
+          "warnings": [
+            "Use get_asset_details for exact Poly Haven file downloads."
+          ],
+          "extra": {
+            "dimensions": [
+              527.8338193893433,
+              547.0837950706482,
+              441.96850061416626
+            ],
+            "max_resolution": [
+              4096,
+              4096
+            ],
+            "license_status": "allowed_public_domain",
+            "license_allowed": true
+          }
+        },
+        {
+          "id": "polyhaven:grey_lati_veneer",
+          "title": "Grey Lati Veneer",
+          "source_name": "Poly Haven",
+          "source_url": "https://polyhaven.com/a/grey_lati_veneer",
+          "author": "Jenelle van Heerden",
+          "license": "CC0",
+          "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "attribution_required": false,
+          "asset_type": "texture",
+          "tags": [
+            "natural grain",
+            "grain",
+            "natural wood grain",
+            "wood grain",
+            "wood",
+            "natural wood",
+            "natural veneer",
+            "natural",
+            "fine grain",
+            "lati",
+            "raw wood",
+            "wood",
+            "raw wood"
+          ],
+          "preview_image_url": "https://cdn.polyhaven.com/asset_img/primary/grey_lati_veneer.png?height=256",
+          "download_url": null,
+          "file_formats": [
+            "zip",
+            "hdr",
+            "exr",
+            "blend",
+            "gltf"
+          ],
+          "confidence_score": 0.88,
+          "warnings": [
+            "Use get_asset_details for exact Poly Haven file downloads."
+          ],
+          "extra": {
+            "dimensions": [
+              1000,
+              1000
+            ],
+            "max_resolution": [
+              8192,
+              8192
+            ],
+            "license_status": "allowed_public_domain",
+            "license_allowed": true
+          }
+        },
+        {
+          "id": "polyhaven:lacquered_cherry_wood",
+          "title": "Lacquered Cherry Wood",
+          "source_name": "Poly Haven",
+          "source_url": "https://polyhaven.com/a/lacquered_cherry_wood",
+          "author": "Jenelle van Heerden, Rico Cilliers",
+          "license": "CC0",
+          "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "attribution_required": false,
+          "asset_type": "texture",
+          "tags": [
+            "lacquered",
+            "polished",
+            "glossy",
+            "reflective",
+            "smooth",
+            "hardwood",
+            "scratch marks",
+            "cherry wood",
+            "cherry",
+            "grain",
+            "wood",
+            "wood grain",
+            "wood"
+          ],
+          "preview_image_url": "https://cdn.polyhaven.com/asset_img/primary/lacquered_cherry_wood.png?height=256",
+          "download_url": null,
+          "file_formats": [
+            "zip",
+            "hdr",
+            "exr",
+            "blend",
+            "gltf"
+          ],
+          "confidence_score": 0.88,
+          "warnings": [
+            "Use get_asset_details for exact Poly Haven file downloads."
+          ],
+          "extra": {
+            "dimensions": [
+              1000,
+              1000
+            ],
+            "max_resolution": [
+              16384,
+              16384
+            ],
+            "license_status": "allowed_public_domain",
+            "license_allowed": true
+          }
+        }
+      ]
+    },
+    "quaternius": {
+      "results": []
+    },
+    "itch": {
+      "results": [
+        {
+          "id": "itch:spikeone.itch.io:",
+          "title": "Spikeone",
+          "source_name": "itch.io",
+          "source_url": "https://spikeone.itch.io",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset-page",
+          "tags": [
+            "wood texture"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.5,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "itch.io licenses and paid/free status vary per page; do not bypass download flows."
+          ],
+          "extra": {
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "itch:endlesskng.itch.io:",
+          "title": "EndlessKng",
+          "source_name": "itch.io",
+          "source_url": "https://endlesskng.itch.io",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset-page",
+          "tags": [
+            "wood texture"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.5,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "itch.io licenses and paid/free status vary per page; do not bypass download flows."
+          ],
+          "extra": {
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "itch:mavhod.itch.io:",
+          "title": "mavhod",
+          "source_name": "itch.io",
+          "source_url": "https://mavhod.itch.io",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset-page",
+          "tags": [
+            "wood texture"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.5,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "itch.io licenses and paid/free status vary per page; do not bypass download flows."
+          ],
+          "extra": {
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        }
+      ]
+    },
+    "godot": {
+      "results": []
+    },
+    "github": {
+      "results": []
+    },
+    "local": {
+      "results": []
+    }
+  },
+  "results": [
+    {
+      "id": "openverse:49874551-dd57-4fe1-a9f8-a0746edc239d",
+      "title": "Wood Texture 02",
+      "source_name": "Openverse",
+      "source_url": "https://www.flickr.com/photos/31288116@N02/3301341497",
+      "author": "SixRevisions",
+      "license": "by-sa",
+      "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+      "attribution_required": true,
+      "asset_type": "image",
+      "tags": [
+        "texture",
+        "textures",
+        "wood"
+      ],
+      "preview_image_url": "https://api.openverse.org/v1/images/49874551-dd57-4fe1-a9f8-a0746edc239d/thumb/",
+      "download_url": "https://live.staticflickr.com/3448/3301341497_6e85c8c746_b.jpg",
+      "file_formats": [
+        "jpg"
+      ],
+      "confidence_score": 0.72,
+      "warnings": [],
+      "extra": {
+        "provider": "flickr",
+        "license_status": "allowed_with_attribution",
+        "license_allowed": true
+      }
+    },
+    {
+      "id": "openverse:5c013f38-8bec-4124-bcd0-a49d3d95b009",
+      "title": "Wood Texture 05",
+      "source_name": "Openverse",
+      "source_url": "https://www.flickr.com/photos/31288116@N02/3302170760",
+      "author": "SixRevisions",
+      "license": "by-sa",
+      "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+      "attribution_required": true,
+      "asset_type": "image",
+      "tags": [
+        "texture",
+        "textures",
+        "wood"
+      ],
+      "preview_image_url": "https://api.openverse.org/v1/images/5c013f38-8bec-4124-bcd0-a49d3d95b009/thumb/",
+      "download_url": "https://live.staticflickr.com/3434/3302170760_4d991e72f4_b.jpg",
+      "file_formats": [
+        "jpg"
+      ],
+      "confidence_score": 0.72,
+      "warnings": [],
+      "extra": {
+        "provider": "flickr",
+        "license_status": "allowed_with_attribution",
+        "license_allowed": true
+      }
+    },
+    {
+      "id": "openverse:cdf3cc5e-8cf4-4788-845a-b5cc81b1ef75",
+      "title": "Wood Texture 06",
+      "source_name": "Openverse",
+      "source_url": "https://www.flickr.com/photos/31288116@N02/3301340043",
+      "author": "SixRevisions",
+      "license": "by-sa",
+      "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+      "attribution_required": true,
+      "asset_type": "image",
+      "tags": [
+        "texture",
+        "textures",
+        "wood"
+      ],
+      "preview_image_url": "https://api.openverse.org/v1/images/cdf3cc5e-8cf4-4788-845a-b5cc81b1ef75/thumb/",
+      "download_url": "https://live.staticflickr.com/3470/3301340043_8c8bc3e0b2_b.jpg",
+      "file_formats": [
+        "jpg"
+      ],
+      "confidence_score": 0.72,
+      "warnings": [],
+      "extra": {
+        "provider": "flickr",
+        "license_status": "allowed_with_attribution",
+        "license_allowed": true
+      }
+    },
+    {
+      "id": "polyhaven:folding_wooden_stool",
+      "title": "Folding Wooden Stool",
+      "source_name": "Poly Haven",
+      "source_url": "https://polyhaven.com/a/folding_wooden_stool",
+      "author": "Ulan Cabanilla",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attribution_required": false,
+      "asset_type": "model",
+      "tags": [
+        "workshop",
+        "garage",
+        "woodwork",
+        "camping",
+        "folding stool",
+        "portable",
+        "compact",
+        "outdoor",
+        "garden",
+        "seating",
+        "furniture"
+      ],
+      "preview_image_url": "https://cdn.polyhaven.com/asset_img/primary/folding_wooden_stool.png?height=256",
+      "download_url": null,
+      "file_formats": [
+        "zip",
+        "hdr",
+        "exr",
+        "blend",
+        "gltf"
+      ],
+      "confidence_score": 0.88,
+      "warnings": [
+        "Use get_asset_details for exact Poly Haven file downloads."
+      ],
+      "extra": {
+        "dimensions": [
+          527.8338193893433,
+          547.0837950706482,
+          441.96850061416626
+        ],
+        "max_resolution": [
+          4096,
+          4096
+        ],
+        "license_status": "allowed_public_domain",
+        "license_allowed": true
+      }
+    },
+    {
+      "id": "polyhaven:grey_lati_veneer",
+      "title": "Grey Lati Veneer",
+      "source_name": "Poly Haven",
+      "source_url": "https://polyhaven.com/a/grey_lati_veneer",
+      "author": "Jenelle van Heerden",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attribution_required": false,
+      "asset_type": "texture",
+      "tags": [
+        "natural grain",
+        "grain",
+        "natural wood grain",
+        "wood grain",
+        "wood",
+        "natural wood",
+        "natural veneer",
+        "natural",
+        "fine grain",
+        "lati",
+        "raw wood",
+        "wood",
+        "raw wood"
+      ],
+      "preview_image_url": "https://cdn.polyhaven.com/asset_img/primary/grey_lati_veneer.png?height=256",
+      "download_url": null,
+      "file_formats": [
+        "zip",
+        "hdr",
+        "exr",
+        "blend",
+        "gltf"
+      ],
+      "confidence_score": 0.88,
+      "warnings": [
+        "Use get_asset_details for exact Poly Haven file downloads."
+      ],
+      "extra": {
+        "dimensions": [
+          1000,
+          1000
+        ],
+        "max_resolution": [
+          8192,
+          8192
+        ],
+        "license_status": "allowed_public_domain",
+        "license_allowed": true
+      }
+    },
+    {
+      "id": "polyhaven:lacquered_cherry_wood",
+      "title": "Lacquered Cherry Wood",
+      "source_name": "Poly Haven",
+      "source_url": "https://polyhaven.com/a/lacquered_cherry_wood",
+      "author": "Jenelle van Heerden, Rico Cilliers",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attribution_required": false,
+      "asset_type": "texture",
+      "tags": [
+        "lacquered",
+        "polished",
+        "glossy",
+        "reflective",
+        "smooth",
+        "hardwood",
+        "scratch marks",
+        "cherry wood",
+        "cherry",
+        "grain",
+        "wood",
+        "wood grain",
+        "wood"
+      ],
+      "preview_image_url": "https://cdn.polyhaven.com/asset_img/primary/lacquered_cherry_wood.png?height=256",
+      "download_url": null,
+      "file_formats": [
+        "zip",
+        "hdr",
+        "exr",
+        "blend",
+        "gltf"
+      ],
+      "confidence_score": 0.88,
+      "warnings": [
+        "Use get_asset_details for exact Poly Haven file downloads."
+      ],
+      "extra": {
+        "dimensions": [
+          1000,
+          1000
+        ],
+        "max_resolution": [
+          16384,
+          16384
+        ],
+        "license_status": "allowed_public_domain",
+        "license_allowed": true
+      }
+    }
+  ],
+  "license_policy": "safe"
+}

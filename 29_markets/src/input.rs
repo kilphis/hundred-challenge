@@ -92,23 +92,15 @@ pub fn input(
     // 建築モード
     if let Some(mi) = m.build {
         let (tool, cost, _) = menu[mi];
-        let trigger = if tool == Tool::Road { mouse.pressed(MouseButton::Left) } else { pressed_now };
-        if trigger && m.in_field(cell) && *money >= cost {
+        if pressed_now && m.in_field(cell) && *money >= cost {
             let mut center = cell_center(cols, cell);
             let ok = match tool {
                 Tool::Build(bk) => {
                     // クリックしたマスを左下にして 2×2 を置く
                     let ok = m.can_place_building(cell);
                     if ok {
-                        m.buildings.push(Building::new(bk, cell));
+                        m.place_building(bk, cell);
                         center = building_center(cols, cell);
-                    }
-                    ok
-                }
-                Tool::Road => {
-                    let ok = m.is_free(cell);
-                    if ok {
-                        m.roads.push(cell);
                     }
                     ok
                 }
@@ -136,13 +128,8 @@ pub fn input(
             if ok {
                 *money -= cost;
                 burst(m, center, tool.color(def), 8);
-                if tool != Tool::Road {
-                    m.build = None;
-                }
+                m.build = None;
             }
-        }
-        if tool == Tool::Road && *money < cost {
-            m.build = None;
         }
         return;
     }

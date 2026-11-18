@@ -4,12 +4,10 @@
 //! ボットは「人が1秒に1回操作する」想定: 原料をクリックする・アイテムを重ねる・市場や加工所へ運ぶ。
 //! 買い物は、今のクエストの品を作るのに要る物(原料の建物 → 作業員 → 運び人 → 加工所)を順に買う。
 
-use std::collections::{HashMap, VecDeque};
-
 use crate::defs::MarketDef;
 use crate::logic::{click_source, drop_item, step_market};
 use crate::state::*;
-use crate::{BSIZE, CARRIER_SPEED, DIRS, FARMER_INTERVAL, PROCESS_T, RIVER_INTERVAL, RIVER_ROWS, ROWS, save};
+use crate::{BSIZE, FARMER_INTERVAL, OFFROAD_SPEED, PROCESS_T, RIVER_INTERVAL, RIVER_ROWS, ROAD_SPEED, ROWS, save};
 
 const DT: f32 = 0.05;
 /// 人の手で1回操作する間隔(秒)
@@ -31,7 +29,7 @@ fn chain(def: &MarketDef, quest: usize, k: Kind, raws: &mut Vec<Kind>, plants: &
     }
 }
 
-/// 建物(2×2)を置ける、外周が道に面した場所(左下のマス)を、市場に近い順に探す。
+/// 建物(2×2)を置ける場所(左下のマス)を、市場に近い順に探す。
 fn spot(m: &Market) -> Option<Cell> {
     let mc = m.market_cell();
     let mut best: Option<(Cell, i32)> = None;
@@ -41,10 +39,9 @@ fn spot(m: &Market) -> Option<Cell> {
             // 右隣の2マスを空けておく(そこにアイテムが出る)
             let right_free =
                 (0..BSIZE).all(|i| m.is_free((x + BSIZE, y + i)) || !m.in_field((x + BSIZE, y + i)));
-            let touches = building_adj(c).any(|a| m.is_road(a));
-            // 市場から右へ伸ばす道の段(市場の下段の高さ)は塞がない
+            // 市場の右隣の段(運び人が出発する高さ)は塞がない
             let on_main_road = building_cells(c).any(|cc| cc.1 == mc.1);
-            if m.can_place_building(c) && touches && right_free && !on_main_road {
+            if m.can_place_building(c) && right_free && !on_main_road {
                 let d = (x - mc.0).abs() + (y - mc.1).abs();
                 if best.map_or(true, |(_, bd)| d < bd) {
                     best = Some((c, d));
@@ -55,7 +52,7 @@ fn spot(m: &Market) -> Option<Cell> {
     best.map(|(c, _)| c)
 }
 
-/// 道に面した空きマス(1×1。川の係用)を、市場に近い順に探す。
+/// 空きマス(1×1。川の係用)を、市場に近い順に探す。
 fn spot1(m: &Market, ok: impl Fn(Cell) -> bool) -> Option<Cell> {
     let mc = m.market_cell();
     let mut best: Option<(Cell, i32)> = None;
@@ -63,7 +60,7 @@ fn spot1(m: &Market, ok: impl Fn(Cell) -> bool) -> Option<Cell> {
         for y in 0..ROWS {
             let c = (x, y);
             let right_free = m.is_free((x + 1, y)) || !m.in_field((x + 1, y));
-            if m.is_free(c) && m.touches_road(c) && right_free && ok(c) {
+            if m.is_free(c) && right_free && ok(c) {
                 let d = (x - mc.0).abs() + (y - mc.1).abs();
                 if best.map_or(true, |(_, bd)| d < bd) {
                     best = Some((c, d));
@@ -72,63 +69,6 @@ fn spot1(m: &Market, ok: impl Fn(Cell) -> bool) -> Option<Cell> {
         }
     }
     best.map(|(c, _)| c)
-}
-
-/// 道を1本、市場の右隣(市場の下段の高さ)から右へ、まだ無い所を n マスぶん伸ばす。
-/// (細かいマスになって道の費用が画面距離あたり2倍になったので、端まで一気には敷かず、置き場が無くなったら伸ばす)
-fn extend_road(m: &mut Market, money: &mut u32, n: i32) {
-    let (mx, y) = m.market_cell();
-    let cost = m.def.road_cost;
-    let mut left = n;
-    for x in mx + BSIZE..m.cols() {
-        if left == 0 || *money < cost {
-            break;
-        }
-        if !m.is_road((x, y)) && m.is_free((x, y)) {
-            m.roads.push((x, y));
-            *money -= cost;
-            left -= 1;
-        }
-    }
-}
-
-/// from から出るアイテムの行き先が道に面していなければ、空きマスに道を敷いてつなぐ。
-fn connect_output(m: &mut Market, money: &mut u32, from: Cell) {
-    let Some(o) = m.nearest_free(from, false) else { return };
-    if m.touches_road(o) {
-        return;
-    }
-    let mut prev: HashMap<Cell, Cell> = HashMap::new();
-    let mut q = VecDeque::new();
-    for (dx, dy) in DIRS {
-        let n = (o.0 + dx, o.1 + dy);
-        if m.is_free(n) {
-            prev.insert(n, n);
-            q.push_back(n);
-        }
-    }
-    while let Some(c) = q.pop_front() {
-        if m.touches_road(c) {
-            let mut cur = c;
-            loop {
-                m.roads.push(cur);
-                *money = money.saturating_sub(m.def.road_cost);
-                let p = prev[&cur];
-                if p == cur {
-                    break;
-                }
-                cur = p;
-            }
-            return;
-        }
-        for (dx, dy) in DIRS {
-            let n = (c.0 + dx, c.1 + dy);
-            if n != o && m.is_free(n) && !prev.contains_key(&n) {
-                prev.insert(n, c);
-                q.push_back(n);
-            }
-        }
-    }
 }
 
 #[derive(Default)]
@@ -142,9 +82,6 @@ impl Bot {
         self.shop -= DT;
         if self.shop <= 0.0 {
             self.shop = 0.5;
-            if m.roads.is_empty() {
-                extend_road(m, money, BSIZE);
-            }
             self.buy(m, money);
         }
         self.hand -= DT;
@@ -175,13 +112,9 @@ impl Bot {
             if *money < c {
                 return;
             }
-            let Some(cell) = spot(m) else {
-                extend_road(m, money, BSIZE);
-                return;
-            };
+            let Some(cell) = spot(m) else { return };
             *money -= c;
-            m.buildings.push(Building::new(BKind::Source(si), cell));
-            connect_output(m, money, cell);
+            m.place_building(BKind::Source(si), cell);
             return;
         }
         // 2段目: 作業員・川の係を置いて自動化
@@ -201,7 +134,6 @@ impl Bot {
                 };
                 *money -= c;
                 m.workers.push(Worker { kind: WKind::River, cell, timer: RIVER_INTERVAL });
-                connect_output(m, money, cell);
                 return;
             }
             let Some(si) = def.sources.iter().position(|s| s.out == r && s.unlock <= m.quest) else { continue };
@@ -231,12 +163,9 @@ impl Bot {
             if *money < c {
                 return;
             }
-            let Some(cell) = spot(m) else {
-                extend_road(m, money, BSIZE);
-                return;
-            };
+            let Some(cell) = spot(m) else { return };
             *money -= c;
-            m.buildings.push(Building::new(BKind::Plant(p), cell));
+            m.place_building(BKind::Plant(p), cell);
             return;
         }
         if m.carriers.len() < want_carriers {
@@ -286,14 +215,18 @@ impl Bot {
                 }
             }
         }
-        // 3. 運び人がいない間は、売れる物を手で市場へ(材料にもなる物は残す)
+        // 3. 運び人がいない間は、売れる物を手で市場へ(材料にもなる物は2個まで残し、余りは売る。残しすぎるとお金が尽きて詰まる)
         if m.carriers.is_empty() {
             let is_material = |k: Kind| def.plants.iter().any(|p| p.unlock <= m.quest && (p.a == k || p.b == k));
+            let count = |k: Kind| m.items.iter().filter(|it| it.kind == k).count();
             let quest_k = def.quests.get(m.quest).map(|q| q.0);
             if let Some(&i) = free_items
                 .iter()
                 .filter(|&&i| def.price(m.items[i].kind).is_some())
-                .find(|&&i| Some(m.items[i].kind) == quest_k || !is_material(m.items[i].kind))
+                .find(|&&i| {
+                    let k = m.items[i].kind;
+                    Some(k) == quest_k || !is_material(k) || count(k) > 2
+                })
             {
                 drop_item(m, money, i, mc);
                 return true;
@@ -326,8 +259,8 @@ pub fn run(json: Option<&str>) {
     let mut out = String::new();
     out += "# バランス表(`cargo run -- --sim` が自動生成)\n\n";
     out += &format!(
-        "ボットが人の手(1操作/{}秒)+ 自動化で遊んだときの所要時間。運び人 {} マス/秒、作業員 {} 秒ごと、加工 {} 秒。\n\n",
-        HAND_T, CARRIER_SPEED, FARMER_INTERVAL, PROCESS_T
+        "ボットが人の手(1操作/{}秒)+ 自動化で遊んだときの所要時間。運び人 {}〜{} マス/秒(踏み跡で速くなる)、作業員 {} 秒ごと、加工 {} 秒。\n\n",
+        HAND_T, OFFROAD_SPEED, ROAD_SPEED, FARMER_INTERVAL, PROCESS_T
     );
     let mut summary = String::from("| マーケット | 所要 | 終了時刻 | 終了時の所持金 |\n|---|---|---|---|\n");
     for mi in 0..w.markets.len() {

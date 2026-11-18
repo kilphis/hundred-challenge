@@ -1,0 +1,217 @@
+[4.2s] isError=False
+{
+  "query": "dungeon music loop",
+  "sources": [
+    "kenney",
+    "opengameart",
+    "ambientcg",
+    "openverse",
+    "polyhaven",
+    "quaternius",
+    "itch",
+    "godot",
+    "github",
+    "local"
+  ],
+  "by_source": {
+    "kenney": {
+      "results": []
+    },
+    "opengameart": {
+      "results": [
+        {
+          "id": "opengameart:dungeon-ambience",
+          "title": "Dungeon Ambience",
+          "source_name": "OpenGameArt",
+          "source_url": "https://opengameart.org/content/dungeon-ambience",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset",
+          "tags": [
+            "dungeon music loop"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.55,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "OpenGameArt license varies per asset page; details tool should verify before download."
+          ],
+          "extra": {
+            "summary_text": "Dungeon Ambience",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "opengameart:spooky-dungeon",
+          "title": "Spooky Dungeon",
+          "source_name": "OpenGameArt",
+          "source_url": "https://opengameart.org/content/spooky-dungeon",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset",
+          "tags": [
+            "dungeon music loop"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.55,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "OpenGameArt license varies per asset page; details tool should verify before download."
+          ],
+          "extra": {
+            "summary_text": "Spooky Dungeon",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "opengameart:dungeon-of-agony",
+          "title": "Dungeon of Agony",
+          "source_name": "OpenGameArt",
+          "source_url": "https://opengameart.org/content/dungeon-of-agony",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset",
+          "tags": [
+            "dungeon music loop"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.55,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "OpenGameArt license varies per asset page; details tool should verify before download."
+          ],
+          "extra": {
+            "summary_text": "Dungeon of Agony",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        }
+      ]
+    },
+    "ambientcg": {
+      "results": []
+    },
+    "openverse": {
+      "results": []
+    },
+    "polyhaven": {
+      "results": []
+    },
+    "quaternius": {
+      "results": []
+    },
+    "itch": {
+      "results": [
+        {
+          "id": "itch:spikeone.itch.io:",
+          "title": "Spikeone",
+          "source_name": "itch.io",
+          "source_url": "https://spikeone.itch.io",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset-page",
+          "tags": [
+            "dungeon music loop"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.5,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "itch.io licenses and paid/free status vary per page; do not bypass download flows."
+          ],
+          "extra": {
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "itch:endlesskng.itch.io:",
+          "title": "EndlessKng",
+          "source_name": "itch.io",
+          "source_url": "https://endlesskng.itch.io",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset-page",
+          "tags": [
+            "dungeon music loop"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.5,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "itch.io licenses and paid/free status vary per page; do not bypass download flows."
+          ],
+          "extra": {
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "itch:mavhod.itch.io:",
+          "title": "mavhod",
+          "source_name": "itch.io",
+          "source_url": "https://mavhod.itch.io",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset-page",
+          "tags": [
+            "dungeon music loop"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.5,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "itch.io licenses and paid/free status vary per page; do not bypass download flows."
+          ],
+          "extra": {
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        }
+      ]
+    },
+    "godot": {
+      "results": []
+    },
+    "github": {
+      "results": []
+    },
+    "local": {
+      "results": []
+    }
+  },
+  "results": [],
+  "license_policy": "safe"
+}

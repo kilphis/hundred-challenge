@@ -3,11 +3,12 @@
 //! 依存: state.rs の型、main.rs の定数。
 
 use bevy::prelude::{Color, Vec2};
-use std::collections::{HashMap, VecDeque};
+use std::cmp::Reverse;
+use std::collections::{BinaryHeap, HashMap, VecDeque};
 use std::f32::consts::TAU;
 
 use crate::state::*;
-use crate::{CARRIER_SPEED, COOLDOWN, DIRS, FARMER_INTERVAL, PRESS_T, PROCESS_T, RIVER_INTERVAL, ROWS};
+use crate::{COOLDOWN, DIRS, FARMER_INTERVAL, PRESS_T, PROCESS_T, RIVER_INTERVAL, ROWS};
 
 // ---------------------------------------------------------------- エフェクト
 
@@ -46,8 +47,8 @@ fn fx_pos(m: &Market, cell: Cell) -> Vec2 {
 }
 
 /// src のマス(建物なら左下)付近にアイテムを発生させる。
-fn produce(m: &mut Market, src: Cell, kind: Kind, prefer_road: bool) -> bool {
-    let Some(free) = m.nearest_free(src, prefer_road) else { return false };
+fn produce(m: &mut Market, src: Cell, kind: Kind) -> bool {
+    let Some(free) = m.nearest_free(src) else { return false };
     m.items.push(Item::new(kind, free));
     let p = fx_pos(m, src);
     burst(m, p, m.def.items[kind].color, 10);
@@ -78,18 +79,31 @@ fn feed(m: &mut Market, bi: usize, kind: Kind) -> bool {
     true
 }
 
-/// from から道だけを通って行けるマスと、その (1つ前のマス, 距離)。from 自身は道でなくても含む(立っている場所)。
+/// マスに入るコスト(所要時間 ×1000 の整数)。踏み固められたマスほど安い。
+fn cell_cost(m: &Market, cell: Cell) -> u32 {
+    (1000.0 / m.speed(cell)).round() as u32
+}
+
+/// from から歩いて行けるマスと、その (1つ前のマス, 累計コスト)。ダイクストラ法。
+/// コストは 1/速さ の和なので、踏まれたマスほど選ばれやすく、同じ区間を往復するうちに1本の道に収束する。
+/// from 自身は歩けないマスでも含む(立っている場所)。
 fn road_tree(m: &Market, from: Cell) -> HashMap<Cell, (Cell, u32)> {
     let mut tree = HashMap::new();
     tree.insert(from, (from, 0));
-    let mut q = VecDeque::from([from]);
-    while let Some(c) = q.pop_front() {
-        let d = tree[&c].1;
+    let mut heap = BinaryHeap::from([Reverse((0u32, from))]);
+    while let Some(Reverse((d, c))) = heap.pop() {
+        if d > tree[&c].1 {
+            continue;
+        }
         for (dx, dy) in DIRS {
             let n = (c.0 + dx, c.1 + dy);
-            if m.passable(n) && !tree.contains_key(&n) {
-                tree.insert(n, (c, d + 1));
-                q.push_back(n);
+            if !m.passable(n) {
+                continue;
+            }
+            let nd = d + cell_cost(m, n);
+            if tree.get(&n).map_or(true, |&(_, od)| nd < od) {
+                tree.insert(n, (c, nd));
+                heap.push(Reverse((nd, n)));
             }
         }
     }
@@ -110,7 +124,7 @@ fn trace(tree: &HashMap<Cell, (Cell, u32)>, to: Cell) -> VecDeque<Cell> {
     path
 }
 
-/// target(1マス)の4近傍のうち、道で行ける一番近いマスと距離。
+/// target(1マス)の4近傍のうち、歩いて行ける一番近いマスとコスト。
 fn nearest_adj(tree: &HashMap<Cell, (Cell, u32)>, target: Cell) -> Option<(Cell, u32)> {
     DIRS.iter()
         .filter_map(|&(dx, dy)| {
@@ -120,7 +134,7 @@ fn nearest_adj(tree: &HashMap<Cell, (Cell, u32)>, target: Cell) -> Option<(Cell,
         .min_by_key(|&(_, d)| d)
 }
 
-/// 建物(左下 `bcell`)の外周のうち、道で行ける一番近いマスと距離。
+/// 建物(左下 `bcell`)の外周のうち、歩いて行ける一番近いマスとコスト。
 fn nearest_adj_building(tree: &HashMap<Cell, (Cell, u32)>, bcell: Cell) -> Option<(Cell, u32)> {
     building_adj(bcell).filter_map(|n| tree.get(&n).map(|&(_, d)| (n, d))).min_by_key(|&(_, d)| d)
 }
@@ -138,7 +152,7 @@ fn incoming(m: &Market, except: usize, plant: Cell, kind: Kind) -> bool {
 }
 
 pub fn drop_item(m: &mut Market, money: &mut u32, i: usize, cell: Cell) {
-    if !m.in_field(cell) || m.is_river(cell) || m.is_road(cell) || m.worker_at(cell).is_some() {
+    if !m.in_field(cell) || m.is_river(cell) || m.worker_at(cell).is_some() {
         return;
     }
     let kind = m.items[i].kind;
@@ -186,7 +200,7 @@ pub fn click_source(m: &mut Market, bi: usize) {
     };
     let Some(item) = kind.produces(def) else { return };
     m.buildings[bi].press = PRESS_T;
-    if ready && produce(m, cell, item, false) {
+    if ready && produce(m, cell, item) {
         m.buildings[bi].cooldown = COOLDOWN;
         m.buildings[bi].uses_left -= 1;
         if m.buildings[bi].uses_left == 0 {
@@ -215,7 +229,7 @@ fn update_workers(m: &mut Market, dt: f32) {
                     w.timer = FARMER_INTERVAL;
                     let bi = m.building_at(w.cell).unwrap();
                     if let Some(k) = m.buildings[bi].kind.produces(def) {
-                        if produce(m, w.cell, k, false) {
+                        if produce(m, w.cell, k) {
                             m.buildings[bi].press = PRESS_T;
                         }
                     }
@@ -223,7 +237,7 @@ fn update_workers(m: &mut Market, dt: f32) {
                 WKind::River => {
                     w.timer = RIVER_INTERVAL;
                     if let Some(r) = def.river {
-                        produce(m, w.cell, r.out, false);
+                        produce(m, w.cell, r.out);
                     }
                 }
             }
@@ -233,7 +247,7 @@ fn update_workers(m: &mut Market, dt: f32) {
     }
 }
 
-/// 加工所: 材料が2つそろったら加工し、製品を道に面したマスに出す。
+/// 加工所: 材料が2つそろったら加工し、製品を近くの空きマスに出す。
 fn update_plants(m: &mut Market, dt: f32) {
     for bi in 0..m.buildings.len() {
         let BKind::Plant(p) = m.buildings[bi].kind else { continue };
@@ -245,7 +259,7 @@ fn update_plants(m: &mut Market, dt: f32) {
             let (cell, out) = (m.buildings[bi].cell, m.def.plants[p].out);
             let b = &mut m.buildings[bi];
             b.work = PROCESS_T;
-            if produce(m, cell, out, true) {
+            if produce(m, cell, out) {
                 let b = &mut m.buildings[bi];
                 b.stock = [false; 2];
                 b.work = 0.0;
@@ -258,7 +272,7 @@ fn update_plants(m: &mut Market, dt: f32) {
 /// 持っている物を足元近くに置いて手ぶらに戻る。
 fn put_down(m: &mut Market, c: &mut Carrier) {
     if let Some(k) = c.carry.take() {
-        if let Some(free) = m.nearest_free(c.cell(), true) {
+        if let Some(free) = m.nearest_free(c.cell()) {
             m.items.push(Item::new(k, free));
         }
     }
@@ -283,10 +297,12 @@ fn step_carrier(m: &mut Market, money: &mut u32, ci: usize, c: &mut Carrier, dt:
     if let Some(&next) = c.path.front() {
         let target = Vec2::new(next.0 as f32, next.1 as f32);
         let d = target - c.pos;
-        let step = CARRIER_SPEED * dt;
+        // 次に入るマスの速さで進む。中心に着いたらそのマスを踏み固める
+        let step = m.speed(next) * dt;
         if d.length() <= step {
             c.pos = target;
             c.path.pop_front();
+            m.tread(next);
         } else {
             c.pos += d / d.length() * step;
         }
@@ -355,14 +371,6 @@ fn step_carrier(m: &mut Market, money: &mut u32, ci: usize, c: &mut Carrier, dt:
                 return;
             }
             c.think = 0.4;
-            // 道の上にいなければ(雇った時に道が無かった等)、市場のそばの道に立ち直す
-            if !m.passable(cur) {
-                let start = m.carrier_start();
-                if start != cur {
-                    *c = Carrier::at(start);
-                    return;
-                }
-            }
             let tree = road_tree(m, cur);
             let claimed: Vec<Cell> = m
                 .carriers

@@ -1,0 +1,57 @@
+{
+ "openverse_audio": {
+  "sec": 0.9,
+  "results": [
+   {
+    "src": "openverse/freesound",
+    "id": "443eb7d3-6067-458e-9e51-5527d3a6b1a7",
+    "title": "Dungeon Music",
+    "license": "CC0",
+    "page": "https://freesound.org/people/Samuelbcf7/sounds/578733",
+    "file": "https://cdn.freesound.org/previews/578/578733_11497502-hq.mp3",
+    "duration_s": 41.1,
+    "creator": "Samuelbcf7"
+   },
+   {
+    "src": "openverse/freesound",
+    "id": "2ff66420-be5e-4f1a-bd5c-29cde864b804",
+    "title": "Creaky Noises - Echoey",
+    "license": "CC0",
+    "page": "https://freesound.org/people/TomchikRec/sounds/372252",
+    "file": "https://cdn.freesound.org/previews/372/372252_5190882-hq.mp3",
+    "duration_s": 62.6,
+    "creator": "TomchikRec"
+   },
+   {
+    "src": "openverse/freesound",
+    "id": "9fdc2bf7-fa83-43b4-bfde-93c992607910",
+    "title": "Music Psycho Strikes",
+    "license": "CC0",
+    "page": "https://freesound.org/people/SnowFightStudios/sounds/676956",
+    "file": "https://cdn.freesound.org/previews/676/676956_12064174-hq.mp3",
+    "duration_s": 9.0,
+    "creator": "SnowFightStudios"
+   },
+   {
+    "src": "openverse/freesound",
+    "id": "c4a320b7-838a-455b-97f5-e99edb356884",
+    "title": "Fight Music Synth Tense Loop",
+    "license": "CC0",
+    "page": "https://freesound.org/people/SnowFightStudios/sounds/676998",
+    "file": "https://cdn.freesound.org/previews/676/676998_12064174-hq.mp3",
+    "duration_s": 97.3,
+    "creator": "SnowFightStudios"
+   },
+   {
+    "src": "openverse/freesound",
+    "id": "8e6db42b-dd8f-4a33-81c5-2e0771d0432d",
+    "title": "inside a tree dungeon",
+    "license": "CC0",
+    "page": "https://freesound.org/people/kbrecordzz/sounds/591039",
+    "file": "https://cdn.freesound.org/previews/591/591039_6958161-hq.mp3",
+    "duration_s": 43.2,
+    "creator": "kbrecordzz"
+   }
+  ]
+ }
+}

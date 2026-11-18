@@ -1,0 +1,23 @@
+11 tools
+- search_assets: Search the 3D asset catalog by keyword or natural language query.
+    {"query": {"type": "string", "description": "Search term — e.g. \"tree\", \"PSX sword\", \"animated character walking\""}, "style": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "description": "Filter by '3DLowPoly' or '3DPSX'"}, "category": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "description": "Filter by category path — e.g. 'Characters/Animated', 
+- list_categories: List all asset categories with GLB counts.
+    {"style": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "description": "Filter by '3DLowPoly' or '3DPSX' (omit for all)"}}
+- get_asset_info: Get full metadata for a specific asset by its absolute path.
+    {"path": {"type": "string", "description": "Absolute path to the .glb file"}}
+- copy_asset: Copy a GLB asset to a destination directory (e.g. into your game project).
+    {"src_path": {"type": "string", "description": "Absolute path to the source .glb file"}, "dest_dir": {"type": "string", "description": "Destination directory (will be created if needed)"}, "rename": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "description": "Optional new filename without extension (default: keep original name)"}}
+- generate_preview: Render a 512×512 PNG thumbnail of a GLB model using headless Blender.
+    {"glb_path": {"type": "string", "description": "Absolute path to the .glb file"}, "output_dir": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "description": "Optional output directory (default: same dir as GLB)"}}
+- get_preview: Return the path to an existing PNG preview for a GLB, if available.
+    {"glb_path": {"type": "string", "description": "Absolute path to the .glb file"}}
+- get_catalog_stats: Return summary statistics about the asset catalog.
+    {}
+- browse_taxonomy: Navigate the asset library's nested category taxonomy at three levels.
+    {"style": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null}, "meso": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null}, "micro": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null}}
+- search_polyhaven: Search polyhaven.com for free CC0 assets.
+    {"query": {"type": "string", "description": "Keyword to match against asset name/id/tags"}, "asset_type": {"default": "models", "type": "string", "description": "'models', 'hdris', or 'textures'"}, "category": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "description": "Optional filter e.g. 'nature', 'furniture', 'architecture'"}, "limit": {"default": 20, "type": "integer", "
+- download_polyhaven_asset: Download a PolyHaven asset and add it to the local library.
+    {"asset_id": {"type": "string", "description": "PolyHaven asset ID (from search_polyhaven results)"}, "asset_type": {"default": "models", "type": "string", "description": "'models', 'hdris', or 'textures'"}, "resolution": {"default": "1k", "type": "string", "description": "'1k', '2k', '4k' (default '1k')"}}
+- run_ingest: Re-scan the asset library and update the catalog database.
+    {"force": {"default": false, "type": "boolean", "description": "Re-ingest all files even if unchanged"}}

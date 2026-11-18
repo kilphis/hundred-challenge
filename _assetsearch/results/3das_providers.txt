@@ -1,0 +1,373 @@
+[0.0s] isError=False
+[
+ {
+  "id": "polyhaven",
+  "name": "Poly Haven",
+  "bestFor": "Free CC0 HDRIs, PBR textures and photoscanned 3D models with a public API.",
+  "types": [
+   "hdri",
+   "material",
+   "texture",
+   "model"
+  ],
+  "pricing": "free",
+  "license": "CC0",
+  "search": "api",
+  "downloads": true
+ },
+ {
+  "id": "ambientcg",
+  "name": "ambientCG",
+  "bestFor": "Free CC0 PBR materials, HDRIs, decals and atlases (1K-16K) with a public JSON API and direct downloads.",
+  "types": [
+   "material",
+   "texture",
+   "hdri",
+   "model"
+  ],
+  "pricing": "free",
+  "license": "CC0",
+  "search": "api",
+  "downloads": true
+ },
+ {
+  "id": "cgbookcase",
+  "name": "cgbookcase",
+  "bestFor": "Free CC0 PBR textures up to 8K (scanned, procedural and approximated).",
+  "types": [
+   "material",
+   "texture"
+  ],
+  "pricing": "free",
+  "license": "CC0",
+  "search": "api",
+  "downloads": false
+ },
+ {
+  "id": "sharetextures",
+  "name": "ShareTextures",
+  "bestFor": "Free CC0-style PBR textures, scanned 3D models and atlases (search by tag; download on the site).",
+  "types": [
+   "material",
+   "texture",
+   "model",
+   "pack"
+  ],
+  "pricing": "free",
+  "license": "CC0 (ShareTextures custom terms)",
+  "search": "api",
+  "downloads": false
+ },
+ {
+  "id": "blenderkit",
+  "name": "BlenderKit",
+  "bestFor": "Blender-native models, materials, HDRIs, scenes and brushes (free + Full Plan) with a public search API; free assets download as .blend/.glb.",
+  "types": [
+   "model",
+   "material",
+   "hdri",
+   "other"
+  ],
+  "pricing": "freemium",
+  "search": "api",
+  "downloads": true
+ },
+ {
+  "id": "fab",
+  "name": "Fab",
+  "bestFor": "Epic's marketplace (formerly Unreal Marketplace, Sketchfab Store, Quixel): game-ready models, environments, characters, materials.",
+  "types": [
+   "model",
+   "material",
+   "texture",
+   "pack",
+   "audio"
+  ],
+  "pricing": "freemium",
+  "search": "deep link only",
+  "downloads": false
+ },
+ {
+  "id": "kenney",
+  "name": "Kenney",
+  "bestFor": "Hundreds of CC0 game asset packs (low-poly 3D kits, 2D sprites, UI, audio, fonts) by Kenney.",
+  "types": [
+   "model",
+   "sprite",
+   "ui",
+   "audio",
+   "font",
+   "texture",
+   "other"
+  ],
+  "pricing": "free",
+  "license": "CC0",
+  "search": "scrape",
+  "downloads": true
+ },
+ {
+  "id": "poliigon",
+  "name": "Poliigon",
+  "bestFor": "Premium photoreal PBR materials, HDRIs and models (subscription, with a free selection).",
+  "types": [
+   "material",
+   "texture",
+   "hdri",
+   "model"
+  ],
+  "pricing": "freemium",
+  "search": "deep link only",
+  "downloads": false
+ },
+ {
+  "id": "quaternius",
+  "name": "Quaternius",
+  "bestFor": "Free low-poly 3D model packs and animated, rigged characters by Quaternius (CC0 or the similar QAL).",
+  "types": [
+   "model"
+  ],
+  "pricing": "free",
+  "search": "scrape",
+  "downloads": false
+ },
+ {
+  "id": "polyfork",
+  "name": "Polyfork",
+  "bestFor": "Low-poly, game- and web-ready 3D models (props, buildings, vehicles, characters, themed kits) with a public API; free assets download as GLB.",
+  "types": [
+   "model"
+  ],
+  "pricing": "freemium",
+  "license": "Royalty Free",
+  "search": "api",
+  "downloads": true
+ },
+ {
+  "id": "threedassets",
+  "name": "3DAssets.dev",
+  "bestFor": "Open catalogue of web-optimised CC0 GLB models (props, nature, buildings, vehicles, characters) with a public API.",
+  "types": [
+   "model"
+  ],
+  "pricing": "free",
+  "license": "CC0",
+  "search": "api",
+  "downloads": true
+ },
+ {
+  "id": "grab3d",
+  "name": "Grab3D",
+  "bestFor": "Free CC0 3D models (GLB, FBX, Blender, USDZ, OBJ) with PBR textures: props, characters, vehicles, nature, buildings.",
+  "types": [
+   "model"
+  ],
+  "pricing": "free",
+  "license": "CC0",
+  "search": "scrape",
+  "downloads": true
+ },
+ {
+  "id": "scenario",
+  "name": "Scenario 3D Collection",
+  "bestFor": "About 1,300 AI-generated 3D models (GLB, Blend, FBX, voxels, Gaussian splats) from Scenario, published on Hugging Face under CC BY 4.0.",
+  "types": [
+   "model"
+  ],
+  "pricing": "free",
+  "license": "CC-BY-4.0",
+  "search": "api",
+  "downloads": true
+ },
+ {
+  "id": "sketchfab",
+  "name": "Sketchfab",
+  "bestFor": "Huge community library of 3D models (scans, props, characters, scenes); we search its CC0 public-domain models. Downloads need a Sketchfab login.",
+  "types": [
+   "model"
+  ],
+  "pricing": "free",
+  "license": "CC0",
+  "search": "api",
+  "downloads": false
+ },
+ {
+  "id": "threedtextures",
+  "name": "3DTextures.me",
+  "bestFor": "Free CC0 seamless PBR materials, realistic and stylized (WordPress blog; downloads via Google Drive).",
+  "types": [
+   "material"
+  ],
+  "pricing": "free",
+  "license": "CC0",
+  "search": "api",
+  "downloads": false
+ },
+ {
+  "id": "freestylized",
+  "name": "FreeStylized",
+  "bestFor": "Free stylized 3D models, PBR materials, skyboxes and asset packs (WordPress REST API; downloads via Google Drive).",
+  "types": [
+   "model",
+   "material",
+   "hdri",
+   "pack"
+  ],
+  "pricing": "free",
+  "license": "FreeStylized Royalty Free (custom CC0)",
+  "search": "api",
+  "downloads": false
+ },
+ {
+  "id": "wikimediacommons",
+  "name": "Wikimedia Commons",
+  "bestFor": "Free 3D files (STL scans, anatomy, reconstructions, printable parts) from Wikipedia's media archive; each file has its own CC0, public-domain or CC-BY(-SA) licence.",
+  "types": [
+   "model"
+  ],
+  "pricing": "free",
+  "search": "api",
+  "downloads": true
+ },
+ {
+  "id": "threedtexel",
+  "name": "3DTexel",
+  "bestFor": "Free handmade CC0 PBR materials, HDRIs, 3D assets, decals and atlases (search via its public API; download with a free account).",
+  "types": [
+   "material",
+   "texture",
+   "hdri",
+   "model",
+   "other"
+  ],
+  "pricing": "free",
+  "search": "api",
+  "downloads": false
+ },
+ {
+  "id": "lazytextures",
+  "name": "LazyTextures",
+  "bestFor": "Free CC0 PBR materials, 3D models, HDRIs and textures with a public JSON API and direct downloads.",
+  "types": [
+   "material",
+   "texture",
+   "model",
+   "hdri",
+   "other"
+  ],
+  "pricing": "free",
+  "license": "CC0",
+  "search": "api",
+  "downloads": true
+ },
+ {
+  "id": "texturecan",
+  "name": "TextureCan",
+  "bestFor": "Free CC0 PBR textures (4K, many with SBSAR sources) and a few CC0 3D models, direct zip downloads.",
+  "types": [
+   "material",
+   "model"
+  ],
+  "pricing": "free",
+  "license": "CC0",
+  "search": "scrape",
+  "downloads": true
+ },
+ {
+  "id": "opengameart",
+  "name": "OpenGameArt",
+  "bestFor": "Community game art: thousands of free 3D models, textures and 2D sprites/tilesets, each with its own licence (mostly CC0 and CC-BY).",
+  "types": [
+   "model",
+   "texture",
+   "sprite"
+  ],
+  "pricing": "free",
+  "search": "scrape",
+  "downloads": true
+ },
+ {
+  "id": "texturescom",
+  "name": "Textures.com",
+  "bestFor": "Huge photo-texture library: PBR materials, scanned 3D foliage/objects, decals, ornaments and HDR skies (credit-based, daily free credits).",
+  "types": [
+   "texture",
+   "material",
+   "model",
+   "hdri"
+  ],
+  "pricing": "freemium",
+  "search": "api",
+  "downloads": false
+ },
+ {
+  "id": "hdrmaps",
+  "name": "HDRMAPS",
+  "bestFor": "High-resolution HDRIs and sky domes (paid shop) plus a set of free HDRIs with direct EXR downloads.",
+  "types": [
+   "hdri",
+   "model",
+   "pack",
+   "other"
+  ],
+  "pricing": "freemium",
+  "license": "Royalty Free",
+  "search": "api",
+  "downloads": true
+ },
+ {
+  "id": "hdrihub",
+  "name": "HDRI Hub",
+  "bestFor": "Commercial high-resolution HDRIs, backplates and 3D people for archviz, plus a few free samples.",
+  "types": [
+   "hdri",
+   "model",
+   "texture",
+   "other"
+  ],
+  "pricing": "freemium",
+  "license": "Royalty Free",
+  "search": "scrape",
+  "downloads": false
+ },
+ {
+  "id": "cgtrader",
+  "name": "CGTrader",
+  "bestFor": "Large marketplace of free and paid 3D models (game, archviz, 3D print); downloads need a CGTrader account.",
+  "types": [
+   "model"
+  ],
+  "pricing": "freemium",
+  "search": "scrape",
+  "downloads": false
+ },
+ {
+  "id": "turbosquid",
+  "name": "TurboSquid",
+  "bestFor": "Large marketplace of free and paid 3D models.",
+  "types": [
+   "model"
+  ],
+  "pricing": "freemium",
+  "search": "deep link only",
+  "downloads": false
+ },
+ {
+  "id": "itchio",
+  "name": "itch.io",
+  "bestFor": "Indie game asset packs (3D, 2D sprites, UI, audio, fonts), free and paid, from itch.io creators.",
+  "types": [
+   "model",
+   "sprite",
+   "texture",
+   "material",
+   "ui",
+   "audio",
+   "font",
+   "pack",
+   "other"
+  ],
+  "pricing": "freemium",
+  "search": "scrape",
+  "downloads": false
+ }
+]

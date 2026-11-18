@@ -1,0 +1,92 @@
+{
+ "polyhaven": {
+  "sec": 0.2,
+  "results": [
+   {
+    "src": "polyhaven",
+    "id": "tree_small_02",
+    "title": "Tree Small 02",
+    "license": "CC0",
+    "page": "https://polyhaven.com/a/tree_small_02",
+    "thumb": "https://cdn.polyhaven.com/asset_img/thumbs/tree_small_02.png?width=256"
+   },
+   {
+    "src": "polyhaven",
+    "id": "jacaranda_tree",
+    "title": "Jacaranda Tree",
+    "license": "CC0",
+    "page": "https://polyhaven.com/a/jacaranda_tree",
+    "thumb": "https://cdn.polyhaven.com/asset_img/thumbs/jacaranda_tree.png?width=256"
+   },
+   {
+    "src": "polyhaven",
+    "id": "island_tree_02",
+    "title": "Island Tree 02",
+    "license": "CC0",
+    "page": "https://polyhaven.com/a/island_tree_02",
+    "thumb": "https://cdn.polyhaven.com/asset_img/thumbs/island_tree_02.png?width=256"
+   },
+   {
+    "src": "polyhaven",
+    "id": "fir_tree_01",
+    "title": "Fir Tree 01",
+    "license": "CC0",
+    "page": "https://polyhaven.com/a/fir_tree_01",
+    "thumb": "https://cdn.polyhaven.com/asset_img/thumbs/fir_tree_01.png?width=256"
+   },
+   {
+    "src": "polyhaven",
+    "id": "island_tree_01",
+    "title": "Island Tree 01",
+    "license": "CC0",
+    "page": "https://polyhaven.com/a/island_tree_01",
+    "thumb": "https://cdn.polyhaven.com/asset_img/thumbs/island_tree_01.png?width=256"
+   }
+  ]
+ },
+ "ambientcg": {
+  "sec": 1.8,
+  "results": [
+   {
+    "src": "ambientcg",
+    "id": "Bark014",
+    "title": "Bark 014",
+    "license": "CC0",
+    "page": "https://ambientcg.com/a/Bark014",
+    "thumb": "https://acg-media.struffelproductions.com/file/ambientCG-Web/media/thumbnail/256-PNG/Bark014.png"
+   },
+   {
+    "src": "ambientcg",
+    "id": "ChristmasTreeOrnament019",
+    "title": "Christmas Tree Ornament 019",
+    "license": "CC0",
+    "page": "https://ambientcg.com/a/ChristmasTreeOrnament019",
+    "thumb": "https://acg-media.struffelproductions.com/file/ambientCG-Web/media/thumbnail/256-PNG/ChristmasTreeOrnament019.png"
+   },
+   {
+    "src": "ambientcg",
+    "id": "Bark015",
+    "title": "Bark 015",
+    "license": "CC0",
+    "page": "https://ambientcg.com/a/Bark015",
+    "thumb": "https://acg-media.struffelproductions.com/file/ambientCG-Web/media/thumbnail/256-PNG/Bark015.png"
+   },
+   {
+    "src": "ambientcg",
+    "id": "Bark012",
+    "title": "Bark 012",
+    "license": "CC0",
+    "page": "https://ambientcg.com/a/Bark012",
+    "thumb": "https://acg-media.struffelproductions.com/file/ambientCG-Web/media/thumbnail/256-PNG/Bark012.png"
+   },
+   {
+    "src": "ambientcg",
+    "id": "ChristmasTreeOrnament021",
+    "title": "Christmas Tree Ornament 021",
+    "license": "CC0",
+    "page": "https://ambientcg.com/a/ChristmasTreeOrnament021",
+    "thumb": "https://acg-media.struffelproductions.com/file/ambientCG-Web/media/thumbnail/256-PNG/ChristmasTreeOrnament021.png"
+   }
+  ]
+ }
+}

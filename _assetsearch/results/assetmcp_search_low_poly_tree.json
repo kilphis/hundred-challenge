@@ -1,0 +1,342 @@
+[4.7s] isError=False
+{
+  "query": "low poly tree",
+  "sources": [
+    "kenney",
+    "opengameart",
+    "ambientcg",
+    "openverse",
+    "polyhaven",
+    "quaternius",
+    "itch",
+    "godot",
+    "github",
+    "local"
+  ],
+  "by_source": {
+    "kenney": {
+      "results": []
+    },
+    "opengameart": {
+      "results": [
+        {
+          "id": "opengameart:low-poly-tree",
+          "title": "Low Poly Tree",
+          "source_name": "OpenGameArt",
+          "source_url": "https://opengameart.org/content/low-poly-tree",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset",
+          "tags": [
+            "low poly tree"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.55,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "OpenGameArt license varies per asset page; details tool should verify before download."
+          ],
+          "extra": {
+            "summary_text": "Low Poly Tree",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "opengameart:palm-tree-v2-low-poly-edition",
+          "title": "Palm tree v2 low poly edition",
+          "source_name": "OpenGameArt",
+          "source_url": "https://opengameart.org/content/palm-tree-v2-low-poly-edition",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset",
+          "tags": [
+            "low poly tree"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.55,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "OpenGameArt license varies per asset page; details tool should verify before download."
+          ],
+          "extra": {
+            "summary_text": "Palm tree v2 low poly edition",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "opengameart:low-poly-tree-0",
+          "title": "Low Poly Tree",
+          "source_name": "OpenGameArt",
+          "source_url": "https://opengameart.org/content/low-poly-tree-0",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset",
+          "tags": [
+            "low poly tree"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.55,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "OpenGameArt license varies per asset page; details tool should verify before download."
+          ],
+          "extra": {
+            "summary_text": "Low Poly Tree",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        }
+      ]
+    },
+    "ambientcg": {
+      "results": []
+    },
+    "openverse": {
+      "results": [
+        {
+          "id": "openverse:1d105a35-a697-42af-8249-3ded7fa53c80",
+          "title": "Ventis Low Poly Tree(fix'd) - venti.ghost - lowpoly polygon fruit trees colors",
+          "source_name": "Openverse",
+          "source_url": "https://www.flickr.com/photos/70285332@N00/15757057899",
+          "author": "▓▒░ TORLEY ░▒▓",
+          "license": "by-sa",
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+          "attribution_required": true,
+          "asset_type": "image",
+          "tags": [
+            "firestorm",
+            "lindenlab",
+            "secondlife"
+          ],
+          "preview_image_url": "https://api.openverse.org/v1/images/1d105a35-a697-42af-8249-3ded7fa53c80/thumb/",
+          "download_url": "https://live.staticflickr.com/7520/15757057899_50dab41c80_b.jpg",
+          "file_formats": [
+            "jpg"
+          ],
+          "confidence_score": 0.72,
+          "warnings": [],
+          "extra": {
+            "provider": "flickr",
+            "license_status": "allowed_with_attribution",
+            "license_allowed": true
+          }
+        },
+        {
+          "id": "openverse:d91f70de-ca57-4c82-b245-69f5a191b13e",
+          "title": "Low Poly Trees",
+          "source_name": "Openverse",
+          "source_url": "https://www.flickr.com/photos/129338653@N07/16427988541",
+          "author": "Nilsze",
+          "license": "by-nd",
+          "license_url": "https://creativecommons.org/licenses/by-nd/2.0/",
+          "attribution_required": true,
+          "asset_type": "image",
+          "tags": [
+            "low",
+            "mountain",
+            "poly",
+            "polygon",
+            "tree"
+          ],
+          "preview_image_url": "https://api.openverse.org/v1/images/d91f70de-ca57-4c82-b245-69f5a191b13e/thumb/",
+          "download_url": "https://live.staticflickr.com/7452/16427988541_e276cd1b26_b.jpg",
+          "file_formats": [
+            "jpg"
+          ],
+          "confidence_score": 0.72,
+          "warnings": [
+            "License is not clearly public domain, attribution-compatible, or open-source.",
+            "Unrecognized license: by-nd"
+          ],
+          "extra": {
+            "provider": "flickr",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "openverse:bfca21fb-da82-4318-887f-f9bacb243f0b",
+          "title": "Pseudo-Low Poly Tree",
+          "source_name": "Openverse",
+          "source_url": "https://sketchfab.com/3d-models/6c039eed8a2f4dc8a33dad2b0a683735",
+          "author": "Alexander Cidbal",
+          "license": "by-nc-nd",
+          "license_url": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+          "attribution_required": true,
+          "asset_type": "image",
+          "tags": [
+            "tree",
+            "high-poly",
+            "leafs",
+            "low-poly-blender",
+            "blender28",
+            "free"
+          ],
+          "preview_image_url": "https://api.openverse.org/v1/images/bfca21fb-da82-4318-887f-f9bacb243f0b/thumb/",
+          "download_url": "https://media.sketchfab.com/models/6c039eed8a2f4dc8a33dad2b0a683735/thumbnails/d925dc31f0e34bfd8754acfa96e12629/5a823c1b1f40460186134910cb1f664b.jpeg",
+          "file_formats": [
+            "jpeg"
+          ],
+          "confidence_score": 0.72,
+          "warnings": [
+            "License is not clearly public domain, attribution-compatible, or open-source.",
+            "Unrecognized license: by-nc-nd"
+          ],
+          "extra": {
+            "provider": "sketchfab",
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        }
+      ]
+    },
+    "polyhaven": {
+      "results": []
+    },
+    "quaternius": {
+      "results": []
+    },
+    "itch": {
+      "results": [
+        {
+          "id": "itch:spikeone.itch.io:",
+          "title": "Spikeone",
+          "source_name": "itch.io",
+          "source_url": "https://spikeone.itch.io",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset-page",
+          "tags": [
+            "low poly tree"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.5,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "itch.io licenses and paid/free status vary per page; do not bypass download flows."
+          ],
+          "extra": {
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "itch:endlesskng.itch.io:",
+          "title": "EndlessKng",
+          "source_name": "itch.io",
+          "source_url": "https://endlesskng.itch.io",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset-page",
+          "tags": [
+            "low poly tree"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.5,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "itch.io licenses and paid/free status vary per page; do not bypass download flows."
+          ],
+          "extra": {
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        },
+        {
+          "id": "itch:mavhod.itch.io:",
+          "title": "mavhod",
+          "source_name": "itch.io",
+          "source_url": "https://mavhod.itch.io",
+          "author": null,
+          "license": null,
+          "license_url": null,
+          "attribution_required": null,
+          "asset_type": "game-asset-page",
+          "tags": [
+            "low poly tree"
+          ],
+          "preview_image_url": null,
+          "download_url": null,
+          "file_formats": [],
+          "confidence_score": 0.5,
+          "warnings": [
+            "License metadata is missing.",
+            "Missing license metadata.",
+            "itch.io licenses and paid/free status vary per page; do not bypass download flows."
+          ],
+          "extra": {
+            "license_status": "blocked_unclear_license",
+            "license_allowed": false
+          }
+        }
+      ]
+    },
+    "godot": {
+      "results": []
+    },
+    "github": {
+      "results": []
+    },
+    "local": {
+      "results": []
+    }
+  },
+  "results": [
+    {
+      "id": "openverse:1d105a35-a697-42af-8249-3ded7fa53c80",
+      "title": "Ventis Low Poly Tree(fix'd) - venti.ghost - lowpoly polygon fruit trees colors",
+      "source_name": "Openverse",
+      "source_url": "https://www.flickr.com/photos/70285332@N00/15757057899",
+      "author": "▓▒░ TORLEY ░▒▓",
+      "license": "by-sa",
+      "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+      "attribution_required": true,
+      "asset_type": "image",
+      "tags": [
+        "firestorm",
+        "lindenlab",
+        "secondlife"
+      ],
+      "preview_image_url": "https://api.openverse.org/v1/images/1d105a35-a697-42af-8249-3ded7fa53c80/thumb/",
+      "download_url": "https://live.staticflickr.com/7520/15757057899_50dab41c80_b.jpg",
+      "file_formats": [
+        "jpg"
+      ],
+      "confidence_score": 0.72,
+      "warnings": [],
+      "extra": {
+        "provider": "flickr",
+        "license_status": "allowed_with_attribution",
+        "license_allowed": true
+      }
+    }
+  ],
+  "license_policy": "safe"
+}
