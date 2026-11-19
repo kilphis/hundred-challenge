@@ -37,6 +37,8 @@
 | 32 | Boids GPU 版(Rust + wgpu)| `32_boids_gpu/`(`cargo run --release`)|
 | 33 | 円に集まる100体(ピクミン風、2D)| `33_pikmin_circle/index.html` |
 | 34 | ダンジョン探索(Python、端末)| `34_dungeon/`(`uv run 34_dungeon/dungeon.py`)|
+| 35 | コンビニ店員 × ゾンビ街(3D版)| `35_konbini_3d/index.html` |
+| 36 | Ruby と Lisp の比較(コイン集めゲーム)| `36_ruby_lisp/`(`ruby 36_ruby_lisp/main.rb`)|
 
 ブラウザで動く日は表のリンクから遊べる(GitHub Pages)。
 

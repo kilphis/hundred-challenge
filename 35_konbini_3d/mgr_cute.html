@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>店長 可愛い案</title>
+<style>html,body{margin:0;background:#cfd3d8;font:bold 22px sans-serif;overflow:hidden}canvas{display:block}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="models/manager.js"></script><script src="models/manager_cute.js"></script></head><body>
+<script>
+const W=1200,H=560,R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});R.setSize(W,H);R.shadowMap.enabled=true;document.body.appendChild(R.domElement);
+const S=new THREE.Scene();S.background=new THREE.Color(0xcfd3d8);
+S.add(new THREE.HemisphereLight(0xfff6e8,0x4a4038,0.7));
+const d=new THREE.DirectionalLight(0xfff1dc,0.9);d.position.set(150,300,250);d.castShadow=true;S.add(d);
+const fl=new THREE.Mesh(new THREE.PlaneGeometry(2000,600),new THREE.MeshStandardMaterial({color:0xb0b0b0}));fl.rotation.x=-Math.PI/2;fl.receiveShadow=true;S.add(fl);
+const items=[['今(参考)',()=>{const m=MODELS.manager();m.scale.setScalar(0.6);return m}],['A ちび丸頭',()=>MODELS.manager_cute('A')],['B おまんじゅう',()=>MODELS.manager_cute('B')],['C キャップ+牙',()=>MODELS.manager_cute('C')],['D ぬいぐるみ',()=>MODELS.manager_cute('D')]];
+items.forEach((it,i)=>{const m=it[1]();m.position.x=(i-2)*115;S.add(m);});
+const cam=new THREE.PerspectiveCamera(30,W/H,1,5000);cam.position.set(0,95,520);cam.lookAt(0,62,0);
+R.render(S,cam);
+items.forEach((it,i)=>{const l=document.createElement('div');l.textContent=it[0];l.style.cssText='position:fixed;bottom:14px;width:240px;text-align:center;left:'+(W/2+(i-2)*(W/5)-120)+'px';document.body.appendChild(l)});
+</script></body></html>

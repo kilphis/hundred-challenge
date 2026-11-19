@@ -1,0 +1,81 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>コンビニ3Dモデル集</title>
+<style>
+html,body{margin:0;height:100%;background:#cfd3d8;font:13px sans-serif;overflow:hidden}
+#side{position:fixed;left:0;top:0;bottom:0;width:190px;background:#222c;color:#fff;overflow:auto;padding:8px;box-sizing:border-box}
+#side h4{margin:10px 0 4px;color:#9cf}
+#side div.i{padding:3px 6px;cursor:pointer;border-radius:4px}
+#side div.i:hover{background:#fff3}#side div.i.on{background:#4a8}
+#info{position:fixed;left:200px;top:8px;color:#222;background:#fffa;padding:4px 8px;border-radius:4px;white-space:pre}
+canvas{display:block}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<!-- 追加するモデルファイルはここに足す -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="models/picks.js"></script>
+<script src="models/set1.js"></script>
+<script src="models/set2.js"></script>
+<script src="models/manager.js"></script><!-- set1.js の manager を上書き --></head><body>
+<div id="side"></div><div id="info"></div>
+<script>
+// [カテゴリ, 表示名, MODELS名, 引数配列(任意)]
+const ENTRIES = [
+ ['人物','店員','clerk'],['人物','客ゾンビ(紫)','zombie'],['人物','客ゾンビ(赤)','zombie',[{skin:'#8fae78',shirt:'#8c4b4b'}]],
+ ['人物','客ゾンビ(青)','zombie',[{skin:'#6f9460',shirt:'#4b6a8c'}]],['人物','店長ゾンビ','manager'],
+ ['売り場','ゴンドラ棚','gondola'],['売り場','飲料冷蔵ケース','wall_drink'],['売り場','レジカウンター','register_counter'],
+ ['売り場','ホットケース','hot_case'],['売り場','フライヤー','fryer'],['売り場','ゴミ箱','trash_bin'],
+ ['バックヤード','在庫棚','stock_rack'],['バックヤード','冷凍庫','freezer'],
+ ['商品(Polyfork)','パン','bread'],['商品(Polyfork)','チョコ','chocolate'],['商品(Polyfork)','ゴミ袋(仮: 巾着)','trash_bag'],
+ ['商品(Polyfork)','ゾンビ用コーヒー(持ち帰り)','cup_takeaway'],['商品(Polyfork)','ゾンビ用コーヒー(カップ)','cup_coffee'],
+ ['商品(Polyfork)','買い物カート','cart'],['商品(Polyfork)','コンテナ(折りコン風)','container'],['商品(Polyfork)','コンテナ(黄)=品出しカート','container',['#f2c230']],['商品(Polyfork)','酒瓶','bottle_sake'],['商品(Polyfork)','ゾンビ用洗剤(ポーション瓶)','bottle_potion'],
+ ['小物','カゴ(食料品)','crate',['#e8b04b']],['小物','カゴ(日用品)','crate',['#6bb0e8']],['小物','カゴ(飲料)','crate',['#59c96b']],
+];
+const R=new THREE.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(innerWidth,innerHeight);
+R.shadowMap.enabled=true;document.body.appendChild(R.domElement);
+const S=new THREE.Scene();S.background=new THREE.Color(0xcfd3d8);
+const cam=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.3,20000);
+const oc=new THREE.OrbitControls(cam,R.domElement);
+S.add(new THREE.HemisphereLight(0xfff6e8,0x4a4038,0.5));
+const d=new THREE.DirectionalLight(0xfff1dc,0.8);d.castShadow=true;d.shadow.mapSize.set(2048,2048);S.add(d,d.target);
+const P=new THREE.PointLight(0xffe2b8,0.3);S.add(P);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshStandardMaterial({color:0x9a9a9a,roughness:.9}));
+floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;S.add(floor);
+let cur=null;
+let curIdx=-1;
+function show(idx){
+  if(cur)S.remove(cur);
+  curIdx=idx;
+  const [cat,name,fn,args]=ENTRIES[idx];
+  document.querySelectorAll('#side .i').forEach((e,i)=>e.classList.toggle('on',i==idx));
+  const f=window.MODELS&&window.MODELS[fn];
+  if(!f){document.getElementById('info').textContent=name+': 未作成('+fn+')';cur=null;return;}
+  cur=f.apply(null,args||[]);S.add(cur);
+  const obj=cur;let tries=0;
+  (function wait(){ // GLB は非同期で中身が入る
+    if(curIdx!==idx)return;
+    if(obj.children.length===0&&tries++<40){document.getElementById('info').textContent=name+': 読み込み中…';setTimeout(wait,100);return;}
+    fit(obj,name);
+  })();
+}
+function fit(cur,name){
+  const b=new THREE.Box3().setFromObject(cur),sz=b.getSize(new THREE.Vector3()),c=b.getCenter(new THREE.Vector3());
+  let n=0;cur.traverse(o=>{if(o.isMesh)n++;});
+  document.getElementById('info').textContent=`${name}\n幅${sz.x.toFixed(0)} × 高さ${sz.y.toFixed(0)} × 奥行${sz.z.toFixed(0)} cm / メッシュ${n}`;
+  const r=Math.max(sz.x,sz.y,sz.z);
+  floor.scale.set(r*6,r*6,1);floor.position.y=b.min.y-0.01;
+  d.position.set(c.x+r*1.2,c.y+r*2,c.z+r*.8);d.target.position.copy(c);
+  const sc=d.shadow.camera;sc.left=sc.bottom=-r*1.5;sc.right=sc.top=r*1.5;sc.near=1;sc.far=r*6;sc.updateProjectionMatrix();
+  P.position.set(c.x-r,c.y+r*.6,c.z+r);P.distance=r*8;
+  cam.near=r*.01;cam.far=r*30;cam.updateProjectionMatrix();
+  cam.position.set(c.x+r*1.1,c.y+r*.8,c.z+r*1.4);oc.target.copy(c);oc.update();
+  cur.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+}
+const side=document.getElementById('side');let last='';
+ENTRIES.forEach((e,i)=>{
+  if(e[0]!=last){const h=document.createElement('h4');h.textContent=e[0];side.appendChild(h);last=e[0];}
+  const dv=document.createElement('div');dv.className='i';dv.textContent=e[1];dv.onclick=()=>{try{show(i)}catch(x){document.getElementById('info').textContent=e[1]+': エラー '+x.message}};side.appendChild(dv);
+});
+addEventListener('resize',()=>{R.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();});
+(function loop(){requestAnimationFrame(loop);R.render(S,cam);})();
+show(Math.max(0,ENTRIES.findIndex(e=>e[2]===new URLSearchParams(location.search).get('m')&&(e[3]||[]).join()===(new URLSearchParams(location.search).get('c')||''))));
+</script></body></html>

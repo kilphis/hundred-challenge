@@ -8,21 +8,19 @@ cd "$(dirname "$0")"
   echo "---"
   echo "# 100日チャレンジ MOC"
   echo
-  echo "各日の okimochi(作った気持ち)へのリンク。\`./make_moc.sh\` で作り直す(手で編集しない)。"
+  echo "各日の okimochi(作った気持ち)へのリンク。書いた日は [x]、未記入(ファイルなし・中身が空)は [ ]。リンクは未記入でも張る(クリックで作れる)。\`./make_moc.sh\` で作り直す(手で編集しない)。"
   echo
-  echo "| Day | 内容 | okimochi |"
-  echo "|---|---|---|"
   for d in $(ls -d [0-9]* 2>/dev/null | sort -n); do
     [ -d "$d" ] || continue
     n=${d%%_*}
     what=$(awk -F'|' -v n="$n" '$2 ~ "^ *"n" *$" {gsub(/^ +| +$/,"",$3); print $3; exit}' README.md)
     [ -n "$what" ] || what=$d
-    if [ -f "$d/okimochi.md" ]; then
-      link="[[70_hundred_challenge/$d/okimochi\\|$d]]"
+    if [ -f "$d/okimochi.md" ] && grep -q '[^[:space:]]' "$d/okimochi.md"; then
+      box="[x]"
     else
-      link="—"
+      box="[ ]"
     fi
-    echo "| $n | $what | $link |"
+    echo "- $box Day $n [[70_hundred_challenge/$d/okimochi|$d]] — $what"
   done
 } > MOC.md
 echo "MOC.md: $(grep -c '\[\[' MOC.md) 件のリンク"

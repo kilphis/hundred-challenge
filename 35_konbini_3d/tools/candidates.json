@@ -1,0 +1,3833 @@
+{
+ "ゴミ袋": [
+  {
+   "id": "sleeping-bag-730d7d",
+   "title": "Sleeping Bag",
+   "url": "https://polyfork.dev/asset/sleeping-bag-730d7d",
+   "thumbnailUrl": "https://polyfork.dev/files/sleeping-bag-730d7d/renders/hero.png",
+   "class": "prop",
+   "kit": "campground-lake-ad32b0",
+   "triangles": 796,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.76,
+    "y": 0.29,
+    "z": 2
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "velvet-dice-bag-69769c",
+   "title": "Velvet Dice Bag",
+   "url": "https://polyfork.dev/asset/velvet-dice-bag-69769c",
+   "thumbnailUrl": "https://polyfork.dev/files/velvet-dice-bag-69769c/renders/hero.png",
+   "class": "prop",
+   "kit": "emerald-gilded-runes-kit-abfc30",
+   "triangles": 802,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.07,
+    "y": 0.09,
+    "z": 0.06
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/velvet-dice-bag-69769c?edition=hd",
+    "triangles": 797,
+    "previewGlbUrl": "https://polyfork.dev/cdn/velvet-dice-bag-69769c-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "garment-bag-51900a",
+   "title": "Garment Bag",
+   "url": "https://polyfork.dev/asset/garment-bag-51900a",
+   "thumbnailUrl": "https://polyfork.dev/files/garment-bag-51900a/renders/hero.png",
+   "class": "prop",
+   "kit": "casino-3dd029",
+   "triangles": 732,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.77,
+    "y": 1.3,
+    "z": 0.13
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/garment-bag-51900a?edition=hd",
+    "triangles": 2282,
+    "previewGlbUrl": "https://polyfork.dev/cdn/garment-bag-51900a-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "builder-s-dumpy-bag-89fd1b",
+   "title": "Builder's Dumpy Bag",
+   "url": "https://polyfork.dev/asset/builder-s-dumpy-bag-89fd1b",
+   "thumbnailUrl": "https://polyfork.dev/files/builder-s-dumpy-bag-89fd1b/renders/hero.png",
+   "class": "prop",
+   "kit": "construction-site-9e40b0",
+   "triangles": 660,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.98,
+    "y": 1.17,
+    "z": 0.98
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/builder-s-dumpy-bag-89fd1b?edition=hd",
+    "triangles": 2930,
+    "previewGlbUrl": "https://polyfork.dev/cdn/builder-s-dumpy-bag-89fd1b-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "kit-bag-7d617f",
+   "title": "Kit Bag",
+   "url": "https://polyfork.dev/asset/kit-bag-7d617f",
+   "thumbnailUrl": "https://polyfork.dev/files/kit-bag-7d617f/renders/hero.png",
+   "class": "prop",
+   "kit": "stadium-5db167",
+   "triangles": 757,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.8,
+    "y": 0.42,
+    "z": 0.46
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "first-aid-bag-8a7f09",
+   "title": "First Aid Bag",
+   "url": "https://polyfork.dev/asset/first-aid-bag-8a7f09",
+   "thumbnailUrl": "https://polyfork.dev/files/first-aid-bag-8a7f09/renders/hero.png",
+   "class": "prop",
+   "kit": "stadium-5db167",
+   "triangles": 702,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.5,
+    "y": 0.45,
+    "z": 0.35
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/first-aid-bag-8a7f09?edition=hd",
+    "triangles": 1912,
+    "previewGlbUrl": "https://polyfork.dev/cdn/first-aid-bag-8a7f09-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "paper-bag-luminaria-0e8a1a",
+   "title": "Paper Bag Luminaria",
+   "url": "https://polyfork.dev/asset/paper-bag-luminaria-0e8a1a",
+   "thumbnailUrl": "https://polyfork.dev/files/paper-bag-luminaria-0e8a1a/renders/hero.png",
+   "class": "prop",
+   "kit": "halloween-night-46ade4",
+   "triangles": 406,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.22,
+    "y": 0.3,
+    "z": 0.14
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "agility-bag-set-e25fcd",
+   "title": "Agility Bag Set",
+   "url": "https://polyfork.dev/asset/agility-bag-set-e25fcd",
+   "thumbnailUrl": "https://polyfork.dev/files/agility-bag-set-e25fcd/renders/hero.png",
+   "class": "prop",
+   "kit": "stadium-5db167",
+   "triangles": 960,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1.6,
+    "y": 0.25,
+    "z": 5.3
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/agility-bag-set-e25fcd?edition=hd",
+    "triangles": 3312,
+    "previewGlbUrl": "https://polyfork.dev/cdn/agility-bag-set-e25fcd-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "おにぎり": [
+  {
+   "id": "giant-lawn-ornament-ball-a92ef6",
+   "title": "Giant Lawn Ornament Ball",
+   "url": "https://polyfork.dev/asset/giant-lawn-ornament-ball-a92ef6",
+   "thumbnailUrl": "https://polyfork.dev/files/giant-lawn-ornament-ball-a92ef6/renders/hero.png",
+   "class": "prop",
+   "kit": "christmas-village-fbc27a",
+   "triangles": 732,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1.02,
+    "y": 1.31,
+    "z": 1.04
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/giant-lawn-ornament-ball-a92ef6?edition=hd",
+    "triangles": 2050,
+    "previewGlbUrl": "https://polyfork.dev/cdn/giant-lawn-ornament-ball-a92ef6-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "beach-ball-4b2a9b",
+   "title": "Beach Ball",
+   "url": "https://polyfork.dev/asset/beach-ball-4b2a9b",
+   "thumbnailUrl": "https://polyfork.dev/files/beach-ball-4b2a9b/renders/hero.png",
+   "class": "prop",
+   "kit": "coast-and-boardwalk-d883fd",
+   "triangles": 450,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.34,
+    "y": 0.34,
+    "z": 0.35
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/beach-ball-4b2a9b?edition=hd",
+    "triangles": 1368,
+    "previewGlbUrl": "https://polyfork.dev/cdn/beach-ball-4b2a9b-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "match-ball-0e675d",
+   "title": "Match Ball",
+   "url": "https://polyfork.dev/asset/match-ball-0e675d",
+   "thumbnailUrl": "https://polyfork.dev/files/match-ball-0e675d/renders/hero.png",
+   "class": "prop",
+   "kit": "stadium-5db167",
+   "triangles": 565,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.22,
+    "y": 0.22,
+    "z": 0.22
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "cannonball-f87cdc",
+   "title": "Cannonball",
+   "url": "https://polyfork.dev/asset/cannonball-f87cdc",
+   "thumbnailUrl": "https://polyfork.dev/files/cannonball-f87cdc/renders/hero.png",
+   "class": "prop",
+   "kit": "pirate-cove-2ebea4",
+   "triangles": 338,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.15,
+    "y": 0.16,
+    "z": 0.16
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "rice-paddy-tile-dc727e",
+   "title": "Rice Paddy Tile",
+   "url": "https://polyfork.dev/asset/rice-paddy-tile-dc727e",
+   "thumbnailUrl": "https://polyfork.dev/files/rice-paddy-tile-dc727e/renders/hero.png",
+   "class": "prop",
+   "kit": "medieval-japan-cb01ad",
+   "triangles": 842,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 2,
+    "y": 0.12,
+    "z": 2
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "ball-cart-8274fd",
+   "title": "Ball Cart",
+   "url": "https://polyfork.dev/asset/ball-cart-8274fd",
+   "thumbnailUrl": "https://polyfork.dev/files/ball-cart-8274fd/renders/hero.png",
+   "class": "prop",
+   "kit": "stadium-5db167",
+   "triangles": 1155,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1,
+    "y": 1.15,
+    "z": 1
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/ball-cart-8274fd?edition=hd",
+    "triangles": 3946,
+    "previewGlbUrl": "https://polyfork.dev/cdn/ball-cart-8274fd-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "hasa-rice-drying-rack-d545bc",
+   "title": "Hasa Rice Drying Rack",
+   "url": "https://polyfork.dev/asset/hasa-rice-drying-rack-d545bc",
+   "thumbnailUrl": "https://polyfork.dev/files/hasa-rice-drying-rack-d545bc/renders/hero.png",
+   "class": "prop",
+   "kit": "medieval-japan-cb01ad",
+   "triangles": 668,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 2,
+    "y": 1.21,
+    "z": 0.7
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "ball-bin-3198fe",
+   "title": "Ball Bin",
+   "url": "https://polyfork.dev/asset/ball-bin-3198fe",
+   "thumbnailUrl": "https://polyfork.dev/files/ball-bin-3198fe/renders/hero.png",
+   "class": "prop",
+   "kit": "school-456eda",
+   "triangles": 724,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.75,
+    "y": 0.86,
+    "z": 0.5
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "サンドイッチ": [
+  {
+   "id": "sandwich-board-sign-cb5e7c",
+   "title": "Sandwich Board Sign",
+   "url": "https://polyfork.dev/asset/sandwich-board-sign-cb5e7c",
+   "thumbnailUrl": "https://polyfork.dev/files/sandwich-board-sign-cb5e7c/renders/hero.png",
+   "class": "prop",
+   "kit": "japanese-suburban-city-street-baa482",
+   "triangles": 362,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.7,
+    "y": 1,
+    "z": 0.5
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/sandwich-board-sign-cb5e7c?edition=hd",
+    "triangles": 744,
+    "previewGlbUrl": "https://polyfork.dev/cdn/sandwich-board-sign-cb5e7c-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "弁当": [
+  {
+   "id": "newspaper-box-3f2c0e",
+   "title": "Newspaper Box",
+   "url": "https://polyfork.dev/asset/newspaper-box-3f2c0e",
+   "thumbnailUrl": "https://polyfork.dev/files/newspaper-box-3f2c0e/renders/hero.png",
+   "class": "prop",
+   "kit": "nyc-city-kit-fbca88",
+   "triangles": 474,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.5,
+    "y": 1.1,
+    "z": 0.49
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/newspaper-box-3f2c0e?edition=hd",
+    "triangles": 930,
+    "previewGlbUrl": "https://polyfork.dev/cdn/newspaper-box-3f2c0e-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "fire-alarm-call-box-56d332",
+   "title": "Fire Alarm Call Box",
+   "url": "https://polyfork.dev/asset/fire-alarm-call-box-56d332",
+   "thumbnailUrl": "https://polyfork.dev/files/fire-alarm-call-box-56d332/renders/hero.png",
+   "class": "prop",
+   "kit": "nyc-city-kit-fbca88",
+   "triangles": 730,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.58,
+    "y": 2.48,
+    "z": 0.58
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/fire-alarm-call-box-56d332?edition=hd",
+    "triangles": 2142,
+    "previewGlbUrl": "https://polyfork.dev/cdn/fire-alarm-call-box-56d332-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "tackle-box-efd0ee",
+   "title": "Tackle Box",
+   "url": "https://polyfork.dev/asset/tackle-box-efd0ee",
+   "thumbnailUrl": "https://polyfork.dev/files/tackle-box-efd0ee/renders/hero.png",
+   "class": "prop",
+   "kit": "campground-lake-ad32b0",
+   "triangles": 810,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.45,
+    "y": 0.24,
+    "z": 0.28
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/tackle-box-efd0ee?edition=hd",
+    "triangles": 1430,
+    "previewGlbUrl": "https://polyfork.dev/cdn/tackle-box-efd0ee-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "box-of-red-wine-08d2b3",
+   "title": "Box of Red Wine",
+   "url": "https://polyfork.dev/asset/box-of-red-wine-08d2b3",
+   "thumbnailUrl": "https://polyfork.dev/files/box-of-red-wine-08d2b3/renders/hero.png",
+   "class": "prop",
+   "kit": "chile-fiestas-patrias-87e847",
+   "triangles": 474,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.1,
+    "y": 0.22,
+    "z": 0.07
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/box-of-red-wine-08d2b3?edition=hd",
+    "triangles": 822,
+    "previewGlbUrl": "https://polyfork.dev/cdn/box-of-red-wine-08d2b3-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "rayuela-box-4587d4",
+   "title": "Rayuela Box",
+   "url": "https://polyfork.dev/asset/rayuela-box-4587d4",
+   "thumbnailUrl": "https://polyfork.dev/files/rayuela-box-4587d4/renders/hero.png",
+   "class": "prop",
+   "kit": "chile-fiestas-patrias-87e847",
+   "triangles": 418,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1,
+    "y": 0.2,
+    "z": 1
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/rayuela-box-4587d4?edition=hd",
+    "triangles": 1298,
+    "previewGlbUrl": "https://polyfork.dev/cdn/rayuela-box-4587d4-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "signal-box-f57a2d",
+   "title": "Signal Box",
+   "url": "https://polyfork.dev/asset/signal-box-f57a2d",
+   "thumbnailUrl": "https://polyfork.dev/files/signal-box-f57a2d/renders/hero.png",
+   "class": "building",
+   "kit": "countryside-railway-9b4c57",
+   "triangles": 2264,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 7.96,
+    "y": 8.18,
+    "z": 3.97
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "recessed-floor-box-018add",
+   "title": "Recessed Floor Box",
+   "url": "https://polyfork.dev/asset/recessed-floor-box-018add",
+   "thumbnailUrl": "https://polyfork.dev/files/recessed-floor-box-018add/renders/hero.png",
+   "class": "prop",
+   "kit": "office-794453",
+   "triangles": 568,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.3,
+    "y": 0.26,
+    "z": 0.2
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/recessed-floor-box-018add?edition=hd",
+    "triangles": 1038,
+    "previewGlbUrl": "https://polyfork.dev/cdn/recessed-floor-box-018add-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "offering-box-c85bd3",
+   "title": "Offering Box",
+   "url": "https://polyfork.dev/asset/offering-box-c85bd3",
+   "thumbnailUrl": "https://polyfork.dev/files/offering-box-c85bd3/renders/hero.png",
+   "class": "prop",
+   "kit": "japanese-suburban-city-street-baa482",
+   "triangles": 817,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1.02,
+    "y": 0.8,
+    "z": 0.68
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/offering-box-c85bd3?edition=hd",
+    "triangles": 1666,
+    "previewGlbUrl": "https://polyfork.dev/cdn/offering-box-c85bd3-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "パン": [
+  {
+   "id": "clay-bread-oven-860b06",
+   "title": "Clay Bread Oven",
+   "url": "https://polyfork.dev/asset/clay-bread-oven-860b06",
+   "thumbnailUrl": "https://polyfork.dev/files/clay-bread-oven-860b06/renders/hero.png",
+   "class": "prop",
+   "kit": "medieval-village-kit-ca0b43",
+   "triangles": 564,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1.59,
+    "y": 1.52,
+    "z": 1.55
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/clay-bread-oven-860b06?edition=hd",
+    "triangles": 2169,
+    "previewGlbUrl": "https://polyfork.dev/cdn/clay-bread-oven-860b06-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "bread-loaf-0e0ab5",
+   "title": "Bread Loaf",
+   "url": "https://polyfork.dev/asset/bread-loaf-0e0ab5",
+   "thumbnailUrl": "https://polyfork.dev/files/bread-loaf-0e0ab5/renders/hero.png",
+   "class": "ultra",
+   "triangles": 280,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.18,
+    "y": 0.14,
+    "z": 0.24
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/bread-loaf-0e0ab5?edition=hd",
+    "triangles": 1022,
+    "previewGlbUrl": "https://polyfork.dev/cdn/bread-loaf-0e0ab5-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "gingerbread-house-8b9049",
+   "title": "Gingerbread House",
+   "url": "https://polyfork.dev/asset/gingerbread-house-8b9049",
+   "thumbnailUrl": "https://polyfork.dev/files/gingerbread-house-8b9049/renders/hero.png",
+   "class": "prop",
+   "kit": "christmas-village-fbc27a",
+   "triangles": 889,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.49,
+    "y": 0.36,
+    "z": 0.5
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/gingerbread-house-8b9049?edition=hd",
+    "triangles": 2037,
+    "previewGlbUrl": "https://polyfork.dev/cdn/gingerbread-house-8b9049-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "gingerbread-man-4766ed",
+   "title": "Gingerbread Man",
+   "url": "https://polyfork.dev/asset/gingerbread-man-4766ed",
+   "thumbnailUrl": "https://polyfork.dev/files/gingerbread-man-4766ed/renders/hero.png",
+   "class": "ultra",
+   "triangles": 280,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.15,
+    "y": 0.15,
+    "z": 0.04
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/gingerbread-man-4766ed?edition=hd",
+    "triangles": 860,
+    "previewGlbUrl": "https://polyfork.dev/cdn/gingerbread-man-4766ed-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "altar-figurine-908964",
+   "title": "Altar Figurine",
+   "url": "https://polyfork.dev/asset/altar-figurine-908964",
+   "thumbnailUrl": "https://polyfork.dev/files/altar-figurine-908964/renders/hero.png",
+   "class": "prop",
+   "kit": "dia-de-muertos-f2f8f8",
+   "triangles": 814,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.11,
+    "y": 0.12,
+    "z": 0.11
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "pan-de-muerto-plate-324b99",
+   "title": "Pan de Muerto Plate",
+   "url": "https://polyfork.dev/asset/pan-de-muerto-plate-324b99",
+   "thumbnailUrl": "https://polyfork.dev/files/pan-de-muerto-plate-324b99/renders/hero.png",
+   "class": "prop",
+   "kit": "dia-de-muertos-f2f8f8",
+   "triangles": 696,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.22,
+    "y": 0.08,
+    "z": 0.22
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "north-pole-treat-table-91a6e4",
+   "title": "North Pole Treat Table",
+   "url": "https://polyfork.dev/asset/north-pole-treat-table-91a6e4",
+   "thumbnailUrl": "https://polyfork.dev/files/north-pole-treat-table-91a6e4/renders/hero.png",
+   "class": "prop",
+   "kit": "christmas-village-fbc27a",
+   "triangles": 730,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1.95,
+    "y": 0.82,
+    "z": 0.95
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "hornito-6fd0df",
+   "title": "Hornito",
+   "url": "https://polyfork.dev/asset/hornito-6fd0df",
+   "thumbnailUrl": "https://polyfork.dev/files/hornito-6fd0df/renders/hero.png",
+   "class": "prop",
+   "kit": "chile-fiestas-patrias-87e847",
+   "triangles": 688,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1.8,
+    "y": 2.43,
+    "z": 1.73
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/hornito-6fd0df?edition=hd",
+    "triangles": 2143,
+    "previewGlbUrl": "https://polyfork.dev/cdn/hornito-6fd0df-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "ヨーグルト": [
+  {
+   "id": "slot-token-cup-4ee5e4",
+   "title": "Slot Token Cup",
+   "url": "https://polyfork.dev/asset/slot-token-cup-4ee5e4",
+   "thumbnailUrl": "https://polyfork.dev/files/slot-token-cup-4ee5e4/renders/hero.png",
+   "class": "prop",
+   "kit": "casino-3dd029",
+   "triangles": 776,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.18,
+    "y": 0.16,
+    "z": 0.18
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/slot-token-cup-4ee5e4?edition=hd",
+    "triangles": 996,
+    "previewGlbUrl": "https://polyfork.dev/cdn/slot-token-cup-4ee5e4-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "acorn-cup-0ed13c",
+   "title": "Acorn Cup",
+   "url": "https://polyfork.dev/asset/acorn-cup-0ed13c",
+   "thumbnailUrl": "https://polyfork.dev/files/acorn-cup-0ed13c/renders/hero.png",
+   "class": "prop",
+   "kit": "insect-world-e44b9f",
+   "triangles": 932,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 2.38,
+    "y": 1.85,
+    "z": 2.43
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "leather-dice-cup-f99a7e",
+   "title": "Leather Dice Cup",
+   "url": "https://polyfork.dev/asset/leather-dice-cup-f99a7e",
+   "thumbnailUrl": "https://polyfork.dev/files/leather-dice-cup-f99a7e/renders/hero.png",
+   "class": "prop",
+   "kit": "emerald-gilded-runes-kit-abfc30",
+   "triangles": 790,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.08,
+    "y": 0.09,
+    "z": 0.08
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "takeaway-coffee-cup-1fd6dd",
+   "title": "Takeaway Coffee Cup",
+   "url": "https://polyfork.dev/asset/takeaway-coffee-cup-1fd6dd",
+   "thumbnailUrl": "https://polyfork.dev/files/takeaway-coffee-cup-1fd6dd/renders/hero.png",
+   "class": "prop",
+   "kit": "modern-restaurant-cafe-01ea4c",
+   "triangles": 381,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.09,
+    "y": 0.12,
+    "z": 0.09
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/takeaway-coffee-cup-1fd6dd?edition=hd",
+    "triangles": 842,
+    "previewGlbUrl": "https://polyfork.dev/cdn/takeaway-coffee-cup-1fd6dd-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "coffee-cup-90be67",
+   "title": "Coffee Cup",
+   "url": "https://polyfork.dev/asset/coffee-cup-90be67",
+   "thumbnailUrl": "https://polyfork.dev/files/coffee-cup-90be67/renders/hero.png",
+   "class": "ultra",
+   "triangles": 300,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.14,
+    "y": 0.16,
+    "z": 0.14
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/coffee-cup-90be67?edition=hd",
+    "triangles": 796,
+    "previewGlbUrl": "https://polyfork.dev/cdn/coffee-cup-90be67-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "office-mug-8afee0",
+   "title": "Office Mug",
+   "url": "https://polyfork.dev/asset/office-mug-8afee0",
+   "thumbnailUrl": "https://polyfork.dev/files/office-mug-8afee0/renders/hero.png",
+   "class": "prop",
+   "kit": "office-794453",
+   "triangles": 474,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.1,
+    "y": 0.09,
+    "z": 0.08
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/office-mug-8afee0?edition=hd",
+    "triangles": 810,
+    "previewGlbUrl": "https://polyfork.dev/cdn/office-mug-8afee0-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "terremoto-ffa776",
+   "title": "Terremoto",
+   "url": "https://polyfork.dev/asset/terremoto-ffa776",
+   "thumbnailUrl": "https://polyfork.dev/files/terremoto-ffa776/renders/hero.png",
+   "class": "prop",
+   "kit": "chile-fiestas-patrias-87e847",
+   "triangles": 724,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.1,
+    "y": 0.24,
+    "z": 0.1
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "emboque-bfbc2e",
+   "title": "Emboque",
+   "url": "https://polyfork.dev/asset/emboque-bfbc2e",
+   "thumbnailUrl": "https://polyfork.dev/files/emboque-bfbc2e/renders/hero.png",
+   "class": "prop",
+   "kit": "chile-fiestas-patrias-87e847",
+   "triangles": 798,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.31,
+    "y": 0.06,
+    "z": 0.18
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "カップ麺": [
+  {
+   "id": "slot-token-cup-4ee5e4",
+   "title": "Slot Token Cup",
+   "url": "https://polyfork.dev/asset/slot-token-cup-4ee5e4",
+   "thumbnailUrl": "https://polyfork.dev/files/slot-token-cup-4ee5e4/renders/hero.png",
+   "class": "prop",
+   "kit": "casino-3dd029",
+   "triangles": 776,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.18,
+    "y": 0.16,
+    "z": 0.18
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/slot-token-cup-4ee5e4?edition=hd",
+    "triangles": 996,
+    "previewGlbUrl": "https://polyfork.dev/cdn/slot-token-cup-4ee5e4-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "acorn-cup-0ed13c",
+   "title": "Acorn Cup",
+   "url": "https://polyfork.dev/asset/acorn-cup-0ed13c",
+   "thumbnailUrl": "https://polyfork.dev/files/acorn-cup-0ed13c/renders/hero.png",
+   "class": "prop",
+   "kit": "insect-world-e44b9f",
+   "triangles": 932,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 2.38,
+    "y": 1.85,
+    "z": 2.43
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "leather-dice-cup-f99a7e",
+   "title": "Leather Dice Cup",
+   "url": "https://polyfork.dev/asset/leather-dice-cup-f99a7e",
+   "thumbnailUrl": "https://polyfork.dev/files/leather-dice-cup-f99a7e/renders/hero.png",
+   "class": "prop",
+   "kit": "emerald-gilded-runes-kit-abfc30",
+   "triangles": 790,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.08,
+    "y": 0.09,
+    "z": 0.08
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "takeaway-coffee-cup-1fd6dd",
+   "title": "Takeaway Coffee Cup",
+   "url": "https://polyfork.dev/asset/takeaway-coffee-cup-1fd6dd",
+   "thumbnailUrl": "https://polyfork.dev/files/takeaway-coffee-cup-1fd6dd/renders/hero.png",
+   "class": "prop",
+   "kit": "modern-restaurant-cafe-01ea4c",
+   "triangles": 381,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.09,
+    "y": 0.12,
+    "z": 0.09
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/takeaway-coffee-cup-1fd6dd?edition=hd",
+    "triangles": 842,
+    "previewGlbUrl": "https://polyfork.dev/cdn/takeaway-coffee-cup-1fd6dd-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "coffee-cup-90be67",
+   "title": "Coffee Cup",
+   "url": "https://polyfork.dev/asset/coffee-cup-90be67",
+   "thumbnailUrl": "https://polyfork.dev/files/coffee-cup-90be67/renders/hero.png",
+   "class": "ultra",
+   "triangles": 300,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.14,
+    "y": 0.16,
+    "z": 0.14
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/coffee-cup-90be67?edition=hd",
+    "triangles": 796,
+    "previewGlbUrl": "https://polyfork.dev/cdn/coffee-cup-90be67-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "office-mug-8afee0",
+   "title": "Office Mug",
+   "url": "https://polyfork.dev/asset/office-mug-8afee0",
+   "thumbnailUrl": "https://polyfork.dev/files/office-mug-8afee0/renders/hero.png",
+   "class": "prop",
+   "kit": "office-794453",
+   "triangles": 474,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.1,
+    "y": 0.09,
+    "z": 0.08
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/office-mug-8afee0?edition=hd",
+    "triangles": 810,
+    "previewGlbUrl": "https://polyfork.dev/cdn/office-mug-8afee0-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "terremoto-ffa776",
+   "title": "Terremoto",
+   "url": "https://polyfork.dev/asset/terremoto-ffa776",
+   "thumbnailUrl": "https://polyfork.dev/files/terremoto-ffa776/renders/hero.png",
+   "class": "prop",
+   "kit": "chile-fiestas-patrias-87e847",
+   "triangles": 724,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.1,
+    "y": 0.24,
+    "z": 0.1
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "emboque-bfbc2e",
+   "title": "Emboque",
+   "url": "https://polyfork.dev/asset/emboque-bfbc2e",
+   "thumbnailUrl": "https://polyfork.dev/files/emboque-bfbc2e/renders/hero.png",
+   "class": "prop",
+   "kit": "chile-fiestas-patrias-87e847",
+   "triangles": 798,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.31,
+    "y": 0.06,
+    "z": 0.18
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "スナック袋": [
+  {
+   "id": "sleeping-bag-730d7d",
+   "title": "Sleeping Bag",
+   "url": "https://polyfork.dev/asset/sleeping-bag-730d7d",
+   "thumbnailUrl": "https://polyfork.dev/files/sleeping-bag-730d7d/renders/hero.png",
+   "class": "prop",
+   "kit": "campground-lake-ad32b0",
+   "triangles": 796,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.76,
+    "y": 0.29,
+    "z": 2
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "velvet-dice-bag-69769c",
+   "title": "Velvet Dice Bag",
+   "url": "https://polyfork.dev/asset/velvet-dice-bag-69769c",
+   "thumbnailUrl": "https://polyfork.dev/files/velvet-dice-bag-69769c/renders/hero.png",
+   "class": "prop",
+   "kit": "emerald-gilded-runes-kit-abfc30",
+   "triangles": 802,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.07,
+    "y": 0.09,
+    "z": 0.06
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/velvet-dice-bag-69769c?edition=hd",
+    "triangles": 797,
+    "previewGlbUrl": "https://polyfork.dev/cdn/velvet-dice-bag-69769c-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "garment-bag-51900a",
+   "title": "Garment Bag",
+   "url": "https://polyfork.dev/asset/garment-bag-51900a",
+   "thumbnailUrl": "https://polyfork.dev/files/garment-bag-51900a/renders/hero.png",
+   "class": "prop",
+   "kit": "casino-3dd029",
+   "triangles": 732,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.77,
+    "y": 1.3,
+    "z": 0.13
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/garment-bag-51900a?edition=hd",
+    "triangles": 2282,
+    "previewGlbUrl": "https://polyfork.dev/cdn/garment-bag-51900a-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "builder-s-dumpy-bag-89fd1b",
+   "title": "Builder's Dumpy Bag",
+   "url": "https://polyfork.dev/asset/builder-s-dumpy-bag-89fd1b",
+   "thumbnailUrl": "https://polyfork.dev/files/builder-s-dumpy-bag-89fd1b/renders/hero.png",
+   "class": "prop",
+   "kit": "construction-site-9e40b0",
+   "triangles": 660,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.98,
+    "y": 1.17,
+    "z": 0.98
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/builder-s-dumpy-bag-89fd1b?edition=hd",
+    "triangles": 2930,
+    "previewGlbUrl": "https://polyfork.dev/cdn/builder-s-dumpy-bag-89fd1b-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "kit-bag-7d617f",
+   "title": "Kit Bag",
+   "url": "https://polyfork.dev/asset/kit-bag-7d617f",
+   "thumbnailUrl": "https://polyfork.dev/files/kit-bag-7d617f/renders/hero.png",
+   "class": "prop",
+   "kit": "stadium-5db167",
+   "triangles": 757,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.8,
+    "y": 0.42,
+    "z": 0.46
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "first-aid-bag-8a7f09",
+   "title": "First Aid Bag",
+   "url": "https://polyfork.dev/asset/first-aid-bag-8a7f09",
+   "thumbnailUrl": "https://polyfork.dev/files/first-aid-bag-8a7f09/renders/hero.png",
+   "class": "prop",
+   "kit": "stadium-5db167",
+   "triangles": 702,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.5,
+    "y": 0.45,
+    "z": 0.35
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/first-aid-bag-8a7f09?edition=hd",
+    "triangles": 1912,
+    "previewGlbUrl": "https://polyfork.dev/cdn/first-aid-bag-8a7f09-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "paper-bag-luminaria-0e8a1a",
+   "title": "Paper Bag Luminaria",
+   "url": "https://polyfork.dev/asset/paper-bag-luminaria-0e8a1a",
+   "thumbnailUrl": "https://polyfork.dev/files/paper-bag-luminaria-0e8a1a/renders/hero.png",
+   "class": "prop",
+   "kit": "halloween-night-46ade4",
+   "triangles": 406,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.22,
+    "y": 0.3,
+    "z": 0.14
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "agility-bag-set-e25fcd",
+   "title": "Agility Bag Set",
+   "url": "https://polyfork.dev/asset/agility-bag-set-e25fcd",
+   "thumbnailUrl": "https://polyfork.dev/files/agility-bag-set-e25fcd/renders/hero.png",
+   "class": "prop",
+   "kit": "stadium-5db167",
+   "triangles": 960,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1.6,
+    "y": 0.25,
+    "z": 5.3
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/agility-bag-set-e25fcd?edition=hd",
+    "triangles": 3312,
+    "previewGlbUrl": "https://polyfork.dev/cdn/agility-bag-set-e25fcd-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "チョコ": [
+  {
+   "id": "chocolate-bar-284f07",
+   "title": "Chocolate Bar",
+   "url": "https://polyfork.dev/asset/chocolate-bar-284f07",
+   "thumbnailUrl": "https://polyfork.dev/files/chocolate-bar-284f07/renders/hero.png",
+   "class": "ultra",
+   "triangles": 165,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.08,
+    "y": 0.02,
+    "z": 0.15
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/chocolate-bar-284f07?edition=hd",
+    "triangles": 447,
+    "previewGlbUrl": "https://polyfork.dev/cdn/chocolate-bar-284f07-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "approach-lighting-bar-6bb554",
+   "title": "Approach Lighting Bar",
+   "url": "https://polyfork.dev/asset/approach-lighting-bar-6bb554",
+   "thumbnailUrl": "https://polyfork.dev/files/approach-lighting-bar-6bb554/renders/hero.png",
+   "class": "prop",
+   "kit": "airport-43b137",
+   "triangles": 714,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 4,
+    "y": 3.43,
+    "z": 0.9
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/approach-lighting-bar-6bb554?edition=hd",
+    "triangles": 1754,
+    "previewGlbUrl": "https://polyfork.dev/cdn/approach-lighting-bar-6bb554-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "scroll-bar-fc8256",
+   "title": "Scroll Bar",
+   "url": "https://polyfork.dev/asset/scroll-bar-fc8256",
+   "thumbnailUrl": "https://polyfork.dev/files/scroll-bar-fc8256/renders/hero.png",
+   "class": "prop",
+   "kit": "3d-ui-kit-5635f7",
+   "triangles": 948,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.01,
+    "y": 0.24,
+    "z": 0
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "progress-bar-4da04c",
+   "title": "Progress Bar",
+   "url": "https://polyfork.dev/asset/progress-bar-4da04c",
+   "thumbnailUrl": "https://polyfork.dev/files/progress-bar-4da04c/renders/hero.png",
+   "class": "prop",
+   "kit": "3d-ui-kit-5635f7",
+   "triangles": 862,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.24,
+    "y": 0.01,
+    "z": 0
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "window-grab-bar-3072a7",
+   "title": "Window Grab Bar",
+   "url": "https://polyfork.dev/asset/window-grab-bar-3072a7",
+   "thumbnailUrl": "https://polyfork.dev/files/window-grab-bar-3072a7/renders/hero.png",
+   "class": "prop",
+   "kit": "3d-ui-kit-5635f7",
+   "triangles": 820,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.12,
+    "y": 0.01,
+    "z": 0
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "tab-bar-02457c",
+   "title": "Tab Bar",
+   "url": "https://polyfork.dev/asset/tab-bar-02457c",
+   "thumbnailUrl": "https://polyfork.dev/files/tab-bar-02457c/renders/hero.png",
+   "class": "prop",
+   "kit": "3d-ui-kit-5635f7",
+   "triangles": 812,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.68,
+    "y": 0.1,
+    "z": 0.01
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "slim-led-light-bar-a6bb6f",
+   "title": "Slim LED Light Bar",
+   "url": "https://polyfork.dev/asset/slim-led-light-bar-a6bb6f",
+   "thumbnailUrl": "https://polyfork.dev/files/slim-led-light-bar-a6bb6f/renders/hero.png",
+   "class": "prop",
+   "kit": "office-reefscape-kit-1afd7c",
+   "triangles": 444,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1,
+    "y": 0.18,
+    "z": 0.38
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/slim-led-light-bar-a6bb6f?edition=hd",
+    "triangles": 1002,
+    "previewGlbUrl": "https://polyfork.dev/cdn/slim-led-light-bar-a6bb6f-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "conference-camera-bar-419e10",
+   "title": "Conference Camera Bar",
+   "url": "https://polyfork.dev/asset/conference-camera-bar-419e10",
+   "thumbnailUrl": "https://polyfork.dev/files/conference-camera-bar-419e10/renders/hero.png",
+   "class": "prop",
+   "kit": "office-794453",
+   "triangles": 736,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.76,
+    "y": 0.75,
+    "z": 0.2
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/conference-camera-bar-419e10?edition=hd",
+    "triangles": 1624,
+    "previewGlbUrl": "https://polyfork.dev/cdn/conference-camera-bar-419e10-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "洗剤": [
+  {
+   "id": "bottle-ca0f79",
+   "title": "Bottle",
+   "url": "https://polyfork.dev/asset/bottle-ca0f79",
+   "thumbnailUrl": "https://polyfork.dev/files/bottle-ca0f79/renders/hero.png",
+   "class": "ultra",
+   "triangles": 180,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.08,
+    "y": 0.28,
+    "z": 0.09
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/bottle-ca0f79?edition=hd",
+    "triangles": 692,
+    "previewGlbUrl": "https://polyfork.dev/cdn/bottle-ca0f79-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "whiskey-bottle-and-glass-fa24b4",
+   "title": "Whiskey Bottle and Glass Set",
+   "url": "https://polyfork.dev/asset/whiskey-bottle-and-glass-fa24b4",
+   "thumbnailUrl": "https://polyfork.dev/files/whiskey-bottle-and-glass-fa24b4/renders/hero.png",
+   "class": "prop",
+   "kit": "frontier-town-a0085b",
+   "triangles": 464,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.25,
+    "y": 0.3,
+    "z": 0.19
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/whiskey-bottle-and-glass-fa24b4?edition=hd",
+    "triangles": 1072,
+    "previewGlbUrl": "https://polyfork.dev/cdn/whiskey-bottle-and-glass-fa24b4-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "potion-bottle-099ad7",
+   "title": "Potion Bottle",
+   "url": "https://polyfork.dev/asset/potion-bottle-099ad7",
+   "thumbnailUrl": "https://polyfork.dev/files/potion-bottle-099ad7/renders/hero.png",
+   "class": "prop",
+   "kit": "dungeon-crypt-c27d93",
+   "triangles": 628,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.08,
+    "y": 0.18,
+    "z": 0.08
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/potion-bottle-099ad7?edition=hd",
+    "triangles": 854,
+    "previewGlbUrl": "https://polyfork.dev/cdn/potion-bottle-099ad7-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "wine-bottle-75a822",
+   "title": "Wine Bottle",
+   "url": "https://polyfork.dev/asset/wine-bottle-75a822",
+   "thumbnailUrl": "https://polyfork.dev/files/wine-bottle-75a822/renders/hero.png",
+   "class": "prop",
+   "kit": "modern-restaurant-cafe-01ea4c",
+   "triangles": 214,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.08,
+    "y": 0.3,
+    "z": 0.07
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/wine-bottle-75a822?edition=hd",
+    "triangles": 640,
+    "previewGlbUrl": "https://polyfork.dev/cdn/wine-bottle-75a822-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "potion-bottle-b28245",
+   "title": "Potion Bottle",
+   "url": "https://polyfork.dev/asset/potion-bottle-b28245",
+   "thumbnailUrl": "https://polyfork.dev/files/potion-bottle-b28245/renders/hero.png",
+   "class": "ultra",
+   "triangles": 119,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.17,
+    "y": 0.26,
+    "z": 0.17
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/potion-bottle-b28245?edition=hd",
+    "triangles": 476,
+    "previewGlbUrl": "https://polyfork.dev/cdn/potion-bottle-b28245-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "bottle-cap-cd96db",
+   "title": "Bottle Cap",
+   "url": "https://polyfork.dev/asset/bottle-cap-cd96db",
+   "thumbnailUrl": "https://polyfork.dev/files/bottle-cap-cd96db/renders/hero.png",
+   "class": "prop",
+   "kit": "insect-world-e44b9f",
+   "triangles": 808,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 3.37,
+    "y": 0.74,
+    "z": 3.2
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/bottle-cap-cd96db?edition=hd",
+    "triangles": 2586,
+    "previewGlbUrl": "https://polyfork.dev/cdn/bottle-cap-cd96db-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "water-bottle-crate-78c8db",
+   "title": "Water Bottle Crate",
+   "url": "https://polyfork.dev/asset/water-bottle-crate-78c8db",
+   "thumbnailUrl": "https://polyfork.dev/files/water-bottle-crate-78c8db/renders/hero.png",
+   "class": "prop",
+   "kit": "stadium-5db167",
+   "triangles": 608,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.38,
+    "y": 0.33,
+    "z": 0.29
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/water-bottle-crate-78c8db?edition=hd",
+    "triangles": 1516,
+    "previewGlbUrl": "https://polyfork.dev/cdn/water-bottle-crate-78c8db-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "wash-bottle-set-88f3aa",
+   "title": "Wash Bottle Set",
+   "url": "https://polyfork.dev/asset/wash-bottle-set-88f3aa",
+   "thumbnailUrl": "https://polyfork.dev/files/wash-bottle-set-88f3aa/renders/hero.png",
+   "class": "prop",
+   "kit": "research-lab-9b9b5d",
+   "triangles": 669,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.14,
+    "y": 0.22,
+    "z": 0.14
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/wash-bottle-set-88f3aa?edition=hd",
+    "triangles": 984,
+    "previewGlbUrl": "https://polyfork.dev/cdn/wash-bottle-set-88f3aa-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "ティッシュ": [
+  {
+   "id": "newspaper-box-3f2c0e",
+   "title": "Newspaper Box",
+   "url": "https://polyfork.dev/asset/newspaper-box-3f2c0e",
+   "thumbnailUrl": "https://polyfork.dev/files/newspaper-box-3f2c0e/renders/hero.png",
+   "class": "prop",
+   "kit": "nyc-city-kit-fbca88",
+   "triangles": 474,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.5,
+    "y": 1.1,
+    "z": 0.49
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/newspaper-box-3f2c0e?edition=hd",
+    "triangles": 930,
+    "previewGlbUrl": "https://polyfork.dev/cdn/newspaper-box-3f2c0e-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "fire-alarm-call-box-56d332",
+   "title": "Fire Alarm Call Box",
+   "url": "https://polyfork.dev/asset/fire-alarm-call-box-56d332",
+   "thumbnailUrl": "https://polyfork.dev/files/fire-alarm-call-box-56d332/renders/hero.png",
+   "class": "prop",
+   "kit": "nyc-city-kit-fbca88",
+   "triangles": 730,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.58,
+    "y": 2.48,
+    "z": 0.58
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/fire-alarm-call-box-56d332?edition=hd",
+    "triangles": 2142,
+    "previewGlbUrl": "https://polyfork.dev/cdn/fire-alarm-call-box-56d332-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "tackle-box-efd0ee",
+   "title": "Tackle Box",
+   "url": "https://polyfork.dev/asset/tackle-box-efd0ee",
+   "thumbnailUrl": "https://polyfork.dev/files/tackle-box-efd0ee/renders/hero.png",
+   "class": "prop",
+   "kit": "campground-lake-ad32b0",
+   "triangles": 810,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.45,
+    "y": 0.24,
+    "z": 0.28
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/tackle-box-efd0ee?edition=hd",
+    "triangles": 1430,
+    "previewGlbUrl": "https://polyfork.dev/cdn/tackle-box-efd0ee-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "box-of-red-wine-08d2b3",
+   "title": "Box of Red Wine",
+   "url": "https://polyfork.dev/asset/box-of-red-wine-08d2b3",
+   "thumbnailUrl": "https://polyfork.dev/files/box-of-red-wine-08d2b3/renders/hero.png",
+   "class": "prop",
+   "kit": "chile-fiestas-patrias-87e847",
+   "triangles": 474,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.1,
+    "y": 0.22,
+    "z": 0.07
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/box-of-red-wine-08d2b3?edition=hd",
+    "triangles": 822,
+    "previewGlbUrl": "https://polyfork.dev/cdn/box-of-red-wine-08d2b3-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "rayuela-box-4587d4",
+   "title": "Rayuela Box",
+   "url": "https://polyfork.dev/asset/rayuela-box-4587d4",
+   "thumbnailUrl": "https://polyfork.dev/files/rayuela-box-4587d4/renders/hero.png",
+   "class": "prop",
+   "kit": "chile-fiestas-patrias-87e847",
+   "triangles": 418,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1,
+    "y": 0.2,
+    "z": 1
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/rayuela-box-4587d4?edition=hd",
+    "triangles": 1298,
+    "previewGlbUrl": "https://polyfork.dev/cdn/rayuela-box-4587d4-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "signal-box-f57a2d",
+   "title": "Signal Box",
+   "url": "https://polyfork.dev/asset/signal-box-f57a2d",
+   "thumbnailUrl": "https://polyfork.dev/files/signal-box-f57a2d/renders/hero.png",
+   "class": "building",
+   "kit": "countryside-railway-9b4c57",
+   "triangles": 2264,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 7.96,
+    "y": 8.18,
+    "z": 3.97
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "recessed-floor-box-018add",
+   "title": "Recessed Floor Box",
+   "url": "https://polyfork.dev/asset/recessed-floor-box-018add",
+   "thumbnailUrl": "https://polyfork.dev/files/recessed-floor-box-018add/renders/hero.png",
+   "class": "prop",
+   "kit": "office-794453",
+   "triangles": 568,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.3,
+    "y": 0.26,
+    "z": 0.2
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/recessed-floor-box-018add?edition=hd",
+    "triangles": 1038,
+    "previewGlbUrl": "https://polyfork.dev/cdn/recessed-floor-box-018add-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "offering-box-c85bd3",
+   "title": "Offering Box",
+   "url": "https://polyfork.dev/asset/offering-box-c85bd3",
+   "thumbnailUrl": "https://polyfork.dev/files/offering-box-c85bd3/renders/hero.png",
+   "class": "prop",
+   "kit": "japanese-suburban-city-street-baa482",
+   "triangles": 817,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1.02,
+    "y": 0.8,
+    "z": 0.68
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/offering-box-c85bd3?edition=hd",
+    "triangles": 1666,
+    "previewGlbUrl": "https://polyfork.dev/cdn/offering-box-c85bd3-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "電池": [
+  {
+   "id": "battery-wall-section-51b723",
+   "title": "Battery Wall Section",
+   "url": "https://polyfork.dev/asset/battery-wall-section-51b723",
+   "thumbnailUrl": "https://polyfork.dev/files/battery-wall-section-51b723/renders/hero.png",
+   "class": "building",
+   "kit": "pirate-cove-2ebea4",
+   "triangles": 576,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 4,
+    "y": 2.4,
+    "z": 1.5
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "battery-bank-b4d362",
+   "title": "Battery Bank",
+   "url": "https://polyfork.dev/asset/battery-bank-b4d362",
+   "thumbnailUrl": "https://polyfork.dev/files/battery-bank-b4d362/renders/hero.png",
+   "class": "prop",
+   "kit": "space-base-kit-cf65de",
+   "triangles": 606,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1.5,
+    "y": 1.88,
+    "z": 1.1
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/battery-bank-b4d362?edition=hd",
+    "triangles": 1488,
+    "previewGlbUrl": "https://polyfork.dev/cdn/battery-bank-b4d362-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "temporary-traffic-light-04c866",
+   "title": "Temporary Traffic Light",
+   "url": "https://polyfork.dev/asset/temporary-traffic-light-04c866",
+   "thumbnailUrl": "https://polyfork.dev/files/temporary-traffic-light-04c866/renders/hero.png",
+   "class": "prop",
+   "kit": "construction-site-9e40b0",
+   "triangles": 872,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1.24,
+    "y": 2.4,
+    "z": 1.01
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/temporary-traffic-light-04c866?edition=hd",
+    "triangles": 3006,
+    "previewGlbUrl": "https://polyfork.dev/cdn/temporary-traffic-light-04c866-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "portable-party-speaker-92cdc1",
+   "title": "Portable Party Speaker",
+   "url": "https://polyfork.dev/asset/portable-party-speaker-92cdc1",
+   "thumbnailUrl": "https://polyfork.dev/files/portable-party-speaker-92cdc1/renders/hero.png",
+   "class": "prop",
+   "kit": "skatepark-0922a9",
+   "triangles": 780,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.53,
+    "y": 1.1,
+    "z": 0.38
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/portable-party-speaker-92cdc1?edition=hd",
+    "triangles": 3008,
+    "previewGlbUrl": "https://polyfork.dev/cdn/portable-party-speaker-92cdc1-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "capital-cruiser-482162",
+   "title": "Capital Cruiser",
+   "url": "https://polyfork.dev/asset/capital-cruiser-482162",
+   "thumbnailUrl": "https://polyfork.dev/files/capital-cruiser-482162/renders/hero.png",
+   "class": "vehicle",
+   "kit": "spaceship-wars-kit-234642",
+   "triangles": 4320,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 20.6,
+    "y": 16.35,
+    "z": 43.25
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/capital-cruiser-482162?edition=hd",
+    "triangles": 12950,
+    "previewGlbUrl": "https://polyfork.dev/cdn/capital-cruiser-482162-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "stone-viaduct-span-0bd731",
+   "title": "Stone Viaduct Span",
+   "url": "https://polyfork.dev/asset/stone-viaduct-span-0bd731",
+   "thumbnailUrl": "https://polyfork.dev/files/stone-viaduct-span-0bd731/renders/hero.png",
+   "class": "prop",
+   "kit": "countryside-railway-9b4c57",
+   "triangles": 810,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 5.92,
+    "y": 10,
+    "z": 24
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/stone-viaduct-span-0bd731?edition=hd",
+    "triangles": 3324,
+    "previewGlbUrl": "https://polyfork.dev/cdn/stone-viaduct-span-0bd731-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "cruiser-and-longboard-b3d081",
+   "title": "Cruiser and Longboard",
+   "url": "https://polyfork.dev/asset/cruiser-and-longboard-b3d081",
+   "thumbnailUrl": "https://polyfork.dev/files/cruiser-and-longboard-b3d081/renders/hero.png",
+   "class": "prop",
+   "kit": "skatepark-0922a9",
+   "triangles": 860,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.29,
+    "y": 0.19,
+    "z": 0.98
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/cruiser-and-longboard-b3d081?edition=hd",
+    "triangles": 1880,
+    "previewGlbUrl": "https://polyfork.dev/cdn/cruiser-and-longboard-b3d081-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "arrow-board-2eea6b",
+   "title": "Arrow Board",
+   "url": "https://polyfork.dev/asset/arrow-board-2eea6b",
+   "thumbnailUrl": "https://polyfork.dev/files/arrow-board-2eea6b/renders/hero.png",
+   "class": "prop",
+   "kit": "construction-site-9e40b0",
+   "triangles": 964,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 2,
+    "y": 3,
+    "z": 2
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/arrow-board-2eea6b?edition=hd",
+    "triangles": 3786,
+    "previewGlbUrl": "https://polyfork.dev/cdn/arrow-board-2eea6b-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "歯ブラシ": [],
+ "お茶/水(ペットボトル)": [
+  {
+   "id": "bottle-ca0f79",
+   "title": "Bottle",
+   "url": "https://polyfork.dev/asset/bottle-ca0f79",
+   "thumbnailUrl": "https://polyfork.dev/files/bottle-ca0f79/renders/hero.png",
+   "class": "ultra",
+   "triangles": 180,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.08,
+    "y": 0.28,
+    "z": 0.09
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/bottle-ca0f79?edition=hd",
+    "triangles": 692,
+    "previewGlbUrl": "https://polyfork.dev/cdn/bottle-ca0f79-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "whiskey-bottle-and-glass-fa24b4",
+   "title": "Whiskey Bottle and Glass Set",
+   "url": "https://polyfork.dev/asset/whiskey-bottle-and-glass-fa24b4",
+   "thumbnailUrl": "https://polyfork.dev/files/whiskey-bottle-and-glass-fa24b4/renders/hero.png",
+   "class": "prop",
+   "kit": "frontier-town-a0085b",
+   "triangles": 464,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.25,
+    "y": 0.3,
+    "z": 0.19
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/whiskey-bottle-and-glass-fa24b4?edition=hd",
+    "triangles": 1072,
+    "previewGlbUrl": "https://polyfork.dev/cdn/whiskey-bottle-and-glass-fa24b4-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "potion-bottle-099ad7",
+   "title": "Potion Bottle",
+   "url": "https://polyfork.dev/asset/potion-bottle-099ad7",
+   "thumbnailUrl": "https://polyfork.dev/files/potion-bottle-099ad7/renders/hero.png",
+   "class": "prop",
+   "kit": "dungeon-crypt-c27d93",
+   "triangles": 628,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.08,
+    "y": 0.18,
+    "z": 0.08
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/potion-bottle-099ad7?edition=hd",
+    "triangles": 854,
+    "previewGlbUrl": "https://polyfork.dev/cdn/potion-bottle-099ad7-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "wine-bottle-75a822",
+   "title": "Wine Bottle",
+   "url": "https://polyfork.dev/asset/wine-bottle-75a822",
+   "thumbnailUrl": "https://polyfork.dev/files/wine-bottle-75a822/renders/hero.png",
+   "class": "prop",
+   "kit": "modern-restaurant-cafe-01ea4c",
+   "triangles": 214,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.08,
+    "y": 0.3,
+    "z": 0.07
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/wine-bottle-75a822?edition=hd",
+    "triangles": 640,
+    "previewGlbUrl": "https://polyfork.dev/cdn/wine-bottle-75a822-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "potion-bottle-b28245",
+   "title": "Potion Bottle",
+   "url": "https://polyfork.dev/asset/potion-bottle-b28245",
+   "thumbnailUrl": "https://polyfork.dev/files/potion-bottle-b28245/renders/hero.png",
+   "class": "ultra",
+   "triangles": 119,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.17,
+    "y": 0.26,
+    "z": 0.17
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/potion-bottle-b28245?edition=hd",
+    "triangles": 476,
+    "previewGlbUrl": "https://polyfork.dev/cdn/potion-bottle-b28245-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "bottle-cap-cd96db",
+   "title": "Bottle Cap",
+   "url": "https://polyfork.dev/asset/bottle-cap-cd96db",
+   "thumbnailUrl": "https://polyfork.dev/files/bottle-cap-cd96db/renders/hero.png",
+   "class": "prop",
+   "kit": "insect-world-e44b9f",
+   "triangles": 808,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 3.37,
+    "y": 0.74,
+    "z": 3.2
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/bottle-cap-cd96db?edition=hd",
+    "triangles": 2586,
+    "previewGlbUrl": "https://polyfork.dev/cdn/bottle-cap-cd96db-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "water-bottle-crate-78c8db",
+   "title": "Water Bottle Crate",
+   "url": "https://polyfork.dev/asset/water-bottle-crate-78c8db",
+   "thumbnailUrl": "https://polyfork.dev/files/water-bottle-crate-78c8db/renders/hero.png",
+   "class": "prop",
+   "kit": "stadium-5db167",
+   "triangles": 608,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.38,
+    "y": 0.33,
+    "z": 0.29
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/water-bottle-crate-78c8db?edition=hd",
+    "triangles": 1516,
+    "previewGlbUrl": "https://polyfork.dev/cdn/water-bottle-crate-78c8db-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "wash-bottle-set-88f3aa",
+   "title": "Wash Bottle Set",
+   "url": "https://polyfork.dev/asset/wash-bottle-set-88f3aa",
+   "thumbnailUrl": "https://polyfork.dev/files/wash-bottle-set-88f3aa/renders/hero.png",
+   "class": "prop",
+   "kit": "research-lab-9b9b5d",
+   "triangles": 669,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.14,
+    "y": 0.22,
+    "z": 0.14
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/wash-bottle-set-88f3aa?edition=hd",
+    "triangles": 984,
+    "previewGlbUrl": "https://polyfork.dev/cdn/wash-bottle-set-88f3aa-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "缶コーヒー": [
+  {
+   "id": "metal-trash-can-f57043",
+   "title": "Metal Trash Can",
+   "url": "https://polyfork.dev/asset/metal-trash-can-f57043",
+   "thumbnailUrl": "https://polyfork.dev/files/metal-trash-can-f57043/renders/hero.png",
+   "class": "prop",
+   "kit": "nyc-city-kit-fbca88",
+   "triangles": 720,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.72,
+    "y": 0.9,
+    "z": 0.62
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "spray-paint-can-6e5292",
+   "title": "Spray Paint Can",
+   "url": "https://polyfork.dev/asset/spray-paint-can-6e5292",
+   "thumbnailUrl": "https://polyfork.dev/files/spray-paint-can-6e5292/renders/hero.png",
+   "class": "prop",
+   "kit": "skatepark-0922a9",
+   "triangles": 548,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.07,
+    "y": 0.18,
+    "z": 0.07
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/spray-paint-can-6e5292?edition=hd",
+    "triangles": 816,
+    "previewGlbUrl": "https://polyfork.dev/cdn/spray-paint-can-6e5292-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "energy-drink-can-c47bcf",
+   "title": "Energy Drink Can",
+   "url": "https://polyfork.dev/asset/energy-drink-can-c47bcf",
+   "thumbnailUrl": "https://polyfork.dev/files/energy-drink-can-c47bcf/renders/hero.png",
+   "class": "prop",
+   "kit": "skatepark-0922a9",
+   "triangles": 606,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.06,
+    "y": 0.16,
+    "z": 0.06
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "watering-can-b22758",
+   "title": "Watering Can",
+   "url": "https://polyfork.dev/asset/watering-can-b22758",
+   "thumbnailUrl": "https://polyfork.dev/files/watering-can-b22758/renders/hero.png",
+   "class": "prop",
+   "kit": "cozy-farm-cc979f",
+   "triangles": 492,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.18,
+    "y": 0.35,
+    "z": 0.46
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/watering-can-b22758?edition=hd",
+    "triangles": 1471,
+    "previewGlbUrl": "https://polyfork.dev/cdn/watering-can-b22758-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "oil-can-rack-f68976",
+   "title": "Oil Can Rack",
+   "url": "https://polyfork.dev/asset/oil-can-rack-f68976",
+   "thumbnailUrl": "https://polyfork.dev/files/oil-can-rack-f68976/renders/hero.png",
+   "class": "prop",
+   "kit": "roadside-americana-50d40c",
+   "triangles": 918,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.72,
+    "y": 1.1,
+    "z": 0.54
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/oil-can-rack-f68976?edition=hd",
+    "triangles": 4000,
+    "previewGlbUrl": "https://polyfork.dev/cdn/oil-can-rack-f68976-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "taxiway-edge-light-run-92f7eb",
+   "title": "Taxiway Edge Light Run",
+   "url": "https://polyfork.dev/asset/taxiway-edge-light-run-92f7eb",
+   "thumbnailUrl": "https://polyfork.dev/files/taxiway-edge-light-run-92f7eb/renders/hero.png",
+   "class": "prop",
+   "kit": "airport-43b137",
+   "triangles": 592,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.15,
+    "y": 0.3,
+    "z": 0.15
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "ground-power-unit-326361",
+   "title": "Ground Power Unit",
+   "url": "https://polyfork.dev/asset/ground-power-unit-326361",
+   "thumbnailUrl": "https://polyfork.dev/files/ground-power-unit-326361/renders/hero.png",
+   "class": "vehicle",
+   "kit": "airport-43b137",
+   "triangles": 2128,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 2.34,
+    "y": 2.54,
+    "z": 4.47
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "gold-hoard-mound-d0a2be",
+   "title": "Gold Hoard Mound",
+   "url": "https://polyfork.dev/asset/gold-hoard-mound-d0a2be",
+   "thumbnailUrl": "https://polyfork.dev/files/gold-hoard-mound-d0a2be/renders/hero.png",
+   "class": "prop",
+   "kit": "dragons-lair-dark-dragon-782570",
+   "triangles": 760,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 4.91,
+    "y": 1.84,
+    "z": 4.86
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "ジュース": [
+  {
+   "id": "fallen-blackberry-27dc5a",
+   "title": "Fallen Blackberry",
+   "url": "https://polyfork.dev/asset/fallen-blackberry-27dc5a",
+   "thumbnailUrl": "https://polyfork.dev/files/fallen-blackberry-27dc5a/renders/hero.png",
+   "class": "prop",
+   "kit": "insect-world-e44b9f",
+   "triangles": 886,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1.88,
+    "y": 1.99,
+    "z": 1.72
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/fallen-blackberry-27dc5a?edition=hd",
+    "triangles": 3539,
+    "previewGlbUrl": "https://polyfork.dev/cdn/fallen-blackberry-27dc5a-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "carving-station-roast-4c485e",
+   "title": "Carving Station Roast",
+   "url": "https://polyfork.dev/asset/carving-station-roast-4c485e",
+   "thumbnailUrl": "https://polyfork.dev/files/carving-station-roast-4c485e/renders/hero.png",
+   "class": "prop",
+   "kit": "casino-3dd029",
+   "triangles": 685,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.35,
+    "y": 0.2,
+    "z": 0.5
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/carving-station-roast-4c485e?edition=hd",
+    "triangles": 1540,
+    "previewGlbUrl": "https://polyfork.dev/cdn/carving-station-roast-4c485e-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "box-of-red-wine-08d2b3",
+   "title": "Box of Red Wine",
+   "url": "https://polyfork.dev/asset/box-of-red-wine-08d2b3",
+   "thumbnailUrl": "https://polyfork.dev/files/box-of-red-wine-08d2b3/renders/hero.png",
+   "class": "prop",
+   "kit": "chile-fiestas-patrias-87e847",
+   "triangles": 474,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.1,
+    "y": 0.22,
+    "z": 0.07
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/box-of-red-wine-08d2b3?edition=hd",
+    "triangles": 822,
+    "previewGlbUrl": "https://polyfork.dev/cdn/box-of-red-wine-08d2b3-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "glove-dispenser-rack-11419e",
+   "title": "Glove Dispenser Rack",
+   "url": "https://polyfork.dev/asset/glove-dispenser-rack-11419e",
+   "thumbnailUrl": "https://polyfork.dev/files/glove-dispenser-rack-11419e/renders/hero.png",
+   "class": "prop",
+   "kit": "research-lab-9b9b5d",
+   "triangles": 576,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 0.9,
+    "y": 0.74,
+    "z": 0.23
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/glove-dispenser-rack-11419e?edition=hd",
+    "triangles": 1812,
+    "previewGlbUrl": "https://polyfork.dev/cdn/glove-dispenser-rack-11419e-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "concourse-paving-tile-93ce9c",
+   "title": "Concourse Paving Tile",
+   "url": "https://polyfork.dev/asset/concourse-paving-tile-93ce9c",
+   "thumbnailUrl": "https://polyfork.dev/files/concourse-paving-tile-93ce9c/renders/hero.png",
+   "class": "prop",
+   "kit": "stadium-5db167",
+   "triangles": 482,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 4,
+    "y": 0.09,
+    "z": 4
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/concourse-paving-tile-93ce9c?edition=hd",
+    "triangles": 1162,
+    "previewGlbUrl": "https://polyfork.dev/cdn/concourse-paving-tile-93ce9c-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ],
+ "(参考)商品棚の小物": [
+  {
+   "id": "convenience-store-c30e1d",
+   "title": "Convenience Store",
+   "url": "https://polyfork.dev/asset/convenience-store-c30e1d",
+   "thumbnailUrl": "https://polyfork.dev/files/convenience-store-c30e1d/renders/hero.png",
+   "class": "building",
+   "kit": "japanese-suburban-city-street-baa482",
+   "triangles": 920,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 8,
+    "y": 3.42,
+    "z": 4
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "log-store-25e0b5",
+   "title": "Log Store",
+   "url": "https://polyfork.dev/asset/log-store-25e0b5",
+   "thumbnailUrl": "https://polyfork.dev/files/log-store-25e0b5/renders/hero.png",
+   "class": "prop",
+   "kit": "chronos-hearth-kit-4827fd",
+   "triangles": 696,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 1.99,
+    "y": 1.8,
+    "z": 1
+   },
+   "hd": {
+    "plan": "pro",
+    "pageUrl": "https://polyfork.dev/asset/log-store-25e0b5?edition=hd",
+    "triangles": 2584,
+    "previewGlbUrl": "https://polyfork.dev/cdn/log-store-25e0b5-hd-preview.glb"
+   },
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "department-store-ffbd58",
+   "title": "Department Store",
+   "url": "https://polyfork.dev/asset/department-store-ffbd58",
+   "thumbnailUrl": "https://polyfork.dev/files/department-store-ffbd58/renders/hero.png",
+   "class": "building",
+   "kit": "nyc-city-kit-fbca88",
+   "triangles": 3108,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 16,
+    "y": 23.06,
+    "z": 12.75
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "general-store-a2187a",
+   "title": "General Store",
+   "url": "https://polyfork.dev/asset/general-store-a2187a",
+   "thumbnailUrl": "https://polyfork.dev/files/general-store-a2187a/renders/hero.png",
+   "class": "building",
+   "kit": "frontier-town-a0085b",
+   "triangles": 1395,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 6,
+    "y": 6,
+    "z": 8
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "corner-shop-5aec8c",
+   "title": "Corner Shop",
+   "url": "https://polyfork.dev/asset/corner-shop-5aec8c",
+   "thumbnailUrl": "https://polyfork.dev/files/corner-shop-5aec8c/renders/hero.png",
+   "class": "building",
+   "kit": "nyc-city-kit-fbca88",
+   "triangles": 2887,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 8.85,
+    "y": 7,
+    "z": 8.85
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "skate-shop-bce146",
+   "title": "Skate Shop",
+   "url": "https://polyfork.dev/asset/skate-shop-bce146",
+   "thumbnailUrl": "https://polyfork.dev/files/skate-shop-bce146/renders/hero.png",
+   "class": "building",
+   "kit": "skatepark-0922a9",
+   "triangles": 2415,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 6,
+    "y": 6.5,
+    "z": 8
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "blacksmith-s-shop-9c5f43",
+   "title": "Blacksmith's Shop",
+   "url": "https://polyfork.dev/asset/blacksmith-s-shop-9c5f43",
+   "thumbnailUrl": "https://polyfork.dev/files/blacksmith-s-shop-9c5f43/renders/hero.png",
+   "class": "building",
+   "kit": "frontier-town-a0085b",
+   "triangles": 1339,
+   "free": true,
+   "plan": "free",
+   "hasRig": false,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 6,
+    "y": 6.2,
+    "z": 6
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  },
+  {
+   "id": "groundsman-s-store-shed-5b6996",
+   "title": "Groundsman's Store Shed",
+   "url": "https://polyfork.dev/asset/groundsman-s-store-shed-5b6996",
+   "thumbnailUrl": "https://polyfork.dev/files/groundsman-s-store-shed-5b6996/renders/hero.png",
+   "class": "building",
+   "kit": "stadium-5db167",
+   "triangles": 1539,
+   "free": true,
+   "plan": "free",
+   "hasRig": true,
+   "hasSkeleton": false,
+   "hasIk": false,
+   "size": {
+    "x": 4,
+    "y": 3,
+    "z": 3
+   },
+   "hd": null,
+   "downloadStatus": "direct",
+   "canDownloadNow": true,
+   "license": {
+    "name": "CC BY 4.0 or Polyfork licence",
+    "url": "https://polyfork.dev/licensing",
+    "evidence": "Free Polyfork low-poly mesh files come under two licences, the user's choice: CC BY 4.0 (credit the asset's credit line, link its model page, state changes; redistribution and resale allowed) or the Polyfork licence (no attribution, no standalone redistribution of the files, and no building or training a commercial 3D asset generator from them; CC BY 4.0 sets no such limit on the mesh files). Call polyfork_get_model for the per-asset licence text and credit line. The .mjs source, HD editions and thumbnails stay under the Polyfork licence only.",
+    "commercialUse": "yes",
+    "attributionRequired": "yes"
+   }
+  }
+ ]
+}
