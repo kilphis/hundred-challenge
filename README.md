@@ -39,6 +39,7 @@
 | 34 | ダンジョン探索(Python、端末)| `34_dungeon/`(`uv run 34_dungeon/dungeon.py`)|
 | 35 | コンビニ店員 × ゾンビ街(3D版)| `35_konbini_3d/index.html` |
 | 36 | Ruby と Lisp の比較(コイン集めゲーム)| `36_ruby_lisp/`(`ruby 36_ruby_lisp/main.rb`)|
+| 37 | 砂のボス戦(Rust + Bevy)| `37_sand_boss/`(`cargo run --release`)|
 
 ブラウザで動く日は表のリンクから遊べる(GitHub Pages)。
 

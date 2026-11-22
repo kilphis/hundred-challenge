@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>筏で川下り</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #bfe0f0; overflow: hidden; font-family: -apple-system, "Hiragino Sans", sans-serif; color: #fff; }
+  canvas { display: block; }
+  .hud { position: fixed; text-shadow: 0 1px 4px rgba(0,0,0,.6); font-size: 20px; font-weight: 600; }
+  #hp { left: 18px; top: 14px; letter-spacing: 3px; }
+  #time { right: 18px; top: 14px; }
+  #prog { position: fixed; left: 18px; right: 18px; bottom: 16px; height: 8px; background: rgba(0,0,0,.35); border-radius: 4px; }
+  #bar { height: 100%; width: 0; background: #ffd35a; border-radius: 4px; }
+  #dist { position: fixed; bottom: 30px; right: 18px; font-size: 16px; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+  #flash { position: fixed; inset: 0; background: radial-gradient(transparent 55%, rgba(220,30,20,.7)); opacity: 0; pointer-events: none; }
+  .ov { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(20,40,60,.45); text-align: center; text-shadow: 0 2px 8px rgba(0,0,0,.6); }
+  .ov h1 { font-size: 44px; margin: 0 0 12px; }
+  .ov p { font-size: 18px; margin: 4px; line-height: 1.7; }
+</style>
+</head>
+<body>
+<div class="hud" id="hp"></div>
+<div class="hud" id="time"></div>
+<div id="dist"></div>
+<div id="prog"><div id="bar"></div></div>
+<div id="flash"></div>
+<div class="ov" id="title" style="display:flex">
+  <h1>筏で川下り</h1>
+  <p>← → / A D：左右に漕ぐ　↑ / W：前に漕ぐ　↓ / S：ブレーキ</p>
+  <p>岩にぶつかると筏が傷む。ゴールの門まで下ろう。</p>
+  <p><b>Space で出発</b></p>
+</div>
+<div class="ov" id="result"><h1 id="rt"></h1><p id="rs"></p></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="defs.js"></script>
+<script src="world.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
