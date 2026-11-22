@@ -42,4 +42,4 @@ tags: [100日チャレンジ]
 - [x] Day 35 [[70_hundred_challenge/35_konbini_3d/okimochi|35_konbini_3d]] — コンビニ店員 × ゾンビ街(3D版)
 - [x] Day 36 [[70_hundred_challenge/36_ruby_lisp/okimochi|36_ruby_lisp]] — Ruby と Lisp の比較(コイン集めゲーム)
 - [x] Day 37 [[70_hundred_challenge/37_sand_boss/okimochi|37_sand_boss]] — 砂のボス戦(Rust + Bevy)
-- [x] Day 38 [[70_hundred_challenge/38/okimochi|38]] — 38
+- [x] Day 38 [[70_hundred_challenge/38_raft_river/okimochi|38_raft_river]] — 筏で川下り(Rust + Bevy、一人称)

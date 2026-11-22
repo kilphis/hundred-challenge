@@ -40,6 +40,7 @@
 | 35 | コンビニ店員 × ゾンビ街(3D版)| `35_konbini_3d/index.html` |
 | 36 | Ruby と Lisp の比較(コイン集めゲーム)| `36_ruby_lisp/`(`ruby 36_ruby_lisp/main.rb`)|
 | 37 | 砂のボス戦(Rust + Bevy)| `37_sand_boss/`(`cargo run --release`)|
+| 38 | 筏で川下り(Rust + Bevy、一人称)| `38_raft_river/`(`cargo run --release`)|
 
 ブラウザで動く日は表のリンクから遊べる(GitHub Pages)。
 
