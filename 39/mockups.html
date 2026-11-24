@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>メイクテン対戦 見た目の案</title>
+<style>
+  body { margin: 0; padding: 24px; background: #1c1c20; color: #ddd; font-family: -apple-system, "Hiragino Sans", sans-serif; }
+  h1 { font-size: 18px; font-weight: 600; margin: 0 0 4px; }
+  p.note { margin: 0 0 18px; font-size: 13px; color: #999; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; max-width: 1900px; }
+  figure { margin: 0; }
+  figcaption { font-size: 14px; margin: 0 0 6px; }
+  figcaption b { font-size: 18px; margin-right: 8px; }
+  figcaption span { color: #999; }
+  svg { width: 100%; height: auto; display: block; border-radius: 10px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<h1>メイクテン対戦 見た目の案(静止画)</h1>
+<p class="note">どれも同じ場面: 左(あなた)が10を作って相手に飛ばした瞬間。左右の魔法使いが4つの数を浮かせ、上に HP 3、下に入力欄。</p>
+<div class="grid" id="grid"></div>
+
+<script>
+const W = 900, H = 560;
+const LEFT = [4, 7, 2, 9], RIGHT = [6, 3, 8, 1];
+// 数の浮かぶ位置(魔法使いの頭を中心にした相対座標)
+const OFFS = [[-95, -25], [-50, -105], [45, -115], [100, -35]];
+const WZ_Y = 400;            // 足元
+const LX = 200, RX = 700;
+
+function pad(s) { return s; }
+
+// ---- 魔法使いの輪郭(右向き。flip=-1 で左右反転) ----
+function wizardShapes(p) {
+  // p: {robe, hat, trim, skin, beard, staff, orb, stroke, sw, fillMode}
+  const st = p.stroke ? `stroke="${p.stroke}" stroke-width="${p.sw}" stroke-linejoin="round" stroke-linecap="round"` : '';
+  const f = (c) => p.noFill ? 'fill="none"' : `fill="${c}"`;
+  return `
+    <path d="M-58 ${WZ_Y} L-34 262 Q0 244 34 262 L58 ${WZ_Y} Q0 ${WZ_Y + 12} -58 ${WZ_Y} Z" ${f(p.robe)} ${st}/>
+    <path d="M-34 262 Q0 244 34 262 L30 276 Q0 262 -30 276 Z" ${f(p.trim)} ${st}/>
+    <path d="M-16 246 Q0 330 6 ${WZ_Y - 20}" fill="none" stroke="${p.trim}" stroke-width="${p.noFill ? 1.5 : 3}" opacity=".7"/>
+    <path d="M-16 244 Q-4 300 0 318 Q4 300 16 244 Z" ${f(p.beard)} ${st}/>
+    <circle cx="0" cy="228" r="19" ${f(p.skin)} ${st}/>
+    <circle cx="6" cy="226" r="1.8" fill="${p.eye}"/><circle cx="14" cy="226" r="1.8" fill="${p.eye}"/>
+    <ellipse cx="0" cy="214" rx="46" ry="9" ${f(p.hat)} ${st}/>
+    <path d="M-27 212 Q-12 160 14 116 Q24 130 20 150 Q27 180 27 212 Z" ${f(p.hat)} ${st}/>
+    <path d="M-27 206 Q0 214 27 206" fill="none" stroke="${p.trim}" stroke-width="${p.noFill ? 1.5 : 4}"/>
+    <line x1="28" y1="276" x2="72" y2="248" stroke="${p.stroke || p.robe}" stroke-width="${p.noFill ? 2 : 9}" stroke-linecap="round"/>
+    <line x1="72" y1="196" x2="80" y2="${WZ_Y + 4}" stroke="${p.staff}" stroke-width="${p.noFill ? 2.5 : 5}" stroke-linecap="round"/>
+    <circle cx="71" cy="190" r="9" ${p.noFill ? `fill="none" stroke="${p.orb}" stroke-width="2.5"` : `fill="${p.orb}"`}/>
+  `;
+}
+function wizard(cx, flip, p, extra = '') {
+  return `<g transform="translate(${cx},0) scale(${flip},1)" ${extra}>${wizardShapes(p)}</g>`;
+}
+
+const styles = {};
+
+// ============ A 星空と金 ============
+styles.A = {
+  title: 'A 星空と金', desc: '夜空に浮かぶ石の足場。紺と紫のローブ、金色の数の玉。いちばん「魔法使い」らしい定番。',
+  svg() {
+    let stars = '';
+    let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+    for (let i = 0; i < 70; i++) stars += `<circle cx="${rnd() * W}" cy="${rnd() * 330}" r="${0.6 + rnd() * 1.6}" fill="#fff" opacity="${0.3 + rnd() * 0.7}"/>`;
+    const me = { robe: '#2b3a8c', hat: '#3b2a8f', trim: '#e8c96a', skin: '#f2d2b4', beard: '#e9e9f2', staff: '#a8793a', orb: '#ffe28a', eye: '#222', stroke: '#141a4a', sw: 2 };
+    const op = { robe: '#7a2a6c', hat: '#5a1f6a', trim: '#7fe0d4', skin: '#e9c4a6', beard: '#cfcfdc', staff: '#8a6a3a', orb: '#9ff0e6', eye: '#222', stroke: '#2a0f3a', sw: 2 };
+    const orbA = (x, y, n, c1, c2, glow) => `
+      <g><circle cx="${x}" cy="${y}" r="36" fill="${glow}" opacity=".25"/>
+      <circle cx="${x}" cy="${y}" r="27" fill="url(#${c1})" stroke="${c2}" stroke-width="2"/>
+      <text x="${x}" y="${y + 11}" text-anchor="middle" font-family="Georgia,serif" font-size="32" font-weight="700" fill="#2a1d00">${n}</text></g>`;
+    const pip = (x, y, on) => `<path d="M${x} ${y + 9} C${x - 16} ${y - 3} ${x - 10} ${y - 14} ${x} ${y - 6} C${x + 10} ${y - 14} ${x + 16} ${y - 3} ${x} ${y + 9}Z" fill="${on ? '#ff6b8a' : 'none'}" stroke="#ffb3c4" stroke-width="1.5"/>`;
+    return `
+    <defs>
+      <linearGradient id="skyA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070b24"/><stop offset=".6" stop-color="#26185e"/><stop offset="1" stop-color="#5a2a7a"/></linearGradient>
+      <radialGradient id="goldA"><stop offset="0" stop-color="#fff6c8"/><stop offset=".7" stop-color="#ffd35a"/><stop offset="1" stop-color="#e0a020"/></radialGradient>
+      <radialGradient id="tealA"><stop offset="0" stop-color="#e6fffb"/><stop offset=".7" stop-color="#8be8dc"/><stop offset="1" stop-color="#3fb5a8"/></radialGradient>
+      <linearGradient id="trailA" x1="0" x2="1"><stop offset="0" stop-color="#ffd35a" stop-opacity="0"/><stop offset="1" stop-color="#fff2b0"/></linearGradient>
+      <filter id="blurA"><feGaussianBlur stdDeviation="6"/></filter>
+    </defs>
+    <rect width="${W}" height="${H}" fill="url(#skyA)"/>
+    ${stars}
+    <circle cx="450" cy="90" r="38" fill="#f4efd0" opacity=".9"/><circle cx="465" cy="82" r="34" fill="#26185e"/>
+    <ellipse cx="${LX}" cy="${WZ_Y + 14}" rx="130" ry="22" fill="#3a3460"/><ellipse cx="${LX}" cy="${WZ_Y + 8}" rx="130" ry="20" fill="#5b5490"/>
+    <ellipse cx="${RX}" cy="${WZ_Y + 14}" rx="130" ry="22" fill="#3a3460"/><ellipse cx="${RX}" cy="${WZ_Y + 8}" rx="130" ry="20" fill="#5b5490"/>
+    ${wizard(LX, 1, me)}${wizard(RX, -1, op)}
+    ${OFFS.map(([dx, dy], i) => orbA(LX + dx, 230 + dy + (i % 2) * 6, LEFT[i], 'goldA', '#fff2b0', '#ffd35a')).join('')}
+    ${OFFS.map(([dx, dy], i) => orbA(RX - dx, 230 + dy + (i % 2) * 6, RIGHT[i], 'tealA', '#e6fffb', '#8be8dc')).join('')}
+    <g>
+      <path d="M290 250 Q420 235 560 262 L560 290 Q420 285 290 270Z" fill="url(#trailA)" filter="url(#blurA)"/>
+      <circle cx="555" cy="262" r="40" fill="#ffd35a" opacity=".35" filter="url(#blurA)"/>
+      <circle cx="555" cy="262" r="30" fill="url(#goldA)" stroke="#fff" stroke-width="2"/>
+      <text x="555" y="274" text-anchor="middle" font-family="Georgia,serif" font-size="34" font-weight="800" fill="#3a2400">10</text>
+    </g>
+    <g font-family="-apple-system,'Hiragino Sans',sans-serif" fill="#e8e6ff">
+      <text x="40" y="32" font-size="15" opacity=".8">あなた</text>${[0, 1, 2].map(i => pip(48 + i * 36, 58, true)).join('')}
+      <text x="860" y="32" font-size="15" text-anchor="end" opacity=".8">相手</text>${[0, 1, 2].map(i => pip(852 - i * 36, 58, i < 2)).join('')}
+    </g>
+    <rect x="0" y="470" width="${W}" height="90" fill="#0a0d2a" opacity=".78"/>
+    <g font-family="-apple-system,'Hiragino Sans',sans-serif">
+      <rect x="40" y="486" width="250" height="44" rx="10" fill="#1a1f52" stroke="#e8c96a" stroke-width="1.5"/>
+      <text x="165" y="516" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="24" fill="#ffe28a">4 × 2 = 8</text>
+      ${['+', '−', '×', '÷'].map((o, i) => `<g><circle cx="${340 + i * 56}" cy="508" r="21" fill="#2b3a8c" stroke="#e8c96a" stroke-width="1.5"/><text x="${340 + i * 56}" y="517" text-anchor="middle" font-size="24" fill="#ffe28a">${o}</text></g>`).join('')}
+      <text x="860" y="514" text-anchor="end" font-size="15" fill="#9ff0e6">相手は考え中…</text>
+    </g>`;
+  }
+};
+
+// ============ B 切り絵(紙) ============
+styles.B = {
+  title: 'B 切り絵の紙', desc: '色紙を重ねた温かい世界。影で奥行きを出し、丸くて太い字。やわらかく、スマホにも合う。',
+  svg() {
+    const me = { robe: '#e8734a', hat: '#d9573a', trim: '#fbe3a1', skin: '#fde0c8', beard: '#fff', staff: '#8b5a2b', orb: '#fbe3a1', eye: '#4a2a1a' };
+    const op = { robe: '#3f8f8b', hat: '#2e6f78', trim: '#fbe3a1', skin: '#fde0c8', beard: '#f4f4f4', staff: '#8b5a2b', orb: '#fbe3a1', eye: '#4a2a1a' };
+    const orbB = (x, y, n, c) => `<g filter="url(#shB)"><circle cx="${x}" cy="${y}" r="31" fill="${c}"/><circle cx="${x}" cy="${y}" r="24" fill="#fff8e6"/>
+      <text x="${x}" y="${y + 13}" text-anchor="middle" font-family="'Hiragino Maru Gothic ProN','Arial Rounded MT Bold',sans-serif" font-size="36" font-weight="900" fill="#4a2a1a">${n}</text></g>`;
+    const pip = (x, y, on) => `<rect x="${x - 13}" y="${y - 13}" width="26" height="26" rx="8" fill="${on ? '#e8493a' : '#d8c9a8'}" ${on ? 'filter="url(#shB)"' : ''}/>`;
+    return `
+    <defs>
+      <filter id="shB" x="-20%" y="-20%" width="150%" height="150%"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#5a3a1a" flood-opacity=".35"/></filter>
+    </defs>
+    <rect width="${W}" height="${H}" fill="#f6e7c4"/>
+    <circle cx="450" cy="150" r="90" fill="#fbd27a" filter="url(#shB)"/>
+    <path d="M0 330 Q150 250 300 320 T600 300 T900 320 L900 560 L0 560Z" fill="#cfd9a0" filter="url(#shB)"/>
+    <path d="M0 400 Q200 340 400 395 T900 380 L900 560 L0 560Z" fill="#9fc18a" filter="url(#shB)"/>
+    <ellipse cx="${LX}" cy="${WZ_Y + 12}" rx="105" ry="16" fill="#6e9a6a" filter="url(#shB)"/>
+    <ellipse cx="${RX}" cy="${WZ_Y + 12}" rx="105" ry="16" fill="#6e9a6a" filter="url(#shB)"/>
+    <g filter="url(#shB)">${wizard(LX, 1, me)}</g><g filter="url(#shB)">${wizard(RX, -1, op)}</g>
+    ${OFFS.map(([dx, dy], i) => orbB(LX + dx, 230 + dy + (i % 2) * 6, LEFT[i], '#e8734a')).join('')}
+    ${OFFS.map(([dx, dy], i) => orbB(RX - dx, 230 + dy + (i % 2) * 6, RIGHT[i], '#3f8f8b')).join('')}
+    <g filter="url(#shB)">
+      ${[0, 1, 2, 3, 4].map(i => `<circle cx="${330 + i * 40}" cy="${275 - Math.sin(i / 4 * 3.14) * 6}" r="${5 + i * 1.6}" fill="#e8734a" opacity="${.3 + i * .15}"/>`).join('')}
+      <circle cx="555" cy="262" r="40" fill="#e8493a"/><circle cx="555" cy="262" r="32" fill="#fff8e6"/>
+      <text x="555" y="276" text-anchor="middle" font-family="'Hiragino Maru Gothic ProN','Arial Rounded MT Bold',sans-serif" font-size="40" font-weight="900" fill="#e8493a">10</text>
+    </g>
+    <g font-family="'Hiragino Maru Gothic ProN',sans-serif" font-weight="700" fill="#5a3a1a">
+      <text x="40" y="32" font-size="16">あなた</text>${[0, 1, 2].map(i => pip(54 + i * 36, 56, true)).join('')}
+      <text x="860" y="32" font-size="16" text-anchor="end">あいて</text>${[0, 1, 2].map(i => pip(846 - i * 36, 56, i < 2)).join('')}
+    </g>
+    <g filter="url(#shB)"><rect x="30" y="480" width="840" height="64" rx="18" fill="#fff8e6"/></g>
+    <g font-family="'Hiragino Maru Gothic ProN',sans-serif" font-weight="700">
+      <rect x="46" y="492" width="240" height="40" rx="12" fill="#f6e7c4"/>
+      <text x="166" y="520" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="22" fill="#5a3a1a">4 × 2 = 8</text>
+      ${['+', '−', '×', '÷'].map((o, i) => `<g filter="url(#shB)"><circle cx="${338 + i * 56}" cy="512" r="21" fill="#e8734a"/><text x="${338 + i * 56}" y="521" text-anchor="middle" font-size="24" fill="#fff">${o}</text></g>`).join('')}
+      <text x="852" y="518" text-anchor="end" font-size="15" fill="#3f8f8b">あいては考え中…</text>
+    </g>`;
+  }
+};
+
+// ============ C ネオン幾何 ============
+styles.C = {
+  title: 'C ネオンの幾何', desc: '黒地に光る線だけで描く。魔法使いは三角形の組み合わせ、数は輪。いちばん現代的でシャープ。',
+  svg() {
+    const me = { robe: '', hat: '', trim: '#ff5fb0', skin: '', beard: '', staff: '#ff5fb0', orb: '#ff5fb0', eye: '#ff5fb0', stroke: '#ff5fb0', sw: 2.5, noFill: true };
+    const op = { robe: '', hat: '', trim: '#4de8ff', skin: '', beard: '', staff: '#4de8ff', orb: '#4de8ff', eye: '#4de8ff', stroke: '#4de8ff', sw: 2.5, noFill: true };
+    let grid = '';
+    for (let x = 0; x <= W; x += 45) grid += `<line x1="${x}" y1="0" x2="${x}" y2="${H}"/>`;
+    for (let y = 0; y <= H; y += 45) grid += `<line x1="0" y1="${y}" x2="${W}" y2="${y}"/>`;
+    const orbC = (x, y, n, c) => `<g filter="url(#glC)"><circle cx="${x}" cy="${y}" r="29" fill="none" stroke="${c}" stroke-width="2.5"/><circle cx="${x}" cy="${y}" r="35" fill="none" stroke="${c}" stroke-width="1" stroke-dasharray="3 7" opacity=".7"/>
+      <text x="${x}" y="${y + 11}" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="32" font-weight="700" fill="${c}">${n}</text></g>`;
+    const seg = (x, y, on, c) => `<rect x="${x}" y="${y}" width="44" height="9" fill="${on ? c : 'none'}" stroke="${c}" stroke-width="1.5" ${on ? 'filter="url(#glC)"' : 'opacity=".5"'}/>`;
+    return `
+    <defs>
+      <filter id="glC" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <linearGradient id="fadeC" x1="0" x2="1"><stop offset="0" stop-color="#ff5fb0" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".9"/></linearGradient>
+    </defs>
+    <rect width="${W}" height="${H}" fill="#07070f"/>
+    <g stroke="#1a1a3a" stroke-width="1">${grid}</g>
+    <line x1="0" y1="${WZ_Y + 12}" x2="${W}" y2="${WZ_Y + 12}" stroke="#2a2a5a" stroke-width="1.5"/>
+    <line x1="450" y1="60" x2="450" y2="${WZ_Y + 12}" stroke="#2a2a5a" stroke-width="1" stroke-dasharray="4 8"/>
+    <g filter="url(#glC)">${wizard(LX, 1, me)}${wizard(RX, -1, op)}</g>
+    ${OFFS.map(([dx, dy], i) => orbC(LX + dx, 230 + dy + (i % 2) * 6, LEFT[i], '#ff5fb0')).join('')}
+    ${OFFS.map(([dx, dy], i) => orbC(RX - dx, 230 + dy + (i % 2) * 6, RIGHT[i], '#4de8ff')).join('')}
+    <g filter="url(#glC)">
+      ${[0, 1, 2, 3].map(i => `<line x1="${300 + i * 20}" y1="${250 + i * 8}" x2="${520}" y2="${250 + i * 8}" stroke="url(#fadeC)" stroke-width="2"/>`).join('')}
+      <circle cx="555" cy="262" r="30" fill="#07070f" stroke="#fff" stroke-width="3"/><circle cx="555" cy="262" r="40" fill="none" stroke="#ff5fb0" stroke-width="1.5" stroke-dasharray="6 6"/>
+      <text x="555" y="274" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="34" font-weight="800" fill="#fff">10</text>
+    </g>
+    <g font-family="ui-monospace,Menlo,monospace" fill="#aaa" font-size="13" letter-spacing="2">
+      <text x="40" y="28">YOU</text>${[0, 1, 2].map(i => seg(40 + i * 52, 38, true, '#ff5fb0')).join('')}
+      <text x="860" y="28" text-anchor="end">FOE</text>${[0, 1, 2].map(i => seg(860 - 44 - i * 52, 38, i < 2, '#4de8ff')).join('')}
+    </g>
+    <line x1="40" y1="474" x2="860" y2="474" stroke="#2a2a5a"/>
+    <g font-family="ui-monospace,Menlo,monospace">
+      <rect x="40" y="488" width="250" height="44" fill="none" stroke="#ff5fb0" stroke-width="1.5"/>
+      <text x="165" y="518" text-anchor="middle" font-size="22" fill="#ff5fb0">4 × 2 = 8</text>
+      ${['+', '−', '×', '÷'].map((o, i) => `<g filter="url(#glC)"><rect x="${322 + i * 56}" y="488" width="44" height="44" fill="none" stroke="#ff5fb0" stroke-width="1.5"/><text x="${344 + i * 56}" y="519" text-anchor="middle" font-size="24" fill="#ff5fb0">${o}</text></g>`).join('')}
+      <text x="860" y="516" text-anchor="end" font-size="14" fill="#4de8ff" letter-spacing="2">FOE THINKING…</text>
+    </g>`;
+  }
+};
+
+// ============ D 墨絵 ============
+styles.D = {
+  title: 'D 墨と和紙', desc: '和紙に墨の濃淡と朱の印。数は円相(筆の輪)の中。静かで余白が多く、「魔法」を和の筆致で。',
+  svg() {
+    const me = { robe: '#1d1b1a', hat: '#1d1b1a', trim: '#c8352b', skin: '#f6efe0', beard: '#f6efe0', staff: '#3a2c20', orb: '#c8352b', eye: '#1d1b1a', stroke: '#1d1b1a', sw: 1.5 };
+    const op = { robe: '#5a5550', hat: '#5a5550', trim: '#c8352b', skin: '#f6efe0', beard: '#f6efe0', staff: '#5a4a3a', orb: '#c8352b', eye: '#1d1b1a', stroke: '#3a3632', sw: 1.5 };
+    const enso = (x, y, r, w = 5) => `<path d="M${x + r * .1} ${y - r} A${r} ${r} 0 1 1 ${x - r * .6} ${y - r * .8}" fill="none" stroke="#1d1b1a" stroke-width="${w}" stroke-linecap="round" opacity=".88"/>`;
+    const orbD = (x, y, n, tone) => `<g><circle cx="${x}" cy="${y}" r="30" fill="#f6efe0" opacity=".85"/>${enso(x, y, 30, 5)}
+      <text x="${x}" y="${y + 12}" text-anchor="middle" font-family="'Hiragino Mincho ProN','Yu Mincho',serif" font-size="34" font-weight="800" fill="${tone}">${n}</text></g>`;
+    const seal = (x, y, on) => `<g opacity="${on ? 1 : .3}"><rect x="${x - 13}" y="${y - 13}" width="26" height="26" rx="3" fill="${on ? '#c8352b' : 'none'}" stroke="#c8352b" stroke-width="2"/>${on ? `<path d="M${x - 6} ${y} h12 M${x} ${y - 6} v12" stroke="#f6efe0" stroke-width="2.5"/>` : ''}</g>`;
+    return `
+    <defs>
+      <linearGradient id="paperD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3ecdc"/><stop offset="1" stop-color="#e4dac4"/></linearGradient>
+      <linearGradient id="mtD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d1b1a" stop-opacity=".35"/><stop offset="1" stop-color="#1d1b1a" stop-opacity="0"/></linearGradient>
+      <filter id="inkD"><feTurbulence type="fractalNoise" baseFrequency=".04" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter>
+      <linearGradient id="strokeD" x1="0" x2="1"><stop offset="0" stop-color="#1d1b1a" stop-opacity="0"/><stop offset="1" stop-color="#1d1b1a"/></linearGradient>
+    </defs>
+    <rect width="${W}" height="${H}" fill="url(#paperD)"/>
+    <circle cx="450" cy="170" r="75" fill="#c8352b" opacity=".85"/>
+    <path d="M0 360 Q120 230 240 330 Q330 270 420 340 Q540 230 660 330 Q780 260 900 340 L900 470 L0 470Z" fill="url(#mtD)"/>
+    <path d="M0 400 Q200 340 380 400 Q600 330 900 400 L900 470 L0 470Z" fill="#1d1b1a" opacity=".12"/>
+    <g filter="url(#inkD)">${wizard(LX, 1, me)}${wizard(RX, -1, op)}</g>
+    ${OFFS.map(([dx, dy], i) => orbD(LX + dx, 230 + dy + (i % 2) * 6, LEFT[i], '#1d1b1a')).join('')}
+    ${OFFS.map(([dx, dy], i) => orbD(RX - dx, 230 + dy + (i % 2) * 6, RIGHT[i], '#5a5550')).join('')}
+    <g filter="url(#inkD)">
+      <path d="M300 258 Q420 240 520 262 Q420 272 300 268Z" fill="url(#strokeD)"/>
+      <circle cx="555" cy="262" r="34" fill="#f6efe0"/>${enso(555, 262, 34, 8)}
+      <text x="555" y="276" text-anchor="middle" font-family="'Hiragino Mincho ProN',serif" font-size="38" font-weight="900" fill="#c8352b">10</text>
+    </g>
+    <g font-family="'Hiragino Mincho ProN','Yu Mincho',serif" fill="#1d1b1a">
+      <text x="40" y="32" font-size="17" font-weight="700">己</text>${[0, 1, 2].map(i => seal(60 + i * 34, 58, true)).join('')}
+      <text x="860" y="32" font-size="17" font-weight="700" text-anchor="end">敵</text>${[0, 1, 2].map(i => seal(840 - i * 34, 58, i < 2)).join('')}
+    </g>
+    <rect x="0" y="470" width="${W}" height="90" fill="#1d1b1a" opacity=".06"/>
+    <line x1="30" y1="472" x2="870" y2="472" stroke="#1d1b1a" stroke-width="1.5"/>
+    <g font-family="'Hiragino Mincho ProN',serif">
+      <rect x="40" y="488" width="250" height="44" fill="#f6efe0" stroke="#1d1b1a" stroke-width="1.5"/>
+      <text x="165" y="518" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="22" fill="#1d1b1a">4 × 2 = 8</text>
+      ${['+', '−', '×', '÷'].map((o, i) => `<g><circle cx="${344 + i * 56}" cy="510" r="21" fill="#f6efe0"/>${enso(344 + i * 56, 510, 21, 3)}<text x="${344 + i * 56}" y="519" text-anchor="middle" font-size="24" font-weight="800" fill="#1d1b1a">${o}</text></g>`).join('')}
+      <text x="860" y="516" text-anchor="end" font-size="16" fill="#5a5550">敵は思案中…</text>
+    </g>`;
+  }
+};
+
+const grid = document.getElementById('grid');
+for (const k of ['A', 'B', 'C', 'D']) {
+  const s = styles[k];
+  const fig = document.createElement('figure');
+  fig.innerHTML = `<figcaption><b>${s.title}</b><span>${s.desc}</span></figcaption><svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${s.svg()}</svg>`;
+  grid.appendChild(fig);
+}
+</script>
+</body>
+</html>
