@@ -18,16 +18,6 @@ struct Frac: Equatable {
     var text: String { d == 1 ? "\(n)" : "\(n)/\(d)" }
 }
 
-// 2つの数を1つにする。0 で割るときは nil
-func apply(_ a: Frac, _ o: String, _ b: Frac) -> Frac? {
-    switch o {
-    case "+": return a + b
-    case "−": return a - b
-    case "×": return a * b
-    default: return a.divided(by: b)
-    }
-}
-
 // 入力のしかた(選んだものは UserDefaults に残す)
 enum Mode: String, CaseIterable, Identifiable {
     case merge, prefix, postfix
@@ -72,15 +62,15 @@ func stack(_ toks: [Tok], values: [Int]) -> [Frac]? {
 }
 
 // 4つの数で 10 が作れるか(総当たり: 2つ選んで計算→1つに置き換え、を繰り返す)
-func canMakeTen(_ nums: [Int]) -> Bool {
+func canMakeTen(_ nums: [Int], ops: [String] = basicOps) -> Bool {
     func go(_ xs: [Frac]) -> Bool {
         if xs.count == 1 { return xs[0] == Frac(10) }
         for a in 0..<xs.count {
             for b in 0..<xs.count where a != b {
                 let rest = xs.indices.filter { $0 != a && $0 != b }.map { xs[$0] }
-                var results = [xs[a] + xs[b], xs[a] - xs[b], xs[a] * xs[b]]
-                if let q = xs[a].divided(by: xs[b]) { results.append(q) }
-                for r in results where go(rest + [r]) { return true }
+                for o in ops {
+                    if let r = apply(xs[a], o, xs[b]), go(rest + [r]) { return true }
+                }
             }
         }
         return false
@@ -88,10 +78,33 @@ func canMakeTen(_ nums: [Int]) -> Bool {
     return go(nums.map { Frac($0) })
 }
 
+// 10 になる式を1つ返す(CPU の答え表示用)。なければ nil
+func solveTen(_ nums: [Int]) -> String? {
+    func go(_ xs: [(Frac, String)]) -> String? {
+        if xs.count == 1 { return xs[0].0 == Frac(10) ? xs[0].1 : nil }
+        for a in 0..<xs.count {
+            for b in 0..<xs.count where a != b {
+                let rest = xs.indices.filter { $0 != a && $0 != b }.map { xs[$0] }
+                let (x, xt) = xs[a], (y, yt) = xs[b]
+                var results = [(x + y, "(\(xt) + \(yt))"), (x - y, "(\(xt) − \(yt))"), (x * y, "(\(xt) × \(yt))")]
+                if let q = x.divided(by: y) { results.append((q, "(\(xt) ÷ \(yt))")) }
+                for r in results { if let s = go(rest + [r]) { return s } }
+            }
+        }
+        return nil
+    }
+    guard var s = go(nums.map { (Frac($0), "\($0)") }) else { return nil }
+    if s.hasPrefix("(") { s.removeFirst(); s.removeLast() }     // いちばん外のかっこは外す
+    return s
+}
+
+// CPU が答えを出すまでの秒数(調整はここだけ)
+let cpuSeconds = 30
+
 // 解ける4つ組をランダムに出す(1〜9)
-func newProblem() -> [Int] {
+func newProblem(level: Level = .basic) -> [Int] {
     while true {
         let c = (0..<4).map { _ in Int.random(in: 1...9) }
-        if canMakeTen(c) { return c }
+        if canMakeTen(c, ops: level.ops) { return c }
     }
 }

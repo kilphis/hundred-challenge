@@ -7,6 +7,7 @@ struct Card: Identifiable, Equatable {
 
 struct MergeView: View {
     let start: [Int]
+    var ops = basicOps
     var prefix = false                      // true: 演算子 → 数 → 数 の順 / false: 数 → 演算子 → 数
     @State private var cards: [Card] = []
     @State private var history: [[Card]] = []
@@ -41,15 +42,7 @@ struct MergeView: View {
                 .frame(maxWidth: .infinity, minHeight: 50)
                 .background(.quaternary, in: RoundedRectangle(cornerRadius: 8))
 
-            HStack(spacing: 10) {
-                ForEach(["+", "−", "×", "÷"], id: \.self) { o in
-                    Button(o) { op = o }
-                        .tint(o == op ? .orange : nil)
-                        .disabled(cards.count == 1 || (!prefix && first == nil))
-                }
-            }
-            .font(.title2)
-            .controlSize(.large)
+            OpRow(ops: ops, selected: op, enabled: opEnabled) { op = $0 }
 
             HStack(spacing: 10) {
                 Button("1つ戻す") { undo() }.disabled(history.isEmpty)
@@ -72,6 +65,8 @@ struct MergeView: View {
         return "\(f) \(op ?? "?")"
     }
 
+    private var opEnabled: Bool { cards.count > 1 && (prefix || first != nil) }
+
     private func tap(_ c: Card) {
         if prefix {
             guard op != nil else { return }
@@ -91,7 +86,7 @@ struct MergeView: View {
         guard let o = op,
               let a = cards.first(where: { $0.id == f }),
               let r = apply(a.value, o, c.value) else {
-            message = "0 では割れません"; return
+            message = "その組み合わせは計算できません"; return
         }
         history.append(cards)
         cards.removeAll { $0.id == f || $0.id == c.id }

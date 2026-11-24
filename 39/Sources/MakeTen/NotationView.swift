@@ -3,6 +3,7 @@ import SwiftUI
 // 逆ポーランド(後置) の入力画面
 struct NotationView: View {
     let start: [Int]
+    var ops = basicOps
     var onSolved: () -> Void
 
     @State private var toks: [Tok] = []
@@ -30,13 +31,7 @@ struct NotationView: View {
                 }
             }
 
-            HStack(spacing: 10) {
-                ForEach(["+", "−", "×", "÷"], id: \.self) { o in
-                    Button(o) { push(.op(o)) }.disabled(!canPlaceOp)
-                }
-            }
-            .font(.title2)
-            .controlSize(.large)
+            OpRow(ops: ops, enabled: canPlaceOp) { push(.op($0)) }
 
             // いまの積み
             HStack(spacing: 10) {
@@ -61,7 +56,7 @@ struct NotationView: View {
 
     private func push(_ t: Tok) {
         guard stack(toks + [t], values: start) != nil else {
-            message = "0 では割れません"; return
+            message = "その組み合わせは計算できません"; return
         }
         toks.append(t)
         message = ""
