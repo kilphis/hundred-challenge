@@ -4,11 +4,14 @@ import SwiftUI
 struct MakeTenApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     init() {
-        if CommandLine.arguments.contains("--check") { selfCheck(); exit(0) }
+        if CommandLine.arguments.contains("--check") { selfCheck(); MainActor.assumeIsolated { duelCheck() }; exit(0) }
+        if let i = CommandLine.arguments.firstIndex(of: "--shot"), i + 1 < CommandLine.arguments.count {
+            MainActor.assumeIsolated { shot(CommandLine.arguments[i + 1]) }; exit(0)
+        }
         NSApplication.shared.setActivationPolicy(.regular)
     }
     var body: some Scene {
-        WindowGroup("メイクテン") { ContentView() }
+        WindowGroup("メイクテン") { RootView() }
             .windowResizability(.contentSize)
     }
 }

@@ -43,3 +43,4 @@ tags: [100日チャレンジ]
 - [x] Day 36 [[70_hundred_challenge/36_ruby_lisp/okimochi|36_ruby_lisp]] — Ruby と Lisp の比較(コイン集めゲーム)
 - [x] Day 37 [[70_hundred_challenge/37_sand_boss/okimochi|37_sand_boss]] — 砂のボス戦(Rust + Bevy)
 - [x] Day 38 [[70_hundred_challenge/38_raft_river/okimochi|38_raft_river]] — 筏で川下り(Rust + Bevy、一人称)
+- [x] Day 39 [[70_hundred_challenge/39_make_ten/okimochi|39_make_ten]] — メイクテン 2人対戦(Swift)

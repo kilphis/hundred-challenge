@@ -41,6 +41,7 @@
 | 36 | Ruby と Lisp の比較(コイン集めゲーム)| `36_ruby_lisp/`(`ruby 36_ruby_lisp/main.rb`)|
 | 37 | 砂のボス戦(Rust + Bevy)| `37_sand_boss/`(`cargo run --release`)|
 | 38 | 筏で川下り(Rust + Bevy、一人称)| `38_raft_river/`(`cargo run --release`)|
+| 39 | メイクテン 2人対戦(Swift)| `39_make_ten/`(`swift run`)|
 
 ブラウザで動く日は表のリンクから遊べる(GitHub Pages)。
 
