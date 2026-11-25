@@ -42,6 +42,7 @@
 | 37 | 砂のボス戦(Rust + Bevy)| `37_sand_boss/`(`cargo run --release`)|
 | 38 | 筏で川下り(Rust + Bevy、一人称)| `38_raft_river/`(`cargo run --release`)|
 | 39 | メイクテン 2人対戦(Swift)| `39_make_ten/`(`swift run`)|
+| 40 | 金のフレーズ単語帳(各単語のイメージ効果、HTML)| `40_image_cards/`(`open 40_image_cards/index.html`)|
 
 ブラウザで動く日は表のリンクから遊べる(GitHub Pages)。
 
