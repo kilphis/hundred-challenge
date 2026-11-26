@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>歩く彫刻 案くらべ</title>
+<style>
+:root{--bg:#16181b;--card:#202328;--ink:#e9e6df;--mute:#9a9790;--acc:#d8a24a;--line:#33363c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Hiragino Sans","Noto Sans JP",sans-serif}
+header{padding:28px 20px 8px;max-width:1240px;margin:auto}
+h1{font-size:22px;margin:0 0 4px;letter-spacing:.04em}
+h2{font-size:17px;margin:34px 0 10px;color:var(--acc);letter-spacing:.06em}
+header p{margin:4px 0;color:var(--mute)}
+main{max-width:1240px;margin:auto;padding:0 20px 60px}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.card img{display:block;width:100%;background:#cfd3d8}
+.sub{display:grid;grid-template-columns:1fr 1fr;gap:2px;border-top:2px solid var(--bg)}
+.body{padding:12px 16px 16px}
+.body h3{margin:0 0 2px;font-size:17px}
+.tag{display:inline-block;font-size:12px;color:var(--bg);background:var(--acc);border-radius:4px;padding:0 6px;margin-right:6px}
+.body p{margin:6px 0;color:#cfcbc2}
+.body dl{display:grid;grid-template-columns:5.5em 1fr;gap:2px 10px;margin:8px 0 0;font-size:13.5px}
+.body dt{color:var(--mute)}
+.body dd{margin:0}
+a{color:var(--acc)}
+.note{font-size:13px;color:var(--mute)}
+</style></head><body>
+<header>
+<h1>歩く彫刻 案くらべ(day41)</h1>
+<p>細い脚で大きな胴体を支える多脚の彫刻を4案、自由曲面シェルを3案。静止画で並べています。各案の「回して見る」で 3D を回せます。</p>
+<p>見どころ: 脚の付け根に集まる曲げ(付け根が太く、足先に向かって細い)/ 多脚の歩き方(IK)。</p>
+</header>
+<main>
+<h2>多脚の彫刻</h2>
+<div class="grid" id="sculpts"></div>
+<h2>自由曲面シェル</h2>
+<p class="note">単位は cm。平面の形と支点を決め、一様な荷重で吊り下げた膜の形(Δz = −1)を解いて逆さにした形。支点の間の縁がアーチの開口になる。</p>
+<div class="grid" id="shells"></div>
+</main>
+<script>
+const SCULPTS=[
+ {id:'sculpt_a',dims:'幅1252・高さ767(胴体の中心520)/ 上の骨≈410・下の骨≈765 / 65メッシュ',key:'A',name:'岩を担ぐ十脚',legs:'10本・放射状',gait:'波のように1本ずつ',mat:'花崗岩の巨石 / 鏡面ステンレスの脚',aim:'いちばん重そうな物を、いちばん細そうな脚で持ち上げる対比。',root:'岩の腹を抱える帯から脚が出る。カラーと三角の補強板。'},
+ {id:'sculpt_b',dims:'全長929・幅912・高さ628(膝)/ 上の骨320・下の骨620 / 106メッシュ',key:'B',name:'伏せた舟',legs:'12本・左右6本ずつ',gait:'前から後ろへ脚の波',mat:'タールの木の船体 / 緑青のブロンズの脚',aim:'細長い胴を、脚の波で運ぶ。',root:'舷縁に沿う梁に、脚ごとの肘板で留める。'},
+ {id:'sculpt_c',dims:'幅1220・高さ978(宝珠の先)/ 上の骨≈437・下の骨≈906 / 34メッシュ',key:'C',name:'鋳鉄の灯籠',legs:'6本・放射状',gait:'3本ずつ交互',mat:'錆の浮いた鋳鉄 / 内側の橙の灯り',aim:'背の高い、静かでおごそかな歩き。',root:'リベット留めのリングに、2枚の板で骨をはさむ受け金具。'},
+ {id:'sculpt_d',dims:'幅896・奥行1125・高さ735 / 上の骨≈390〜440・下の骨≈700 / 55メッシュ',key:'D',name:'巻貝',legs:'8本・楕円に放射',gait:'4本ずつ交互',mat:'ブロンズの殻・真珠層の殻口 / 暗いブロンズの脚',aim:'生き物の殻だけが、骨組みの脚で歩いていく不思議さ。',root:'殻の腹の環に沿うリブと、円錐形のカラー。'},
+];
+const SHELLS=[
+ {id:'shell_a',dims:'平面 3088×2970・高さ450・厚み25 / 支点3',key:'S1',name:'三点',aim:'丸みのある三角形の平面。支点3つと、3つの大きなアーチの開口。'},
+ {id:'shell_b',dims:'平面 4227×3243・高さ550・厚み25 / 支点5(不等間隔)',key:'S2',name:'五点の雲',aim:'不定形の楕円の平面。支点5つを不等間隔に置き、開口の大きさがそろわない。'},
+ {id:'shell_c',dims:'平面 4514×2563・高さ600・厚み25 / 長い支点1+短い支点2',key:'S3',name:'長い波',aim:'細長い平面。長辺の片側が長い支点で地面に着き、反対側に大きく開く。'},
+];
+const day=location.pathname.split('/').slice(-2)[0];
+const prev=(id,file)=>`../_3dkit/preview.html?src=../${day}/models/${file}.js&f=${id}`;
+const shot=(id,v)=>`models/shots/${id}_${v}.png`;
+function card(o,file,extra){
+ return `<div class="card">
+  <img src="${o.img||shot(o.id,'persp')}" alt="${o.name} 斜めから" loading="lazy">
+  <div class="sub"><img src="${o.img2||shot(o.id,'front')}" alt="正面" loading="lazy"><img src="${o.img3||shot(o.id,'side')}" alt="横" loading="lazy"></div>
+  <div class="body"><h3><span class="tag">${o.key}</span>${o.name}</h3>
+  <p>${o.aim}</p>${extra||''}
+  <p class="note"><a href="${prev(o.id,file)}" target="_blank">回して見る</a></p></div></div>`;
+}
+document.getElementById('sculpts').innerHTML=SCULPTS.map(o=>card(o,o.id,
+ `<dl><dt>脚</dt><dd>${o.legs}</dd><dt>歩き方</dt><dd>${o.gait}</dd><dt>素材</dt><dd>${o.mat}</dd><dt>付け根</dt><dd>${o.root}</dd>${o.dims?`<dt>寸法</dt><dd>${o.dims}</dd>`:''}</dl>`)).join('');
+document.getElementById('shells').innerHTML=SHELLS.map(o=>card(Object.assign({},o,{
+  img:`models/shots/shell_${o.id}_persp.png`,img2:`models/shots/shell_${o.id}_front.png`,img3:`models/shots/shell_${o.id}_top.png`}),'shell',
+  o.dims?`<dl><dt>寸法</dt><dd>${o.dims}</dd></dl>`:'')).join('');
+</script>
+</body></html>

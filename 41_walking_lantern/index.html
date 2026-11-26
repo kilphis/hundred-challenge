@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>歩く灯籠</title>
+<style>
+:root{--ink:#ece8e0;--mute:#a7a299;--panel:rgba(24,24,26,.78);--acc:#e8aa50}
+html,body{margin:0;height:100%;overflow:hidden;background:#c9cdd2;font:13px/1.6 "Hiragino Sans","Noto Sans JP",sans-serif;color:var(--ink)}
+#view,#view canvas{position:fixed;inset:0;display:block}
+.panel{position:fixed;background:var(--panel);border-radius:10px;padding:10px 14px;backdrop-filter:blur(6px)}
+#help{left:14px;top:14px;max-width:340px}
+#help h1{font-size:16px;margin:0 0 2px;letter-spacing:.05em}
+#help p{margin:2px 0;color:var(--mute)}
+kbd{display:inline-block;min-width:1.4em;text-align:center;border:1px solid #6a665f;border-radius:4px;padding:0 4px;margin-right:3px;color:var(--ink);font:12px monospace}
+#side{right:14px;top:14px;width:290px}
+#side h2{font-size:13px;margin:6px 0 4px;color:var(--acc);font-weight:600}
+.bar{display:grid;grid-template-columns:2.6em 1fr 5.6em;align-items:center;gap:6px;height:20px}
+.bar span{color:var(--mute)}
+.bar i{display:block;height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden}
+.bar b{display:block;height:100%;width:0;border-radius:0 4px 4px 0}
+.bar em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums}
+#legend{height:8px;border-radius:4px;margin:6px 0 2px}
+.row{display:flex;justify-content:space-between;color:var(--mute);font-size:12px}
+#mini{display:block;width:180px;height:180px;margin:4px auto 0}
+.note{color:var(--mute);font-size:12px;margin:4px 0 0}
+@media (max-width:700px){#side{top:auto;bottom:14px;width:auto;left:14px}#help{max-width:none;right:14px}#mini{display:none}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="defs.js"></script>
+<script src="models/sculpt_c.js"></script>
+<script src="curve.js"></script>
+<script src="gait.js"></script>
+<script src="bend.js"></script>
+</head><body>
+<div id="view"></div>
+<div class="panel" id="help">
+  <h1>歩く灯籠</h1>
+  <p><span id="gait"></span> ・ 脚: <span id="variant"></span></p>
+  <p><kbd>M</kbd>曲げを色で見る <kbd>I</kbd>IK の三角形 <kbd>Space</kbd>止める</p>
+  <p><kbd>↑</kbd><kbd>↓</kbd>速さ <kbd>V</kbd>脚の種類 ・ ドラッグで回す</p>
+</div>
+<div class="panel" id="side">
+  <h2>脚の付け根の曲げ</h2>
+  <div id="bars"></div>
+  <div id="legend"></div>
+  <div class="row"><span>0</span><span id="mref"></span></div>
+  <p class="note">最大応力 <span id="sigma"></span></p>
+  <p class="note">重さ <span id="mass"></span> ・ 足先には鉛直の反力だけが掛かるとした近似</p>
+  <h2>上から見た支え(正面が上)</h2>
+  <canvas id="mini" width="360" height="360"></canvas>
+  <p class="note" id="margin"></p>
+</div>
+<script src="main.js"></script>
+</body></html>

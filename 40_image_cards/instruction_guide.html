@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>指示 → 見た目 対応表 (day40)</title>
+<style>
+:root { --h: 230; --ink: #f2efe8; --mute: rgba(242,239,232,.62); --line: rgba(255,255,255,.12); --card: #101018; --accent: hsl(var(--h) 85% 68%);
+  --serif: "Didot","Hiragino Mincho ProN",serif; --sans: "Avenir Next","SF Pro Display","Hiragino Sans",sans-serif; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: #07070d; color: var(--ink); font: 400 15px/1.75 var(--sans); }
+a { color: var(--accent); }
+code, .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .86em; }
+code { background: rgba(255,255,255,.08); padding: 1px 6px; border-radius: 5px; }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px 80px; }
+h1 { font: 600 clamp(1.7rem, 4.4vw, 2.5rem)/1.25 var(--sans); letter-spacing: -.01em; margin: 44px 0 8px; }
+h2 { font: 600 1.3rem/1.4 var(--sans); margin: 56px 0 6px; padding-top: 18px; border-top: 1px solid var(--line); }
+.lead { color: var(--mute); max-width: 46em; }
+.note { color: var(--mute); font-size: .86rem; }
+
+/* 色相バー(全デモ共通) */
+.huebar { position: sticky; top: 0; z-index: 50; background: rgba(7,7,13,.86); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+.huebar .in { max-width: 1040px; margin: 0 auto; padding: 10px 20px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; font-size: .85rem; }
+.huebar input[type=range] { flex: 1 1 220px; min-width: 160px; accent-color: var(--accent);
+  -webkit-appearance: none; appearance: none; height: 10px; border-radius: 99px;
+  background: linear-gradient(90deg, hsl(0 85% 55%), hsl(50 85% 55%), hsl(140 85% 50%), hsl(200 85% 55%), hsl(280 85% 60%), hsl(340 85% 60%), hsl(360 85% 55%)); }
+.huebar input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 3px solid hsl(var(--h) 85% 55%); cursor: pointer; }
+.btn { font: 500 .85rem var(--sans); color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2); border-radius: 99px; padding: 5px 14px; cursor: pointer; }
+.btn:hover { background: hsl(var(--h) 70% 55% / .3); }
+.btn.on { background: hsl(var(--h) 80% 55% / .4); border-color: hsl(var(--h) 90% 75% / .7); }
+
+/* 結論・型 */
+.box { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; margin: 18px 0; }
+.box h3 { margin: 0 0 6px; font-size: 1rem; }
+.formula { font: 500 1.05rem/1.9 var(--sans); }
+.formula b { padding: 2px 10px; border-radius: 8px; margin: 0 2px; }
+.f1 { background: hsl(200 70% 40% / .45); } .f2 { background: hsl(45 80% 42% / .45); } .f3 { background: hsl(330 65% 45% / .45); } .f4 { background: hsl(150 60% 38% / .45); }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--mute); font-weight: 500; font-size: .8rem; }
+.ng { color: #ff9a8a; } .ok { color: #8fe3a8; }
+
+/* カード */
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px 22px 18px; margin: 22px 0; }
+.card .no { font: 500 .75rem var(--sans); color: var(--mute); letter-spacing: .12em; }
+.card h3 { margin: 2px 0 10px; font: 600 1.15rem/1.4 var(--sans); }
+.prompt { position: relative; background: #0a0a12; border: 1px solid hsl(var(--h) 70% 55% / .4); border-left: 4px solid hsl(var(--h) 80% 60%); border-radius: 10px; padding: 12px 84px 12px 16px; margin: 0 0 14px; font-size: .95rem; }
+.prompt::before { content: "指示"; position: absolute; top: -9px; left: 12px; font-size: .68rem; letter-spacing: .12em; background: hsl(var(--h) 70% 40%); color: #fff; padding: 0 8px; border-radius: 99px; line-height: 18px; }
+.prompt .copy { position: absolute; top: 10px; right: 10px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.slot .cap { font-size: .75rem; color: var(--mute); margin-bottom: 5px; letter-spacing: .06em; }
+.slot .cap b { color: var(--ink); font-weight: 600; }
+.slot.after .cap b { color: hsl(var(--h) 90% 75%); }
+.meta { margin-top: 12px; font-size: .82rem; color: var(--mute); }
+.meta .trap { color: #ffd479; }
+@media (max-width: 760px) { .pair { grid-template-columns: 1fr; } }
+
+/* ===== デモ部品(day40 の style.css と同じ値) ===== */
+.demo { position: relative; height: 170px; border-radius: 12px; overflow: hidden; container-type: size; isolation: isolate; background: #07070d; border: 1px solid var(--line); }
+.demo.plain { background: #1c1c24; }
+.demo .w { position: absolute; inset: 0; display: grid; place-items: center; font: 600 clamp(1.6rem, 15cqw, 4rem)/1 Helvetica, Arial, sans-serif; color: #fff; z-index: 3; white-space: nowrap; }
+.g::before { content: ""; position: absolute; inset: -10%; z-index: -3;
+  background:
+    radial-gradient(60% 60% at 18% 12%, hsl(var(--h) 85% 40% / .6), transparent 62%),
+    radial-gradient(55% 55% at 88% 86%, hsl(calc(var(--h) + 55) 85% 42% / .5), transparent 62%),
+    radial-gradient(40% 40% at 64% 8%, hsl(calc(var(--h) - 45) 90% 50% / .28), transparent 62%),
+    #07070d; }
+.n .grain { position: absolute; inset: 0; z-index: -2; opacity: .22; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+.v::after { content: ""; position: absolute; inset: 0; z-index: 6; pointer-events: none; background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(0,0,0,.55)); }
+.glow .w { text-shadow: 0 0 .35em hsl(var(--h) 100% 62% / .75), 0 .04em .5em rgba(0,0,0,.45); }
+.fine .w { font-family: var(--sans); letter-spacing: -.025em; }
+.fine .w .sub { display: block; font: 400 .26em var(--serif); letter-spacing: .08em; color: var(--mute); margin-top: .8em; }
+.fine .w .in { display: flex; flex-direction: column; align-items: center; }
+/* ガラス */
+.demo .box2 { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 72%; padding: 14px 18px; border-radius: 18px; z-index: 3; font-size: .9rem; text-align: center; }
+.blob { position: absolute; border-radius: 50%; z-index: -1; filter: blur(2px); }
+.box2.flat { background: #3a3a46; }
+.box2.glassy { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(14px) saturate(1.4); box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 14px 34px rgba(0,0,0,.4); }
+/* 連動 */
+.linkdemo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+.linkdemo .w { position: static; display: block; z-index: 3; }
+.pillx { padding: 6px 18px; border-radius: 99px; font: 500 .85rem var(--sans); color: #fff; }
+.fixed .pillx { background: hsl(230 70% 55% / .4); border: 1px solid hsl(230 80% 75% / .6); }
+.linked .pillx { background: hsl(var(--h) 80% 55% / .4); border: 1px solid hsl(var(--h) 90% 75% / .7); }
+.fixed .w { text-shadow: 0 0 .35em hsl(230 100% 62% / .75); }
+.fixed.g2 { background: radial-gradient(60% 60% at 18% 12%, hsl(230 85% 40% / .6), transparent 62%), radial-gradient(55% 55% at 88% 86%, hsl(285 85% 42% / .5), transparent 62%), #07070d; }
+/* 文字の動き */
+.motions { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.ch { display: inline-block; will-change: transform; }
+.statichint { color: var(--mute); font-size: .85rem; }
+
+/* 色相ものさし */
+.scale { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: 14px 0 4px; }
+.scale div { border-radius: 10px; padding: 10px 6px; text-align: center; font-size: .78rem; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
+.scale b { display: block; font-size: 1.1rem; }
+
+/* 実物ギャラリー(shots の切り抜き) */
+.imgs { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+.im { background: #0a0a12; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.im .pic { aspect-ratio: 367 / 245; background-image: url("shots/gal_a.png"); background-size: 408.7% auto; background-repeat: no-repeat; }
+.im .tx { padding: 10px 14px 12px; font-size: .88rem; }
+.im .tx .p { font-size: .95rem; }
+.im .tx .m { color: var(--mute); font-size: .76rem; margin-top: 4px; }
+.fig { border-radius: 12px; border: 1px solid var(--line); max-width: 100%; display: block; }
+</style></head>
+<body>
+
+<div class="huebar"><div class="in">
+  <b>色相 --h</b>
+  <input id="hue" type="range" min="0" max="360" value="230">
+  <span class="mono" id="hueval">230</span>
+  <button class="btn" id="rnd">ランダムに滑らかに変える</button>
+  <span class="note">↑ これ1つを動かすと、下の「指示あり」側の背景・文字の光・ボタンが全部一緒に変わります</span>
+</div></div>
+
+<div class="wrap">
+
+<h1>指示 → 見た目 対応表</h1>
+<p class="lead">day40 の単語帳(Image Cards)は、素のままの HTML とはまるで別の見た目になった。その見た目を「どんな一言で頼めば出るか」に逆引きして、<b>指示文と実物を並べた</b>もの。右側(指示あり)は、day40 の <code>style.css</code> と同じ値で動いている実物。</p>
+<p class="note">※ ここの「指示」は、day40 で実際に書かれたCSS・コードから逆算して書き直した文面で、当日の発言そのものではない。当日のつぶやきは「各単語のイメージのエフェクトが起きるようにしたい」だけで、道具の選択はAI任せだった。</p>
+
+<div class="box">
+  <h3>結論</h3>
+  <ul style="margin:6px 0 0; padding-left:1.2em">
+    <li>「おしゃれにして」は何も指定していない。効いたのは<b>道具の名前(プロパティ名・ライブラリ名)</b>と<b>数値</b>だった(下の 9 枚)。</li>
+    <li>「単語のイメージ」の側は、<b>動詞で動きを1文</b>(集まる・落ちる・開く)＋<b>色は色相の数字</b>で伝えると、そのまま効果になった(下の実物12枚)。</li>
+    <li>道具名がわからないときは、感覚語から引く辞書を最後に付けた。</li>
+  </ul>
+</div>
+
+<h2>指示の型</h2>
+<div class="box">
+  <div class="formula"><b class="f1">どこに</b> <b class="f2">道具の名前</b> で <b class="f3">数値・程度</b>。<b class="f4">何を基準に</b>連動させる。</div>
+  <table style="margin-top:10px">
+    <tr><th></th><th>指示</th><th>起きること</th></tr>
+    <tr><td class="ng">× 曖昧</td><td>「CSSでおしゃれにして」</td><td>どこをどう変えるかが決まっていないので、AIは無難な範囲(余白・角丸・影)に落とす。写真映えする要素は選ばれない。</td></tr>
+    <tr><td class="ok">○ 型どおり</td><td>「<u>単語の文字</u>に <u>text-shadow</u> で <u>.35em のぼかし</u>の光を、<u>色相 --h と同じ色</u>で」</td><td>カード4と同じ見た目になる(場所・道具・数値・基準が全部ある)。</td></tr>
+    <tr><td class="ok">○ 基準だけ共通</td><td>「色は全部 <u>--h 1つ</u>から hsl() で計算して」</td><td>この一文で、背景・光・ボタンが連動する構造になる(カード9)。後から色を変えるのも1か所で済む。</td></tr>
+  </table>
+</div>
+
+<h2>色相の数字の読み方(day40 で使った値)</h2>
+<p class="lead">単語ごとの色は <code>defs.js</code> の <code>h:</code> に色相(0〜360)で書いた。「金色」ではなく「色相 45」と言うほうが、狙いどおりに出る。</p>
+<div class="scale">
+  <div style="background:hsl(0 70% 45%)"><b>0</b>赤</div>
+  <div style="background:hsl(30 80% 40%)"><b>30</b>橙</div>
+  <div style="background:hsl(50 80% 38%)"><b>50</b>黄</div>
+  <div style="background:hsl(140 60% 32%)"><b>140</b>緑</div>
+  <div style="background:hsl(200 75% 40%)"><b>200</b>青</div>
+  <div style="background:hsl(280 60% 45%)"><b>280</b>紫</div>
+  <div style="background:hsl(340 70% 48%)"><b>340</b>桃</div>
+</div>
+
+<h2>基本の 9 枚(指示 → 左:指示なし / 右:指示あり)</h2>
+
+<!-- 1 -->
+<div class="card"><div class="no">1 / 9 ・ 背景</div><h3>光が滲む空間になる背景</h3>
+<div class="prompt">背景は暗い色 <code>#07070d</code> をベースに、<code>radial-gradient</code> を3枚重ねて、光が滲む空間にして。位置は左上・右下・上寄り。色は <code>--h</code> を基準に +0 / +55 / −45 ずらして hsl() で作り、透明度は .6 / .5 / .28。<button class="btn copy">コピー</button></div>
+<div class="pair">
+  <div class="slot"><div class="cap"><b>指示なし</b> 単色の背景</div><div class="demo plain"><div class="w">authority</div></div></div>
+  <div class="slot after"><div class="cap"><b>指示あり</b> radial-gradient ×3</div><div class="demo g"><div class="w">authority</div></div></div>
+</div>
+<div class="meta">場所: <code>style.css</code> の <code>.stage .bg</code> ／ ポイント: 色を3枚とも <code>--h</code> から計算しているので、色相を動かすと全体の色が変わる(上のバーで確認できる)。</div></div>
+
+<!-- 2 -->
+<div class="card"><div class="no">2 / 9 ・ 質感</div><h3>フィルムのような粒子(ざらつき)</h3>
+<div class="prompt">背景の上に、SVG の <code>feTurbulence</code>(fractalNoise)でフィルムのような粒子を重ねて。<code>mix-blend-mode: overlay</code>、不透明度 .22。画像ファイルは使わずコードだけで。<button class="btn copy">コピー</button></div>
+<div class="pair">
+  <div class="slot"><div class="cap"><b>指示なし</b> グラデだけ</div><div class="demo g"><div class="w">authority</div></div></div>
+  <div class="slot after"><div class="cap"><b>指示あり</b> + feTurbulence</div><div class="demo g n"><div class="grain"></div><div class="w">authority</div></div></div>
+</div>
+<div class="meta">場所: <code>style.css</code> の <code>.stage .bg::after</code> ／ 効きは繊細。差は暗い部分のなめらかさ(のっぺり → 紙・フィルムっぽい)に出る。</div></div>
+
+<!-- 3 -->
+<div class="card"><div class="no">3 / 9 ・ パネル</div><h3>ガラスのパネル</h3>
+<div class="prompt">パネルはすりガラス風に。<code>backdrop-filter: blur(14px) saturate(1.4)</code>、背景は白7%の半透明、<code>border</code> は白16%で1px、上辺に <code>inset 0 1px 0</code> の白いハイライト。<button class="btn copy">コピー</button></div>
+<div class="pair">
+  <div class="slot"><div class="cap"><b>指示なし</b> 単色のパネル</div>
+    <div class="demo g"><i class="blob" style="left:12%;top:18%;width:70px;height:70px;background:hsl(calc(var(--h) + 120) 90% 60%)"></i><i class="blob" style="right:10%;bottom:12%;width:90px;height:90px;background:hsl(calc(var(--h) + 50) 90% 55%)"></i><div class="box2 flat">めくった裏面 — 意味・例文</div></div></div>
+  <div class="slot after"><div class="cap"><b>指示あり</b> backdrop-filter</div>
+    <div class="demo g"><i class="blob" style="left:12%;top:18%;width:70px;height:70px;background:hsl(calc(var(--h) + 120) 90% 60%)"></i><i class="blob" style="right:10%;bottom:12%;width:90px;height:90px;background:hsl(calc(var(--h) + 50) 90% 55%)"></i><div class="box2 glassy">めくった裏面 — 意味・例文</div></div></div>
+</div>
+<div class="meta">場所: <code>style.css</code> の <code>.pill</code> <code>.back</code> ／ <span class="trap">注意:</span> ガラスは「後ろに色や動きがあるもの」があって初めて見える。後ろが単色だと効果が見えない(色の玉を置いたのはそのため)。</div></div>
+
+<!-- 4 -->
+<div class="card"><div class="no">4 / 9 ・ 文字</div><h3>うっすら発光する文字</h3>
+<div class="prompt">単語の文字に <code>text-shadow</code> で、色相 <code>--h</code> と同じ色の光を重ねて。<code>0 0 .35em hsl(--h 100% 62% / .75)</code>、その下に黒の影 <code>0 .04em .5em rgba(0,0,0,.45)</code> も。<button class="btn copy">コピー</button></div>
+<div class="pair">
+  <div class="slot"><div class="cap"><b>指示なし</b> 影なしの白文字</div><div class="demo g"><div class="w">authority</div></div></div>
+  <div class="slot after"><div class="cap"><b>指示あり</b> 色つき text-shadow</div><div class="demo g glow"><div class="w">authority</div></div></div>
+</div>
+<div class="meta">場所: <code>style.css</code> の <code>.word</code> ／ 光の色を黒でなく背景と同じ色相にすると、文字が背景に「なじんだまま浮く」。</div></div>
+
+<!-- 5 -->
+<div class="card"><div class="no">5 / 9 ・ 周辺</div><h3>四隅を落とす(映画っぽい暗さ)</h3>
+<div class="prompt">四隅を暗くして中央に視線が集まるように。<code>radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(0,0,0,.55))</code> を全面に被せて。<button class="btn copy">コピー</button></div>
+<div class="pair">
+  <div class="slot"><div class="cap"><b>指示なし</b></div><div class="demo g glow"><div class="w">authority</div></div></div>
+  <div class="slot after"><div class="cap"><b>指示あり</b> ビネット</div><div class="demo g glow v"><div class="w">authority</div></div></div>
+</div>
+<div class="meta">場所: <code>style.css</code> の <code>.stage::after</code> ／ 位置を <code>z-index: 6</code> にして、文字・粒子より上に被せている。</div></div>
+
+<!-- 6 -->
+<div class="card"><div class="no">6 / 9 ・ レイアウト</div><h3>枠の大きさが変わっても同じ比率</h3>
+<div class="prompt">文字の大きさは、枠の幅に対する割合で決めて。親に <code>container-type: size</code>、文字は <code>font-size: clamp(2.2rem, 15cqw, 11rem)</code>。小さい枠(一覧)でも大きい枠でも同じ見た目に。<button class="btn copy">コピー</button></div>
+<div class="pair">
+  <div class="slot"><div class="cap"><b>指示なし</b> font-size: 36px 固定(枠 150px と 300px)</div>
+    <div style="display:flex;gap:8px;align-items:flex-end">
+      <div class="demo g glow" style="width:150px;height:110px;flex:none"><div class="w" style="font-size:36px">authority</div></div>
+      <div class="demo g glow" style="width:300px;height:110px;flex:none"><div class="w" style="font-size:36px">authority</div></div></div></div>
+  <div class="slot after"><div class="cap"><b>指示あり</b> 15cqw(同じ2つの枠)</div>
+    <div style="display:flex;gap:8px;align-items:flex-end">
+      <div class="demo g glow" style="width:150px;height:110px;flex:none"><div class="w" style="font-size:15cqw">authority</div></div>
+      <div class="demo g glow" style="width:300px;height:110px;flex:none"><div class="w" style="font-size:15cqw">authority</div></div></div></div>
+</div>
+<div class="meta">場所: <code>style.css</code> の <code>.stage</code> <code>.word</code> ／ この性質のおかげで、50単語を一覧にした <code>gallery.html</code> でも本番と同じ見た目で確認できた。</div></div>
+
+<!-- 7 -->
+<div class="card"><div class="no">7 / 9 ・ 書体</div><h3>書体と字間(高級感の正体)</h3>
+<div class="prompt">英単語は <code>Avenir Next</code> の weight 600、<code>letter-spacing: -.025em</code> で詰める。発音や品詞は <code>Didot</code>(セリフ体)の小さな字で、<code>letter-spacing: .08em</code> と広めに。<button class="btn copy">コピー</button></div>
+<div class="pair">
+  <div class="slot"><div class="cap"><b>指示なし</b> 既定のゴシック</div>
+    <div class="demo g"><div class="w" style="font-family:Arial,sans-serif;font-weight:400"><div style="text-align:center">authority<div style="font:400 .26em Arial;margin-top:.8em;opacity:.7">/əˈθɔːrəti/ 名詞</div></div></div></div></div>
+  <div class="slot after"><div class="cap"><b>指示あり</b> 太さ・字間・セリフ体の組合せ</div>
+    <div class="demo g fine"><div class="w"><div class="in">authority<span class="sub">/əˈθɔːrəti/ 名詞</span></div></div></div></div>
+</div>
+<div class="meta">場所: <code>style.css</code> の <code>:root</code>(--serif / --sans)・<code>.word</code>・<code>.sub</code> ／ Mac に入っている書体を使うので、Windows では別の書体に代わる。</div></div>
+
+<!-- 8 -->
+<div class="card"><div class="no">8 / 9 ・ 動き</div><h3>文字が1字ずつ動いて現れる</h3>
+<div class="prompt">単語は GSAP で1字ずつ <code>stagger</code> をかけて現れさせて。動きは種類で指定する: rise(下から跳ねる)/ drop(上から落ちてバウンド)/ blur(ぼけから焦点)/ zoom(拡大から着地)/ flip(奥から起き上がる)/ slide(斜めに滑り込む)/ type(1字ずつ打つ)。<button class="btn copy">コピー</button></div>
+<div class="pair">
+  <div class="slot"><div class="cap"><b>指示なし</b> 最初から全部表示されているだけ</div><div class="demo g glow"><div class="w">authority</div></div></div>
+  <div class="slot after"><div class="cap"><b>指示あり</b> 下のボタンで種類を選ぶ</div>
+    <div class="motions" id="motions"></div>
+    <div class="demo g glow" id="mdemo" style="height:130px"><div class="w" id="mword">authority</div></div></div>
+</div>
+<div class="meta">場所: <code>fx_core.js</code> の <code>FX.txt.*</code> ／ <span class="trap">罠:</span> GSAP は処理が遅れると時間を縮めるので、撮影(仮想時間)では <code>gsap.ticker.lagSmoothing(0)</code> が要る。</div></div>
+
+<!-- 9 -->
+<div class="card"><div class="no">9 / 9 ・ 構造</div><h3>色を1つの値で全部連動させる</h3>
+<div class="prompt">色は全部 <code>--h</code>(色相)1つから hsl() で計算して。背景のグラデ・文字の光・ボタンの色が同じ値を参照するようにして。単語が切り替わるたびに GSAP で <code>--h</code> を滑らかに動かして。<button class="btn copy">コピー</button></div>
+<p style="margin:0 0 10px"><button class="btn" id="swing">単語を切り替える(--h を滑らかに動かす)</button></p>
+<div class="pair">
+  <div class="slot"><div class="cap"><b>指示なし</b> 部品ごとに色を直接書いた(色相230に固定)</div>
+    <div class="demo fixed g2 linkdemo"><div class="w">authority</div><span class="pillx">Space でめくる</span></div></div>
+  <div class="slot after"><div class="cap"><b>指示あり</b> 全部が --h を参照</div>
+    <div class="demo linked g glow linkdemo"><div class="w">authority</div><span class="pillx">Space でめくる</span></div></div>
+</div>
+<div class="meta">場所: <code>style.css</code> の <code>.stage { --h: 230 }</code> と、そこを参照する <code>.bg</code> <code>.word</code> <code>button.pill</code> ／ 左側は、色を変えようとすると全部の部品を直す必要がある状態。</div></div>
+
+<h2>粒の群れ(tsParticles)— 実機の画面</h2>
+<div class="card">
+  <div class="prompt">紙吹雪は tsParticles で。金色の紙吹雪と星が弾けるようにして(色相 45、文字は zoom)。<button class="btn copy">コピー</button></div>
+  <p class="note" style="margin:0 0 10px">粒子は物理演算で動くので、ここには埋め込まない。下の画像は No.575 の実機の撮影だが、<b>紙吹雪が収まったあとで裏面(カード3のガラスのパネル)を開いた状態</b>なので、紙吹雪そのものは写っていない。動く紙吹雪は <a href="index.html">index.html</a>(No.575 を指定)か <a href="gallery.html">gallery.html</a> で見る。</p>
+  <img class="fig" src="shots/app575.png" alt="No.575 confetti の実機画面" loading="lazy">
+  <div class="meta"><span class="trap">罠:</span> ①<code>loadFull(tsParticles)</code> を先に呼ばないと、エラーも出さず何も描かれない。②色は <code>hsl(210, 90%, 60%)</code>(カンマ区切り)で渡す。③不透明度のアニメは最小=最大にしない(生まれた瞬間に消える)。</div>
+</div>
+
+<h2>イメージ → 効果(指示の1文 と 実物)</h2>
+<p class="lead">単語のイメージを<b>「何が・どう動くか」を1文</b>で言うと、そのまま効果名(<code>fx</code>)と色相(<code>h</code>)に割り当てられた。下は <code>defs.js</code> の <code>img</code> 欄(=指示の1文)と、その実物の切り抜き。全50個は <a href="gallery.html">gallery.html</a> で動かして見られる。</p>
+<div class="imgs" id="imgs"></div>
+
+<h2>感覚語 → 道具名 の辞書(day40 で出たものだけ)</h2>
+<div class="box"><table>
+  <tr><th>こういう感じにしたい</th><th>こう言う</th><th>カード</th></tr>
+  <tr><td>光が滲む・空間がある</td><td><code>radial-gradient</code> を何枚か重ねて、色は半透明で</td><td>1</td></tr>
+  <tr><td>フィルム・紙・ざらつき</td><td>SVG <code>feTurbulence</code> を <code>overlay</code> で重ねる</td><td>2</td></tr>
+  <tr><td>ガラス・すりガラス</td><td><code>backdrop-filter: blur</code> + 白の薄い border + inset ハイライト</td><td>3</td></tr>
+  <tr><td>文字がぼんやり光る</td><td><code>text-shadow</code> に色相と同じ色の光</td><td>4</td></tr>
+  <tr><td>映画っぽい・中央に目が行く</td><td>ビネット(四隅を <code>radial-gradient</code> で暗く)</td><td>5</td></tr>
+  <tr><td>どの大きさでも同じ見た目</td><td><code>container-type: size</code> と <code>cqw</code></td><td>6</td></tr>
+  <tr><td>高級感・落ち着き</td><td>セリフ体(Didot) + 広めの <code>letter-spacing</code> と、本文は詰め気味の太字</td><td>7</td></tr>
+  <tr><td>1字ずつ現れる・跳ねる</td><td>GSAP の <code>stagger</code>(動きの種類名で指定)</td><td>8</td></tr>
+  <tr><td>全体の色味が一緒に変わる</td><td>CSS 変数 <code>--h</code> 1つから <code>hsl()</code> で計算</td><td>9</td></tr>
+  <tr><td>紙吹雪・粒の群れ</td><td>tsParticles(<code>loadFull</code> が必須)</td><td>粒</td></tr>
+</table></div>
+
+<p class="note" style="margin-top:36px">元の学びメモ: <code>manabi.md</code> ／ 単語→効果の割り当て: <code>defs.js</code> ／ 土台: <code>style.css</code></p>
+</div>
+
+<script src="lib/gsap.min.js"></script>
+<script>
+(function () {
+  const root = document.documentElement, slider = document.getElementById("hue"), val = document.getElementById("hueval");
+  function setHue(h) { h = ((h % 360) + 360) % 360; root.style.setProperty("--h", h.toFixed(1)); slider.value = h; val.textContent = Math.round(h); }
+  slider.addEventListener("input", () => setHue(+slider.value));
+  const hueObj = { h: 230 };
+  function swing() {
+    const target = (+slider.value + 70 + Math.random() * 180) % 360;
+    hueObj.h = +slider.value;
+    gsap.killTweensOf(hueObj);
+    // 360をまたぐ近道を避けて、常に同じ向きに回す
+    const to = target < hueObj.h ? target + 360 : target;
+    gsap.to(hueObj, { h: to, duration: 1.4, ease: "power2.inOut", onUpdate: () => setHue(hueObj.h) });
+  }
+  document.getElementById("rnd").onclick = swing;
+  document.getElementById("swing").onclick = swing;
+
+  // 指示のコピー
+  document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", () => {
+    const p = b.closest(".prompt"); const t = p.cloneNode(true); t.querySelector(".copy").remove();
+    const text = t.textContent.trim();
+    const done = () => { b.textContent = "コピーした"; setTimeout(() => b.textContent = "コピー", 1200); };
+    try { navigator.clipboard.writeText(text).then(done, done); } catch (e) { done(); }
+  }));
+
+  // 文字の動き(fx_core.js の FX.txt と同じ値)
+  const word = document.getElementById("mword"), demo = document.getElementById("mdemo"), text = "authority";
+  const MOTION = {
+    rise:  ch => gsap.from(ch, { y: 70, opacity: 0, duration: .8, stagger: .05, ease: "back.out(1.7)" }),
+    drop:  ch => gsap.from(ch, { y: -demo.clientHeight * .6, opacity: 0, duration: .9, stagger: .04, ease: "bounce.out" }),
+    blur:  ch => gsap.from(ch, { filter: "blur(24px)", opacity: 0, scale: 1.4, duration: 1.1, stagger: .06, ease: "power2.out" }),
+    zoom:  ch => gsap.from(ch, { scale: 4, opacity: 0, duration: .7, stagger: .03, ease: "expo.out" }),
+    flip:  ch => gsap.from(ch, { rotationX: 90, opacity: 0, transformOrigin: "50% 100%", duration: .8, stagger: .06, ease: "back.out(2)" }),
+    slide: ch => gsap.from(ch, { x: -demo.clientWidth * .25, skewX: -30, opacity: 0, duration: .7, stagger: .03, ease: "power4.out" }),
+    type:  ch => gsap.from(ch, { opacity: 0, duration: .01, stagger: .12, delay: .2 })
+  };
+  const bar = document.getElementById("motions"); let cur = "rise";
+  function play(name) {
+    cur = name; bar.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.m === name));
+    gsap.killTweensOf(word.querySelectorAll(".ch"));
+    word.innerHTML = [...text].map(c => `<span class="ch">${c}</span>`).join("");
+    MOTION[name](word.querySelectorAll(".ch"));
+  }
+  Object.keys(MOTION).forEach(n => { const b = document.createElement("button"); b.className = "btn"; b.dataset.m = n; b.textContent = n; b.onclick = () => play(n); bar.appendChild(b); });
+  play("rise");
+  // 画面に入ったとき一度だけ再生し直す
+  new IntersectionObserver((es, ob) => { if (es[0].isIntersecting) { play(cur); ob.disconnect(); } }, { threshold: .6 }).observe(demo);
+
+  // イメージ → 効果(defs.js の img と gal_a.png の切り抜き)
+  const col = [0.5, 33.5, 66.5, 99.5], row = [0.6, 25.6, 50.5, 75.5, 100];
+  const ITEMS = [
+    [551, "dealership", 0, 0, "shine", 215, "ショールームの照明が車体をなめる、光の帯"],
+    [552, "garment", 0, 1, "flutter", 320, "布がひらひら舞い落ちる"],
+    [553, "implement", 0, 2, "gears", 200, "歯車がかみ合って、動き出す(実行)"],
+    [554, "paycheck", 0, 3, "coins", 45, "給料日。金貨が降ってきて、底で跳ねる"],
+    [555, "recruit", 1, 0, "gather", 160, "散らばった点が集まって、チームの輪になる"],
+    [557, "typically", 1, 2, "grid", 190, "同じ点が整然と並ぶ=典型"],
+    [558, "authorize", 1, 3, "stamp", 355, "承認の判子がドンと押される"],
+    [559, "comparable", 2, 0, "twin", 175, "同じ大きさの2つの輪が並んで釣り合う"],
+    [563, "afterwards", 3, 0, "comet", 265, "光が流れ去り、尾だけが残る"],
+    [567, "solid", 4, 0, "stack", 30, "ブロックがずしんと積み上がる"],
+    [569, "authority", 4, 2, "rays", 48, "金色の光線が放射して回る"],
+    [570, "domestic", 4, 3, "enclosed", 200, "輪の中だけで跳ね回る(国内)"]
+  ];
+  const box = document.getElementById("imgs");
+  // 行番号: gal_a は 551〜570 の 20 枚 = 4列×5行。(行,列) は No から計算し直す
+  ITEMS.forEach(([no, w, , , fx, h, img]) => {
+    const i = no - 551, c = i % 4, r = Math.floor(i / 4);
+    const d = document.createElement("div"); d.className = "im";
+    d.innerHTML = `<div class="pic" style="background-position:${col[c]}% ${row[r]}%"></div>
+      <div class="tx"><div class="p">「${img}」</div><div class="m mono">${no} ${w} → fx: ${fx}, h: ${h}</div></div>`;
+    box.appendChild(d);
+  });
+})();
+</script>
+</body></html>

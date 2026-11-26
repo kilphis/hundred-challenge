@@ -5,15 +5,15 @@ tags: [100日チャレンジ]
 
 各日の okimochi(作った気持ち)へのリンク。書いた日は [x]、未記入(ファイルなし・中身が空)は [ ]。リンクは未記入でも張る(クリックで作れる)。`./make_moc.sh` で作り直す(手で編集しない)。
 
-- [ ] Day 1 [[70_hundred_challenge/1_shooting/okimochi|1_shooting]] — 縦スクロール弾幕シューティング(ターミナル)
-- [ ] Day 2 [[70_hundred_challenge/2_gacha/okimochi|2_gacha]] — ガチャ(ターミナル ANSI エフェクト)
-- [ ] Day 3 [[70_hundred_challenge/3_bookstore/okimochi|3_bookstore]] — 本屋のピックアップコーナー(Three.js)
-- [x] Day 4 [[70_hundred_challenge/4_hakoniwa/okimochi|4_hakoniwa]] — 箱庭ゲーム(pygame-ce)
-- [x] Day 5 [[70_hundred_challenge/5_kaiwa_game/okimochi|5_kaiwa_game]] — 自作イラストのゲーム
-- [ ] Day 6 [[70_hundred_challenge/6_image_grid/okimochi|6_image_grid]] — 画像 → グリッド
-- [ ] Day 7 [[70_hundred_challenge/7_ballgame/okimochi|7_ballgame]] — 跳ね返るボールの最小ゲームループ(C#)
-- [ ] Day 8 [[70_hundred_challenge/8_asset_stack/okimochi|8_asset_stack]] — asset-stack
-- [ ] Day 9 [[70_hundred_challenge/9_drive/okimochi|9_drive]] — 自動運転ドライブ
+- [ ] Day 1 [[70_hundred_challenge/01_shooting/okimochi|01_shooting]] — 縦スクロール弾幕シューティング(ターミナル)
+- [ ] Day 2 [[70_hundred_challenge/02_gacha/okimochi|02_gacha]] — ガチャ(ターミナル ANSI エフェクト)
+- [ ] Day 3 [[70_hundred_challenge/03_bookstore/okimochi|03_bookstore]] — 本屋のピックアップコーナー(Three.js)
+- [x] Day 4 [[70_hundred_challenge/04_hakoniwa/okimochi|04_hakoniwa]] — 箱庭ゲーム(pygame-ce)
+- [x] Day 5 [[70_hundred_challenge/05_kaiwa_game/okimochi|05_kaiwa_game]] — 自作イラストのゲーム
+- [ ] Day 6 [[70_hundred_challenge/06_image_grid/okimochi|06_image_grid]] — 画像 → グリッド
+- [ ] Day 7 [[70_hundred_challenge/07_ballgame/okimochi|07_ballgame]] — 跳ね返るボールの最小ゲームループ(C#)
+- [ ] Day 8 [[70_hundred_challenge/08_asset_stack/okimochi|08_asset_stack]] — asset-stack
+- [ ] Day 9 [[70_hundred_challenge/09_drive/okimochi|09_drive]] — 自動運転ドライブ
 - [ ] Day 10 [[70_hundred_challenge/10_archery/okimochi|10_archery]] — 的当て / 的当て 3D
 - [ ] Day 11 [[70_hundred_challenge/11_cart_archer/okimochi|11_cart_archer]] — 馬車とゴースト
 - [ ] Day 12 [[70_hundred_challenge/12_gallery/okimochi|12_gallery]] — 成果物ギャラリー
@@ -43,6 +43,7 @@ tags: [100日チャレンジ]
 - [x] Day 36 [[70_hundred_challenge/36_ruby_lisp/okimochi|36_ruby_lisp]] — Ruby と Lisp の比較(コイン集めゲーム)
 - [x] Day 37 [[70_hundred_challenge/37_sand_boss/okimochi|37_sand_boss]] — 砂のボス戦(Rust + Bevy)
 - [x] Day 38 [[70_hundred_challenge/38_raft_river/okimochi|38_raft_river]] — 筏で川下り(Rust + Bevy、一人称)
-- [x] Day 39 [[70_hundred_challenge/39/okimochi|39]] — メイクテン 2人対戦(Swift)
 - [x] Day 39 [[70_hundred_challenge/39_make_ten/okimochi|39_make_ten]] — メイクテン 2人対戦(Swift)
 - [x] Day 40 [[70_hundred_challenge/40_image_cards/okimochi|40_image_cards]] — 金のフレーズ単語帳(各単語のイメージ効果、HTML)
+- [x] Day 41 [[70_hundred_challenge/41_walking_lantern/okimochi|41_walking_lantern]] — 歩く灯籠(多脚の彫刻を IK で歩かせ、脚の付け根の曲げを見る。Three.js)
+- [x] Day 42 [[70_hundred_challenge/42_tsunami_evacuation/okimochi|42_tsunami_evacuation]] — 津波避難シミュレータ(Julia + Agents.jl + GLMakie)

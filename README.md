@@ -4,15 +4,15 @@
 
 | Day | 内容 | 実行 |
 |---|---|---|
-| 1 | 縦スクロール弾幕シューティング(ターミナル) | `uv run 1_shooting/shooting.py` |
-| 2 | ガチャ(ターミナル ANSI エフェクト) | `uv run 2_gacha/gacha.py` |
-| 3 | 本屋のピックアップコーナー(Three.js) | [`3_bookstore/bookstore.html`](https://kilphis.github.io/hundred-challenge/3_bookstore/bookstore.html)  |
-| 4 | 箱庭ゲーム(pygame-ce) | `uv run 4_hakoniwa/hakoniwa.py` |
-| 5 | 自作イラストのゲーム | [`5_kaiwa_game/game.html`](https://kilphis.github.io/hundred-challenge/5_kaiwa_game/game.html) |
-| 6 | 画像 → グリッド | [`6_image_grid/index.html`](https://kilphis.github.io/hundred-challenge/6_image_grid/index.html) |
-| 7 | 跳ね返るボールの最小ゲームループ(C#) | `dotnet run 7_ballgame/ballgame.cs` |
-| 8 | asset-stack | `8_asset_stack/README.md` 参照 |
-| 9 | 自動運転ドライブ | [`9_drive/drive.html`](https://kilphis.github.io/hundred-challenge/9_drive/drive.html) |
+| 1 | 縦スクロール弾幕シューティング(ターミナル) | `uv run 01_shooting/shooting.py` |
+| 2 | ガチャ(ターミナル ANSI エフェクト) | `uv run 02_gacha/gacha.py` |
+| 3 | 本屋のピックアップコーナー(Three.js) | [`03_bookstore/bookstore.html`](https://kilphis.github.io/hundred-challenge/03_bookstore/bookstore.html)  |
+| 4 | 箱庭ゲーム(pygame-ce) | `uv run 04_hakoniwa/hakoniwa.py` |
+| 5 | 自作イラストのゲーム | [`05_kaiwa_game/game.html`](https://kilphis.github.io/hundred-challenge/05_kaiwa_game/game.html) |
+| 6 | 画像 → グリッド | [`06_image_grid/index.html`](https://kilphis.github.io/hundred-challenge/06_image_grid/index.html) |
+| 7 | 跳ね返るボールの最小ゲームループ(C#) | `dotnet run 07_ballgame/ballgame.cs` |
+| 8 | asset-stack | `08_asset_stack/README.md` 参照 |
+| 9 | 自動運転ドライブ | [`09_drive/drive.html`](https://kilphis.github.io/hundred-challenge/09_drive/drive.html) |
 | 10 | 的当て / 的当て 3D | [`10_archery/archery.html`](https://kilphis.github.io/hundred-challenge/10_archery/archery.html), [`10_archery/archery3d.html`](https://kilphis.github.io/hundred-challenge/10_archery/archery3d.html) |
 | 11 | 馬車とゴースト | [`11_cart_archer/cart_archer.html`](https://kilphis.github.io/hundred-challenge/11_cart_archer/cart_archer.html) |
 | 12 | 成果物ギャラリー | [`12_gallery/gallery.html`](https://kilphis.github.io/hundred-challenge/12_gallery/gallery.html) |
@@ -43,6 +43,8 @@
 | 38 | 筏で川下り(Rust + Bevy、一人称)| `38_raft_river/`(`cargo run --release`)|
 | 39 | メイクテン 2人対戦(Swift)| `39_make_ten/`(`swift run`)|
 | 40 | 金のフレーズ単語帳(各単語のイメージ効果、HTML)| `40_image_cards/`(`open 40_image_cards/index.html`)|
+| 41 | 歩く灯籠(多脚の彫刻を IK で歩かせ、脚の付け根の曲げを見る。Three.js)| `41_walking_lantern/`(`open 41_walking_lantern/index.html`)|
+| 42 | 津波避難シミュレータ(Julia + Agents.jl + GLMakie)| `42_tsunami_evacuation/`(`julia --project=. run.jl`)|
 
 ブラウザで動く日は表のリンクから遊べる(GitHub Pages)。
 
